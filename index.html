@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="ko" class="fs-m">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>RealTap — Pi Network Human Testing &amp; QA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Pi Network 공식 SDK (Pi Browser 환경에서 자동 활성화) -->
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #eef2ff;
+      --surface: rgba(255, 255, 255, 0.92);
+      --surface-solid: #ffffff;
+      --surface-alt: #f8fafc;
+      --ink: #0f172a;
+      --sub: #475569;
+      --mute: #64748b;
+      --line: rgba(148, 163, 184, 0.28);
+      --accent: #4f46e5;
+      --accent-2: #10b981;
+      --accent-soft: rgba(79, 70, 229, 0.11);
+      --pi: #6d28d9;
+      --pi-soft: rgba(109, 40, 217, 0.12);
+      --green: #059669;
+      --green-soft: rgba(16, 185, 129, 0.14);
+      --red: #dc2626;
+      --red-soft: rgba(220, 38, 38, 0.12);
+      --yellow: #d97706;
+      --yellow-soft: rgba(217, 119, 6, 0.14);
+      --shadow-3d:
+        0 0.65rem 1.4rem -0.5rem rgba(15, 23, 42, 0.14),
+        0 0.2rem 0.5rem -0.15rem rgba(79, 70, 229, 0.08),
+        inset 0 0.08rem 0.1rem rgba(255, 255, 255, 0.94),
+        inset 0 -0.12rem 0.3rem rgba(148, 163, 184, 0.2);
+      --shadow-btn:
+        0 0.75rem 1.5rem -0.5rem rgba(79, 70, 229, 0.45),
+        0 0.2rem 0.5rem -0.12rem rgba(15, 23, 42, 0.2),
+        inset 0 0.09rem 0.12rem rgba(255, 255, 255, 0.55),
+        inset 0 -0.18rem 0.45rem rgba(49, 46, 129, 0.55);
+    }
+
+    html.fs-s { font-size: 13px; }
+    html.fs-m { font-size: 15.5px; }
+    html.fs-l { font-size: 18px; }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Noto Sans SC', 'Inter', sans-serif;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100dvh;
+      width: 100%;
+      overflow: hidden;
+      font-size: 1rem;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 12%, rgba(99, 102, 241, 0.18), transparent 45%),
+        radial-gradient(circle at 85% 20%, rgba(16, 185, 129, 0.16), transparent 42%),
+        radial-gradient(circle at 50% 95%, rgba(139, 92, 246, 0.14), transparent 50%),
+        #e8eef9;
+    }
+
+    /* 네이티브 모바일 / Pi Browser 전체화면(100dvh) 프레임 */
+    #app {
+      position: relative;
+      width: 100%;
+      max-width: 540px;
+      height: 100dvh;
+      margin: 0 auto;
+      background: linear-gradient(180deg, #f8faff 0%, #eef2ff 55%, #f1f5f9 100%);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(15, 23, 42, 0.08);
+    }
+
+    #hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.65rem;
+      padding: calc(0.55rem + env(safe-area-inset-top)) 0.85rem 0.55rem;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+      z-index: 15;
+    }
+
+    .hdr-left {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      min-width: 0;
+    }
+
+    .hdr-copy {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    #hdr b {
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      background: linear-gradient(135deg, #1e1b4b 0%, #4f46e5 55%, #059669 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    #hdr small {
+      color: var(--sub);
+      font-size: 0.73rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .env-pill {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.25rem 0.55rem;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .env-pill.pi-live {
+      background: rgba(16, 185, 129, 0.15);
+      color: #047857;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+    .env-pill.sandbox {
+      background: rgba(109, 40, 217, 0.12);
+      color: #6d28d9;
+      border: 1px solid rgba(109, 40, 217, 0.25);
+    }
+
+    #main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.55rem 0.75rem 1.25rem;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .emblem-3d {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 2.35rem;
+      height: 2.35rem;
+      filter: drop-shadow(0 0.35rem 0.65rem rgba(79, 70, 229, 0.25));
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .emblem-3d svg { width: 100%; height: 100%; }
+    .emblem-3d:hover { transform: translateY(-0.1rem) scale(1.04); }
+
+    .ico-3d {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 0.72rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      box-shadow:
+        0 0.45rem 0.85rem -0.3rem rgba(15, 23, 42, 0.22),
+        inset 0 0.1rem 0.12rem rgba(255, 255, 255, 0.75),
+        inset 0 -0.15rem 0.3rem rgba(15, 23, 42, 0.14);
+    }
+    .ico-3d svg { width: 1.25rem; height: 1.25rem; }
+    .ico-3d.kind-apptest { background: linear-gradient(145deg, #818cf8 0%, #4f46e5 60%, #3730a3 100%); }
+    .ico-3d.kind-survey { background: linear-gradient(145deg, #34d399 0%, #10b981 60%, #047857 100%); }
+    .ico-3d.kind-verify { background: linear-gradient(145deg, #fbbf24 0%, #f59e0b 58%, #b45309 100%); }
+    .ico-3d.kind-avatar { background: linear-gradient(145deg, #a78bfa 0%, #7c3aed 60%, #4c1d95 100%); }
+
+    /* Search Bar */
+    .search-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.45rem;
+    }
+    .search-ico {
+      position: absolute;
+      left: 0.72rem;
+      width: 0.95rem;
+      height: 0.95rem;
+      color: var(--mute);
+      pointer-events: none;
+    }
+    .search-in {
+      width: 100%;
+      padding: 0.48rem 2.1rem 0.48rem 2.15rem;
+      border-radius: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink);
+      font-size: 0.84rem;
+      font-family: inherit;
+      box-shadow:
+        0 0.4rem 0.9rem -0.4rem rgba(15, 23, 42, 0.12),
+        inset 0 0.08rem 0.15rem rgba(15, 23, 42, 0.05);
+      transition: border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+    .search-in:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 0.18rem rgba(79, 70, 229, 0.15);
+    }
+    .search-clear {
+      position: absolute;
+      right: 0.5rem;
+      width: 1.35rem;
+      height: 1.35rem;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.24);
+      color: var(--sub);
+      font-size: 0.72rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* Wallet History Controls */
+    .hist-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      margin-bottom: 0.65rem;
+      padding: 0.55rem;
+      border-radius: 0.9rem;
+      background: rgba(248, 250, 252, 0.82);
+      border: 1px solid var(--line);
+    }
+    .hist-filter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+    .hist-mode-pills {
+      display: inline-flex;
+      gap: 0.25rem;
+      background: rgba(226, 232, 240, 0.75);
+      padding: 0.18rem;
+      border-radius: 0.72rem;
+    }
+    .hist-mode-btn {
+      border: 0;
+      background: transparent;
+      color: var(--sub);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.28rem 0.58rem;
+      border-radius: 0.55rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .hist-mode-btn.on {
+      background: #ffffff;
+      color: var(--accent);
+      box-shadow: 0 0.18rem 0.45rem -0.15rem rgba(15, 23, 42, 0.16);
+    }
+    .hist-dates {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 0.35rem;
+      align-items: center;
+      margin-top: 0.1rem;
+    }
+    .hist-date-in {
+      width: 100%;
+      padding: 0.38rem 0.48rem;
+      border-radius: 0.68rem;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink);
+      font-size: 0.74rem;
+    }
+    .hist-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.44rem 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+    }
+    .hist-item:last-child { border-bottom: 0; padding-bottom: 0.1rem; }
+    .hist-label { font-size: 0.84rem; font-weight: 700; color: var(--ink); line-height: 1.25; }
+    .hist-time { font-size: 0.71rem; color: var(--mute); margin-top: 0.14rem; font-variant-numeric: tabular-nums; }
+    .hist-amt { font-size: 0.86rem; font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.88);
+      border-radius: 1.15rem;
+      padding: 0.75rem 0.85rem;
+      margin-bottom: 0.65rem;
+      box-shadow: var(--shadow-3d);
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+    .card.task {
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .card.task.compact {
+      padding: 0.44rem 0.62rem;
+      margin-bottom: 0.36rem;
+      border-radius: 0.92rem;
+    }
+    .card.task.compact .ico-3d { width: 1.95rem; height: 1.95rem; border-radius: 0.6rem; }
+    .card.task.compact .ico-3d svg { width: 1.05rem; height: 1.05rem; }
+    .card.task.compact .title { font-size: 0.84rem; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card.task.compact .meta { font-size: 0.7rem; margin-top: 0.12rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card.task.compact .reward { padding: 0.24rem 0.48rem; border-radius: 0.62rem; }
+    .card.task.compact .reward b { font-size: 0.8rem; }
+    .card.task.compact .heart { padding: 0.28rem 0.38rem; font-size: 0.84rem; border-radius: 0.58rem; }
+
+    .card.task::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(125deg, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0) 42%);
+      pointer-events: none;
+    }
+    .card.task:hover {
+      transform: translateY(-0.08rem);
+      border-color: rgba(99, 102, 241, 0.38);
+      box-shadow:
+        0 0.85rem 1.6rem -0.5rem rgba(79, 70, 229, 0.2),
+        0 0.3rem 0.7rem -0.2rem rgba(15, 23, 42, 0.12),
+        inset 0 0.08rem 0.1rem rgba(255, 255, 255, 0.96);
+    }
+    .card.task:active { transform: translateY(0.05rem) scale(0.994); }
+    .card h3 { margin: 0 0 0.45rem; font-size: 0.92rem; font-weight: 700; }
+
+    .row { display: flex; align-items: center; gap: 0.55rem; }
+    .grow { flex: 1; min-width: 0; }
+    .title { font-weight: 700; font-size: 0.9rem; line-height: 1.32; color: var(--ink); }
+    .meta { font-size: 0.76rem; color: var(--sub); margin-top: 0.18rem; line-height: 1.32; }
+    .small { font-size: 0.78rem; color: var(--sub); line-height: 1.42; }
+    .big { font-size: 1.38rem; font-weight: 800; letter-spacing: -0.02em; }
+    .pi { color: var(--pi); font-weight: 800; }
+
+    .reward {
+      text-align: right;
+      background: linear-gradient(145deg, rgba(109, 40, 217, 0.12), rgba(79, 70, 229, 0.06));
+      padding: 0.34rem 0.58rem;
+      border-radius: 0.78rem;
+      border: 1px solid rgba(109, 40, 217, 0.16);
+      box-shadow: inset 0 0.06rem 0.06rem rgba(255, 255, 255, 0.8);
+      flex-shrink: 0;
+    }
+    .reward b { display: block; color: var(--pi); font-size: 0.86rem; font-weight: 800; line-height: 1.15; }
+    .reward small { color: var(--sub); font-size: 0.66rem; }
+
+    .heart {
+      background: linear-gradient(145deg, #ffffff, #f1f5f9);
+      border: 1px solid var(--line);
+      border-radius: 0.68rem;
+      font-size: 0.95rem;
+      cursor: pointer;
+      padding: 0.35rem 0.46rem;
+      line-height: 1;
+      box-shadow: 0 0.22rem 0.5rem -0.15rem rgba(15, 23, 42, 0.12), inset 0 0.06rem 0.06rem #fff;
+      transition: transform 0.16s ease;
+      flex-shrink: 0;
+    }
+    .heart:active { transform: scale(0.9); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.32rem; margin-top: 0.52rem; }
+    .tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.16rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.16);
+      color: var(--sub);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+    .tag.inline-tag { font-size: 0.63rem; padding: 0.08rem 0.38rem; margin-left: 0.28rem; vertical-align: middle; }
+    .tag.b { background: var(--accent-soft); color: var(--accent); }
+    .tag.g { background: var(--green-soft); color: var(--green); }
+    .tag.r { background: var(--red-soft); color: var(--red); }
+    .tag.y { background: var(--yellow-soft); color: var(--yellow); }
+
+    /* Segmented & Chips */
+    .seg {
+      display: flex;
+      gap: 0.28rem;
+      background: rgba(226, 232, 240, 0.75);
+      padding: 0.22rem;
+      border-radius: 0.88rem;
+      margin-bottom: 0.45rem;
+      box-shadow: inset 0 0.12rem 0.28rem rgba(15, 23, 42, 0.08);
+    }
+    .seg button {
+      flex: 1;
+      border: 0;
+      background: transparent;
+      padding: 0.42rem 0.35rem;
+      border-radius: 0.68rem;
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: var(--sub);
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .seg button.on {
+      background: linear-gradient(145deg, #ffffff, #f8fafc);
+      color: var(--ink);
+      box-shadow: 0 0.32rem 0.75rem -0.2rem rgba(15, 23, 42, 0.16), inset 0 0.06rem 0.06rem #fff;
+    }
+
+    .chips {
+      display: flex;
+      gap: 0.38rem;
+      overflow-x: auto;
+      padding-bottom: 0.3rem;
+      margin-bottom: 0.4rem;
+      scrollbar-width: none;
+    }
+    .chips::-webkit-scrollbar { display: none; }
+
+    .chip {
+      border: 1px solid rgba(255, 255, 255, 0.88);
+      background: var(--surface);
+      padding: 0.34rem 0.72rem;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--sub);
+      white-space: nowrap;
+      cursor: pointer;
+      box-shadow: 0 0.28rem 0.65rem -0.25rem rgba(15, 23, 42, 0.14), inset 0 0.06rem 0.06rem #fff;
+      transition: all 0.16s ease;
+    }
+    .chip.on {
+      background: linear-gradient(145deg, #6366f1, #4338ca);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 0.45rem 0.95rem -0.3rem rgba(79, 70, 229, 0.5), inset 0 0.06rem 0.12rem rgba(255, 255, 255, 0.45);
+    }
+
+    /* Buttons */
+    .btn {
+      border: 1px solid rgba(255, 255, 255, 0.88);
+      background: linear-gradient(145deg, #ffffff, #f1f5f9);
+      color: var(--ink);
+      padding: 0.58rem 0.82rem;
+      border-radius: 0.88rem;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      box-shadow: 0 0.45rem 0.9rem -0.32rem rgba(15, 23, 42, 0.14), inset 0 0.08rem 0.08rem #fff;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn:hover:not(:disabled) { transform: translateY(-0.06rem); }
+    .btn:active:not(:disabled) { transform: translateY(0.1rem) scale(0.985); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn.p {
+      background: linear-gradient(145deg, #6366f1 0%, #4338ca 65%, #3730a3 100%);
+      color: #fff;
+      border-color: rgba(165, 180, 252, 0.35);
+      box-shadow: var(--shadow-btn);
+    }
+    .btn.g {
+      background: linear-gradient(145deg, #34d399, #059669);
+      color: #fff;
+      border-color: rgba(167, 243, 208, 0.35);
+      box-shadow: 0 0.55rem 1.1rem -0.35rem rgba(16, 185, 129, 0.45), inset 0 0.08rem 0.1rem rgba(255, 255, 255, 0.5);
+    }
+    .btn.red {
+      background: linear-gradient(145deg, #f87171, #dc2626);
+      color: #fff;
+      border-color: rgba(254, 202, 202, 0.35);
+      box-shadow: 0 0.55rem 1.1rem -0.35rem rgba(220, 38, 38, 0.42), inset 0 0.08rem 0.1rem rgba(255, 255, 255, 0.45);
+    }
+    .btn.line {
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(79, 70, 229, 0.25);
+      color: var(--accent);
+      box-shadow: 0 0.25rem 0.65rem -0.3rem rgba(79, 70, 229, 0.2);
+    }
+    .btn.sm { padding: 0.34rem 0.58rem; font-size: 0.74rem; border-radius: 0.65rem; }
+    .btn.full { width: 100%; }
+
+    .back {
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid var(--line);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      padding: 0.36rem 0.68rem;
+      border-radius: 0.68rem;
+      margin-bottom: 0.55rem;
+      box-shadow: 0 0.22rem 0.55rem -0.2rem rgba(15, 23, 42, 0.1);
+    }
+
+    .kv {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.32rem 0;
+      font-size: 0.84rem;
+    }
+
+    hr { border: 0; border-top: 1px solid var(--line); margin: 0.55rem 0; }
+
+    .note {
+      padding: 0.58rem 0.72rem;
+      border-radius: 0.85rem;
+      font-size: 0.8rem;
+      line-height: 1.45;
+      background: var(--accent-soft);
+      color: var(--ink);
+      border: 1px solid rgba(79, 70, 229, 0.14);
+    }
+    .note.warn { background: var(--yellow-soft); border-color: rgba(217, 119, 6, 0.22); }
+    .note.err { background: var(--red-soft); color: var(--red); border-color: rgba(220, 38, 38, 0.22); }
+    .note.ok { background: var(--green-soft); color: var(--green); border-color: rgba(16, 185, 129, 0.22); }
+
+    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+
+    label.f {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--sub);
+      margin: 0.58rem 0 0.28rem;
+    }
+
+    .in {
+      width: 100%;
+      padding: 0.52rem 0.7rem;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 0.75rem;
+      background: rgba(255, 255, 255, 0.94);
+      color: var(--ink);
+      font-size: 0.86rem;
+      font-family: inherit;
+      box-shadow: inset 0 0.1rem 0.22rem rgba(15, 23, 42, 0.05);
+    }
+    .in:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 0.18rem rgba(79, 70, 229, 0.16);
+    }
+    textarea.in { min-height: 4.1rem; resize: vertical; }
+
+    .kind {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.45rem;
+      margin-bottom: 0.55rem;
+    }
+    .kind button {
+      border: 1px solid rgba(255, 255, 255, 0.88);
+      background: var(--surface);
+      border-radius: 1rem;
+      padding: 0.62rem 0.35rem;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: var(--ink);
+      box-shadow: var(--shadow-3d);
+      transition: all 0.18s ease;
+    }
+    .kind button span { display: block; font-size: 1.25rem; margin-bottom: 0.22rem; }
+    .kind button.on {
+      border-color: var(--accent);
+      background: linear-gradient(145deg, rgba(99, 102, 241, 0.18), rgba(16, 185, 129, 0.12));
+      color: var(--accent);
+      transform: translateY(-0.1rem);
+    }
+
+    .q {
+      background: rgba(248, 250, 252, 0.84);
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      padding: 0.68rem;
+      margin-bottom: 0.58rem;
+      box-shadow: inset 0 0.06rem 0.12rem rgba(255, 255, 255, 0.9);
+    }
+    .opt {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.46rem 0.62rem;
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+      margin-top: 0.36rem;
+      cursor: pointer;
+      font-size: 0.83rem;
+      background: rgba(255, 255, 255, 0.78);
+    }
+    .pills { display: flex; gap: 0.35rem; }
+    .pills label {
+      flex: 1;
+      text-align: center;
+      padding: 0.46rem 0.25rem;
+      border: 1px solid var(--line);
+      border-radius: 0.68rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.82);
+    }
+    .pills input, .stars input { display: none; }
+    .pills label:has(input:checked) { background: linear-gradient(145deg, #6366f1, #4338ca); color: #fff; border-color: transparent; }
+    .pills label.pr:has(input:checked) { background: linear-gradient(145deg, #f87171, #dc2626); color: #fff; border-color: transparent; }
+
+    .stars { display: flex; gap: 0.35rem; }
+    .stars label {
+      flex: 1;
+      text-align: center;
+      padding: 0.5rem 0;
+      border: 1px solid var(--line);
+      border-radius: 0.68rem;
+      font-weight: 800;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.82);
+    }
+    .stars label:has(input:checked) { background: linear-gradient(145deg, #fbbf24, #d97706); color: #fff; border-color: transparent; }
+
+    .step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.48rem 0.6rem;
+      border-radius: 0.78rem;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.85);
+      margin-top: 0.38rem;
+      font-size: 0.82rem;
+      line-height: 1.38;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .step-item:has(input:checked) {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.7rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 0.05rem;
+    }
+
+    .problem-drawer {
+      margin-top: 0.45rem;
+      padding: 0.58rem 0.65rem;
+      border-radius: 0.82rem;
+      background: rgba(220, 38, 38, 0.06);
+      border: 1px solid rgba(220, 38, 38, 0.22);
+    }
+    .sev-pills {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.3rem;
+      margin-top: 0.28rem;
+    }
+    .sev-pills label {
+      text-align: center;
+      padding: 0.38rem 0.2rem;
+      border-radius: 0.6rem;
+      border: 1px solid rgba(220, 38, 38, 0.24);
+      background: #ffffff;
+      font-size: 0.71rem;
+      font-weight: 700;
+      color: var(--sub);
+      cursor: pointer;
+    }
+    .sev-pills input { display: none; }
+    .sev-pills label.sev-blocker:has(input:checked) { background: #dc2626; color: #fff; border-color: transparent; }
+    .sev-pills label.sev-major:has(input:checked) { background: #d97706; color: #fff; border-color: transparent; }
+    .sev-pills label.sev-minor:has(input:checked) { background: #4f46e5; color: #fff; border-color: transparent; }
+
+    .env-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.32rem;
+      padding: 0.28rem 0.58rem;
+      border-radius: 0.68rem;
+      background: rgba(15, 23, 42, 0.06);
+      border: 1px solid var(--line);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .shot-thumb {
+      width: 100%;
+      max-height: 8.5rem;
+      object-fit: cover;
+      border-radius: 0.68rem;
+      margin-top: 0.4rem;
+      border: 1px solid var(--line);
+    }
+
+    /* Slide-out color palette drawer in Me tab */
+    .color-add-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .color-slide-drawer {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.32rem;
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
+      transform: translateX(-0.35rem);
+      padding: 0;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid transparent;
+      transition: max-width 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), padding 0.25s ease, border-color 0.2s ease;
+      pointer-events: none;
+    }
+    .color-slide-drawer.open {
+      max-width: 15rem;
+      opacity: 1;
+      transform: translateX(0);
+      padding: 0.22rem 0.42rem;
+      border-color: var(--line);
+      box-shadow: 0 0.35rem 0.85rem -0.25rem rgba(15, 23, 42, 0.18);
+      pointer-events: auto;
+    }
+    .color-swatch-dot {
+      width: 1.35rem;
+      height: 1.35rem;
+      border-radius: 999px;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0.16rem 0.38rem rgba(15, 23, 42, 0.22);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.15s ease;
+    }
+    .color-swatch-dot:hover {
+      transform: scale(1.12);
+    }
+
+    .bar {
+      height: 0.4rem;
+      border-radius: 99px;
+      background: rgba(148, 163, 184, 0.22);
+      overflow: hidden;
+      margin-top: 0.36rem;
+      box-shadow: inset 0 0.06rem 0.16rem rgba(15, 23, 42, 0.12);
+    }
+    .bar > i {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, #6366f1, #10b981);
+      border-radius: 99px;
+    }
+
+    .imgph {
+      height: 7.2rem;
+      border-radius: 1rem;
+      background: repeating-linear-gradient(
+        -45deg,
+        rgba(99, 102, 241, 0.08),
+        rgba(99, 102, 241, 0.08) 0.6rem,
+        rgba(16, 185, 129, 0.08) 0.6rem,
+        rgba(16, 185, 129, 0.08) 1.2rem
+      );
+      border: 1px dashed rgba(99, 102, 241, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.85rem;
+      margin-top: 0.55rem;
+    }
+
+    details > summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: var(--sub);
+      padding: 0.45rem 0.25rem;
+      list-style: none;
+    }
+
+    #nav {
+      display: flex;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--line);
+      padding: 0.32rem 0.35rem calc(0.32rem + env(safe-area-inset-bottom));
+      flex-shrink: 0;
+      z-index: 15;
+      box-shadow: 0 -0.45rem 1.4rem -0.55rem rgba(15, 23, 42, 0.14);
+    }
+    #nav button {
+      flex: 1;
+      border: 0;
+      background: transparent;
+      color: var(--mute);
+      padding: 0.32rem 0.15rem;
+      border-radius: 0.78rem;
+      cursor: pointer;
+      font-size: 0.68rem;
+      font-weight: 700;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.12rem;
+      transition: all 0.16s ease;
+    }
+    #nav button.on {
+      color: var(--accent);
+      background: rgba(79, 70, 229, 0.11);
+      box-shadow: inset 0 0.06rem 0.06rem rgba(255, 255, 255, 0.8);
+    }
+    #nav .ni { font-size: 1.08rem; line-height: 1.1; }
+
+    .modalbg {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 50;
+      padding: 0.65rem;
+    }
+    @media (min-width: 640px) { .modalbg { align-items: center; } }
+
+    .sheet {
+      background: #ffffff;
+      width: 100%;
+      max-width: 26rem;
+      border-radius: 1.5rem;
+      padding: 1.15rem 1.05rem;
+      box-shadow: 0 1.5rem 3.5rem -0.75rem rgba(15, 23, 42, 0.4), inset 0 0.08rem 0.12rem #fff;
+    }
+    .sheet h3 { margin: 0 0 0.48rem; font-size: 1rem; font-weight: 800; }
+
+    .toast {
+      position: fixed;
+      bottom: 4.6rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0f172a;
+      color: #fff;
+      padding: 0.56rem 1.05rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      z-index: 60;
+      white-space: nowrap;
+      box-shadow: 0 0.7rem 1.5rem -0.45rem rgba(15, 23, 42, 0.55), inset 0 0.06rem 0.06rem rgba(255, 255, 255, 0.25);
+    }
+
+    .spin {
+      width: 1.9rem;
+      height: 1.9rem;
+      border: 0.18rem solid rgba(79, 70, 229, 0.18);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: sp 0.8s linear infinite;
+      margin: 0 auto 0.6rem;
+    }
+    @keyframes sp { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header id="hdr"></header>
+    <main id="main"></main>
+    <nav id="nav" aria-label="Primary"></nav>
+  </div>
+  <div id="layer"></div>
+
+  <script>
+    /* =========================================================================
+       Runtime Environment & Pi SDK Config
+       ========================================================================= */
+    const APP_ENV = {
+      PI_SDK_SANDBOX: true,          // 실제 메인넷 출시 시 false로 변경
+      SHOW_CORE_TEAM_TOOLS: true     // 코어팀 샘플 데이터 및 샌드박스 테스트 도구 표시 여부
+    };
+
+    const isSafeImageDataUri = uri =>
+      typeof uri === 'string' && /^data:image\/(png|jpeg|jpg|webp|gif);base64,[A-Za-z0-9+/=]+$/i.test(uri);
+
+    /* =========================================================================
+       3D Glossy Tactile SVG Emblem & Category Icons
+       ========================================================================= */
+    function brandEmblemSvg() {
+      return `
+        <span class="emblem-3d" aria-hidden="true">
+          <svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="rtSquircle" x1="20" y1="12" x2="140" y2="148" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#6366F1" />
+                <stop offset="52%" stop-color="#3B82F6" />
+                <stop offset="100%" stop-color="#10B981" />
+              </linearGradient>
+              <linearGradient id="rtGlassRim" x1="25" y1="15" x2="135" y2="145" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.72" />
+                <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.14" />
+                <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.4" />
+              </linearGradient>
+              <linearGradient id="rtShield" x1="50" y1="34" x2="115" y2="128" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FFFFFF" />
+                <stop offset="65%" stop-color="#E2E8F0" />
+                <stop offset="100%" stop-color="#94A3B8" />
+              </linearGradient>
+              <linearGradient id="rtCheck" x1="62" y1="68" x2="102" y2="98" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#10B981" />
+                <stop offset="100%" stop-color="#047857" />
+              </linearGradient>
+              <filter id="rtShadow" x="15" y="18" width="130" height="134" filterUnits="userSpaceOnUse">
+                <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#0F172A" flood-opacity="0.28" />
+              </filter>
+            </defs>
+            <rect x="16" y="16" width="128" height="128" rx="34" fill="url(#rtSquircle)" />
+            <rect x="17" y="17" width="126" height="126" rx="33" stroke="url(#rtGlassRim)" stroke-width="2.5" />
+            <ellipse cx="80" cy="40" rx="46" ry="18" fill="white" fill-opacity="0.2" />
+            <g filter="url(#rtShadow)">
+              <path d="M80 36L114 49V78C114 101.5 99.5 119.5 80 127C60.5 119.5 46 101.5 46 78V49L80 36Z" fill="url(#rtShield)" />
+              <path d="M80 36L114 49V78C114 101.5 99.5 119.5 80 127V36Z" fill="#0F172A" fill-opacity="0.06" />
+              <path d="M65 81.5L75.5 92L97 69.5" stroke="url(#rtCheck)" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" />
+            </g>
+            <circle cx="122" cy="38" r="13" fill="#10B981" stroke="#FFFFFF" stroke-width="3" />
+            <circle cx="119" cy="34" r="3.5" fill="#FFFFFF" fill-opacity="0.82" />
+          </svg>
+        </span>
+      `;
+    }
+
+    function kindBadge3d(kind) {
+      if (kind === 'apptest') {
+        return `<div class="ico-3d kind-apptest" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect x="6" y="3" width="12" height="18" rx="3" fill="#FFFFFF" fill-opacity="0.95" />
+            <path d="M9.5 12L11.2 13.7L14.8 10.1" stroke="#4338CA" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="12" cy="18.2" r="1" fill="#4F46E5" />
+          </svg>
+        </div>`;
+      }
+      if (kind === 'survey') {
+        return `<div class="ico-3d kind-survey" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect x="5" y="4" width="14" height="16" rx="3" fill="#FFFFFF" fill-opacity="0.95" />
+            <path d="M8.5 9H15.5M8.5 12.5H15.5M8.5 16H12.5" stroke="#047857" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </div>`;
+      }
+      if (kind === 'verify') {
+        return `<div class="ico-3d kind-verify" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 3.5L19 6.3V12.2C19 16.8 16 20.2 12 21.5C8 20.2 5 16.8 5 12.2V6.3L12 3.5Z" fill="#FFFFFF" fill-opacity="0.96" />
+            <path d="M9 12.2L11.1 14.3L15.2 10.1" stroke="#B45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>`;
+      }
+      return `<div class="ico-3d kind-avatar" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="8.5" r="3.6" fill="#FFFFFF" />
+          <path d="M5.5 19C6.4 15.8 8.9 14 12 14C15.1 14 17.6 15.8 18.5 19" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" />
+        </svg>
+      </div>`;
+    }
+
+    /* =========================================================================
+       Localization Strings, Countries, Languages (RealTap)
+       ========================================================================= */
+    const CONFIG={minWithdraw:1,holdDays:3,feePct:0.3,minConsensus:10,maxQuestions:20,reportsToPause:3,minPerQuestion:0.02,minAppTest:0.1};
+    const LANGS=['en','ko','zh'];
+    const S={
+     piLiveBadge:['Pi Browser','Pi 브라우저','Pi 浏览器'],
+     sandboxBadge:['Sandbox','샌드박스','沙盒模式'],
+     tagline:['Real people test your Pi app','진짜 사람이 내 Pi 앱을 테스트해요','真人帮你测试 Pi 应用'],
+     t_explore:['Explore','탐색','探索'],t_create:['Request','의뢰','发布'],t_activity:['Activity','내 활동','我的活动'],t_wallet:['Wallet','지갑','钱包'],t_me:['Me','내 정보','我的'],
+     k_all:['All','전체','全部'],k_apptest:['App test','앱 테스트','应用测试'],k_survey:['Survey','설문','问卷'],k_verify:['Verify','검증 질문','验证问题'],
+     d_apptest:['Real users run step-by-step scenarios and report QA bugs','실제 사용자가 단계별 시나리오를 테스트하고 버그 리포트를 보내요','真实用户按步骤测试并提交 QA 缺陷报告'],
+     d_survey:['Ask several questions','여러 질문을 한 번에 물어봐요','一次询问多个问题'],
+     d_verify:['One question only a human can answer','사람만 답할 수 있는 질문 하나','只有真人能回答的一个问题'],
+     viewAll:['All','전체','全部'],viewSaved:['♥ Saved','♥ 저장','♥ 收藏'],
+     searchPh:['Search apps, surveys, topics...','앱, 설문, 주제 검색...','搜索应用、问卷、主题...'],
+     noTasks:['Nothing here yet.','아직 아무것도 없어요.','暂无内容。'],noSaved:['Tap ♥ on a task to save it here.','의뢰의 ♥를 누르면 여기에 모여요.','点击任务上的 ♥ 即可收藏到这里。'],
+     noSearch:['No matching tasks for "{0}".','"{0}"에 맞는 의뢰가 없어요.','未找到与“{0}”匹配的任务。'],
+     spotsLeft:['{0} left','{0}자리','余{0}名'],perPerson:['per person','인당','每人'],minutes:['{0}m','{0}분','{0}分'],
+     sensitive:['Sensitive','민감 콘텐츠','敏感内容'],underReview:['Under review','검토 중','审核中'],yours:['Yours','내 의뢰','我发布的'],done:['Joined','참여함','已参与'],locked:['Not eligible','참여 불가','不可参与'],finished:['Finished','종료','已结束'],
+     requester:['Requester','의뢰자','发布者'],rejRate:['Rejection rate {0}%','거절률 {0}%','拒绝率 {0}%'],howPaid:['How you get paid','보상 방식','报酬规则'],
+     expConsensus:['People who match the majority answer share the whole pool.','다수와 같은 답을 한 사람이 전체 보상을 나눠 가져요.','与多数人答案一致者平分全部奖励。'],
+     expReview:['The requester accepts or rejects each response. Rejected shares go to accepted participants.','의뢰자가 응답마다 승인·거절해요. 거절된 몫은 승인된 참여자에게 나뉘어요.','发布者逐条通过或拒绝，被拒绝的份额分给通过者。'],
+     expAuto:['Complete responses are approved automatically.','완성된 응답은 자동으로 승인돼요.','完整的回答将自动通过。'],
+     holdNote:['Rewards can be withdrawn {0} days after approval.','보상은 승인 {0}일 후부터 인출할 수 있어요.','奖励在通过 {0} 天后可提现。'],
+     start:['Start','시작하기','开始'],report:['Report','신고','举报'],back:['← Back','← 뒤로','← 返回'],
+     needCountry:['Only for people in {0}. Change in Me.','{0} 거주자만 참여할 수 있어요. 내 정보에서 변경하세요.','仅限{0}地区用户，可在“我的”中修改。'],
+     needLang:['Only for {0} speakers. Change in Me.','{0} 사용자만 참여할 수 있어요. 내 정보에서 변경하세요.','仅限使用{0}的用户，可在“我的”中修改。'],
+     isFull:['All spots are taken.','모집이 마감되었어요.','名额已满。'],isPaused:['Paused while reports are reviewed.','신고 검토 중이라 일시 중지되었어요.','因举报审核暂停。'],isMine:['This is your request.','내가 올린 의뢰예요.','这是你发布的任务。'],alreadyDone:['You already joined this task.','이미 참여한 의뢰예요.','你已参与此任务。'],isSettled:['This task is finished.','종료된 의뢰예요.','任务已结束。'],
+     consent:['This task may show sensitive or disturbing content. I understand and want to continue.','불쾌하거나 민감한 내용이 있을 수 있음을 이해하고 계속합니다.','此任务可能包含敏感或令人不适的内容，我已了解并愿意继续。'],needConsent:['Please confirm the content warning first.','먼저 민감 콘텐츠 안내에 동의해 주세요.','请先确认内容提示。'],
+     reportContent:['⚑ Report this content','⚑ 이 내용 신고하기','⚑ 举报此内容'],submit:['Submit','제출하기','提交'],answerAll:['Please answer every required question.','필수 질문에 모두 답해 주세요.','请回答所有必答问题。'],submitted:['Submitted! See it in Activity.','제출했어요! 내 활동에서 확인하세요.','已提交！可在“我的活动”查看。'],
+     qChoice:['Choice','객관식','选择题'],qText:['Text','서술형','简答题'],qRating:['Rating','별점','评分'],optional:['optional','선택','可选'],yourAnswer:['Your answer','내 답변','你的回答'],imgPlaceholder:['Image placeholder','이미지 자리 표시','图片占位'],
+     testApp:['Test {0}','{0} 테스트','测试 {0}'],openApp:['Open the app ↗','앱 열기 ↗','打开应用 ↗'],
+     steps:['Step-by-step test scenario','단계별 테스트 시나리오','分步测试场景'],
+     stepsCheckHint:['Complete each step in the app and check it off:','앱에서 각 단계를 순서대로 실행하고 체크하세요:','在应用中完成每一步并勾选：'],
+     completeAllSteps:['Please check off all test steps before submitting.','제출하기 전에 모든 테스트 단계를 완료 체크해 주세요.','提交前请勾选所有测试步骤。'],
+     targetOs:['Target device / OS','대상 기기 / OS','目标设备 / 系统'],
+     os_any:['All devices','전체 기기','所有设备'],os_android:['Android only','Android 전용','仅限 Android'],os_ios:['iOS (iPhone) only','iOS (아이폰) 전용','仅限 iOS'],os_desktop:['Desktop Browser','PC 브라우저','电脑浏览器'],
+     needOs:['Target device is {0}. (Detected: {1})','이 테스트는 {0} 환경 대상입니다. (현재 감지됨: {1})','此测试仅限 {0} 设备。（当前检测：{1}）'],
+     appVersion:['App build / version (optional)','앱 버전 / 빌드 (선택)','应用版本（可选）'],
+     appVersionPh:['e.g. v1.2.0-testnet','예: v1.2.0-테스트넷','例如：v1.2.0-测试网'],
+     scenarioSteps:['Test steps (up to 5 steps)','단계별 시나리오 (최대 5단계)','测试步骤（最多 5 步）'],
+     stepPh:['Step {0} action (e.g. Sign in with Pi & create a post)','{0}단계 행동 (예: Pi 로그인 후 글 1개 작성)','第 {0} 步操作（例如：Pi 登录并发布一条内容）'],
+     addStep:['+ Add step','+ 단계 추가','+ 添加步骤'],
+     customChecks:['Custom check items (optional)','추가 커스텀 확인 항목 (선택)','自定义检查项（可选）'],
+     customCheckPh:['e.g. Dark mode contrast, Back button','예: 다크모드 가독성, 뒤로가기 동작','例如：深色模式对比度、返回键'],
+     addCustomCheck:['+ Add custom item','+ 커스텀 항목 추가','+ 添加检查项'],
+     autoEnvTitle:['Auto-detected QA environment','자동 감지된 테스트 환경','自动检测的测试环境'],
+     autoEnvNote:['Attached automatically so developers can reproduce bugs accurately.','개발자가 버그를 정확히 재현할 수 있도록 자동 첨부됩니다.','自动附带设备与分辨率信息以便开发者复现问题。'],
+     bugSeverity:['Bug severity','문제 심각도','缺陷严重程度'],
+     sev_blocker:['Blocker (Crash/Freeze)','치명적 (멈춤/결제불가)','严重（崩溃/无法支付）'],
+     sev_major:['Major (Broken UX)','불편함 (기능오류/깨짐)','主要（功能异常/错位）'],
+     sev_minor:['Minor (Typo/Visual)','사소함 (오타/여백)','轻微（文案/细节）'],
+     bugNotePh:['Describe what happened on this item...','이 항목에서 발생한 문제를 간단히 적어주세요...','请简述该项出现的问题...'],
+     attachShot:['Attach screenshot (optional)','스크린샷 첨부 (선택)','上传截图（可选）'],
+     shotAttached:['Screenshot attached','스크린샷 첨부됨','已附加截图'],
+     passRate:['Pass rate {0}%','정상 통과율 {0}%','通过率 {0}%'],
+     qaSummaryTitle:['QA Check Breakdown & Device Logs','항목별 통과율 및 버그 심각도 리포트','检查项通过率与缺陷报告'],
+     checklist:['Check each item','항목별 확인','逐项检查'],
+     ck_login:['Sign in with Pi','Pi 로그인','Pi 登录'],ck_pay:['Payment works','결제','支付'],ck_main:['Main feature works','핵심 기능','核心功能'],ck_lang:['Language & text','언어·문구','语言与文案'],ck_speed:['Speed & loading','속도·로딩','速度与加载'],ck_ui:['Layout looks right','화면 배치','界面布局'],
+     o_works:['Works','잘 돼요','正常'],o_problem:['Problem','문제 있음','有问题'],o_cant:["Can't test",'못 해봄','无法测试'],
+     overall:['Overall: how easy was it to use?','전체적으로 쓰기 쉬웠나요?','整体使用是否容易？'],issues:['Additional reproduction notes','추가 재현 방법 및 종합 의견','补充复现步骤与建议'],device:['Your device','사용한 기기','你的设备'],o_android:['Android','안드로이드','安卓'],o_ios:['iPhone','아이폰','iPhone'],o_desktop:['Desktop','PC','电脑'],
+     save:['Save','저장','收藏'],saved:['Saved','저장됨','已收藏'],
+     rpTitle:['Report','신고하기','举报'],rpWhy:['Why are you reporting this?','신고 이유를 선택하세요','请选择举报原因'],rp1:['Hateful or harassing','혐오·괴롭힘','仇恨或骚扰'],rp2:['Sexual content or minors','성적 콘텐츠·미성년자','色情内容或涉及未成年人'],rp3:['Illegal or scam','불법·사기','违法或诈骗'],rp4:['Personal information','개인정보 노출','泄露个人信息'],rp5:['Fake reviews / spam','가짜 후기·스팸','虚假评价/垃圾信息'],rp6:['Other','기타','其他'],rpNote:['Details (optional)','상세 내용 (선택)','详细说明（可选）'],rpSend:['Send report','신고 보내기','提交举报'],rpDone:['Report received. Thank you.','신고가 접수되었어요. 감사합니다.','已收到举报，谢谢。'],rpPaused:['Task paused for review.','검토를 위해 의뢰가 일시 중지되었어요.','任务已暂停以待审核。'],
+     createWhat:['What do you need?','무엇이 필요하세요?','你需要什么？'],
+     appName:['App name','앱 이름','应用名称'],appNamePh:['e.g. Pi Journal','예: Pi 일기장','例如：Pi 日记'],appUrl:['App link','앱 링크','应用链接'],testSteps:['Summary & test goal','테스트 개요 및 목표','测试概述与目标'],testStepsPh:['e.g. Test checkout flow in Pi Browser on mobile.','예: 모바일 Pi 브라우저에서 장바구니~결제 직전 흐름을 테스트해 주세요.','例如：在手机 Pi 浏览器中测试购物车到结账流程。'],pickChecks:['Items to check','확인할 항목','检查项目'],
+     title:['Title','제목','标题'],titlePh:['e.g. Mobile payment habits','예: 모바일 결제 습관','例如：移动支付习惯'],desc:['Instructions (optional)','안내 (선택)','说明（可选）'],
+     vQuestion:['Your question','질문','你的问题'],vQuestionPh:['e.g. Is this Chinese sentence natural?','예: 이 중국어 문장이 자연스러운가요?','例如：这句中文自然吗？'],vOptions:['Answer options','답변 보기','答案选项'],
+     addQ:['+ Add question','+ 질문 추가','+ 添加问题'],qPh:['Question','질문 내용','问题内容'],optPh:['Option','보기','选项'],addOpt:['+ option','+ 보기','+ 选项'],
+     people:['People','인원','人数'],rewardPer:['Reward each (π)','인당 보상 (π)','每人奖励 (π)'],
+     advanced:['More options','추가 옵션','更多选项'],mode:['How rewards are decided','보상 결정 방식','奖励判定方式'],modeC:['Majority — 10+ people, choice only','다수결 — 10명 이상, 객관식만','多数决 — 10人以上，仅选择题'],modeR:['I accept or reject each response','내가 응답마다 승인·거절','我逐条通过或拒绝'],autoAppr:['Approve complete responses automatically','완성된 응답은 자동 승인','自动通过完整回答'],
+     country:['Participant country','참여자 국가','参与者国家'],language:['Participant language','참여자 언어','参与者语言'],estMin:['Minutes needed','소요 시간(분)','所需分钟数'],deadline:['Deadline','마감','截止时间'],hrs:['{0} hours','{0}시간','{0}小时'],days:['{0} days','{0}일','{0}天'],
+     sensFlag:['Shows sensitive content (people see a warning first)','민감한 콘텐츠 포함 (참여자에게 사전 경고)','包含敏感内容（参与者将先看到警告）'],
+     rulesAck:['I agree to the rules','규칙을 지키는 의뢰임을 확인합니다','我确认遵守规则'],rulesTitle:['Not allowed','금지 사항','禁止事项'],
+     r1:['Fake reviews or rating manipulation','가짜 후기·평점 조작','虚假评价或刷分'],r2:['Mass account creation, spam, or collecting personal data','계정 대량 생성·스팸·개인정보 수집','批量注册账号、垃圾信息或收集个人信息'],r3:['Identifying or tracking a specific person','특정인 식별·추적','识别或跟踪特定个人'],r4:['Sexual content, or anything involving minors','성적 콘텐츠, 미성년자 관련 내용','色情内容或涉及未成年人的内容'],r5:['Gambling, scams, or illegal activity','도박·사기·불법 행위','赌博、诈骗或违法活动'],
+     summary:['Payment','결제','支付'],escrow:['Reward pool (held in escrow)','보상 풀 (에스크로 보관)','奖励池（托管）'],fee:['Fee ({0}%)','수수료 ({0}%)','手续费 ({0}%)'],total:['Total','총 결제액','合计'],escrowNote:['Unfilled spots are refunded to you.','채워지지 않은 자리는 환급돼요.','未满员的名额将退还给你。'],suggestMin:['Minimum reward: π {0}','최소 보상: π {0}','最低奖励：π {0}'],balance:['Wallet balance','지갑 잔액','钱包余额'],
+     payBtn:['Pay π {0} & publish','π {0} 결제하고 등록','支付 π {0} 并发布'],errs:['Please fix:','확인해 주세요:','请修正：'],
+     e_name:['Add the app name.','앱 이름을 입력하세요.','请填写应用名称。'],e_url:['Add a valid link (https://…).','올바른 링크(https://…)를 입력하세요.','请填写有效链接（https://…）。'],e_checks:['Pick at least one item to check.','확인할 항목을 하나 이상 고르세요.','请至少选择一个检查项目。'],
+     e_title:['Add a title.','제목을 입력하세요.','请填写标题。'],e_q:['Add at least one question.','질문을 1개 이상 추가하세요.','请至少添加一个问题。'],e_qtext:['Every question needs text.','모든 질문에 내용을 입력하세요.','每个问题都需要内容。'],e_opts:['Choice questions need at least 2 options.','객관식은 보기가 2개 이상 필요해요.','选择题至少需要2个选项。'],e_cons:['Majority mode: choice questions only.','다수결은 객관식 질문만 가능해요.','多数决仅限选择题。'],e_min:['Majority mode needs at least {0} people.','다수결은 최소 {0}명이 필요해요.','多数决至少需要{0}人。'],e_reward:['Reward is below the minimum.','보상이 최소 금액보다 낮아요.','奖励低于最低金额。'],e_bal:['Not enough Pi in your wallet.','지갑의 Pi가 부족해요.','钱包中的 Pi 不足。'],e_rules:['Please agree to the rules.','규칙에 동의해 주세요.','请同意规则。'],e_banned:['This looks like it breaks the rules (auto-screening). Please rephrase.','규칙 위반으로 보이는 내용이 있어요 (자동 검토). 수정해 주세요.','检测到可能违规的内容（自动审核），请修改。'],
+     published:['Request published!','의뢰가 등록되었어요!','任务已发布！'],
+     piTitle:['Pi Sandbox Wallet','Pi 샌드박스 지갑','Pi 沙盒钱包'],piAsk:['RealTap requests a payment','RealTap이 결제를 요청합니다','RealTap 请求支付'],piConfirm:['Sign & pay','서명하고 결제','签名并支付'],piWait:['Confirming on Pi Network…','Pi 네트워크에서 확인 중…','正在 Pi 网络确认…'],cancel:['Cancel','취소','取消'],
+     seg_all:['All','전체','全部'],seg_done:['I joined','참여','我参与的'],seg_req:['I requested','의뢰','我发布的'],role_done:['Joined','참여','参与'],role_req:['Requested','의뢰','发布'],noAct:['Nothing here yet.','아직 내역이 없어요.','暂无记录。'],
+     st_submitted:['Awaiting result','결과 대기','等待结果'],st_approved:['Approved','승인됨','已通过'],st_rejected:['Rejected','거절됨','已拒绝'],st_correct:['Matched majority','다수와 일치','与多数一致'],st_wrong:['Different from majority','다수와 불일치','与多数不一致'],appeal:['Appeal','이의신청','申诉'],appealed:['Appeal sent','이의신청 접수됨','已提交申诉'],
+     earned:['+ π {0}','+ π {0}','+ π {0}'],progress:['{0}/{1} joined','{0}/{1}명 참여','{0}/{1}人参与'],results:['Results','결과 보기','查看结果'],
+     resultTitle:['Results','결과','结果'],avgRating:['Average rating','평균 별점','平均评分'],issuesFound:['{0} of {1} testers reported a problem','테스터 {1}명 중 {0}명이 문제를 알렸어요','{1}位测试者中有{0}位反馈了问题'],feedback:['Written feedback','서술 답변','文字反馈'],
+     pendingReview:['Needs your decision','검토 대기','待你审核'],accept:['Accept','승인','通过'],reject:['Reject','거절','拒绝'],rejectWhy:['Reason (required)','거절 사유 (필수)','拒绝原因（必填）'],rj1:['Low effort / too short','성의 없음 / 너무 짧음','敷衍 / 过短'],rj2:['Off-topic','주제와 무관','与主题无关'],rj3:['Incorrect','틀린 답','答案错误'],rj4:['Duplicate / copied','중복·복사','重复/抄袭'],
+     closeSettle:['Close & pay out','마감하고 정산','截止并结算'],settleWarn:['Unreviewed responses will be approved automatically.','검토하지 않은 응답은 자동 승인돼요.','未审核的回答将自动通过。'],pausedSettleBlock:['This task is paused for report review and cannot be settled right now.','신고 검토 중인 의뢰는 현재 정산할 수 없어요.','任务因举报审核暂停，暂无法结算。'],settled:['Settled','정산 완료','已结算'],
+     lowSample:['Fewer than {0} responses — everyone is paid equally.','응답이 {0}명 미만이라 모두 동일하게 지급돼요.','回答少于{0}人，全员平分。'],noCons:['No clear majority — everyone is paid equally.','뚜렷한 다수가 없어 모두 동일하게 지급돼요.','没有明显多数，全员平分。'],
+     resWinners:['Paid: {0} people × π {1}','지급: {0}명 × π {1}','已支付：{0}人 × π {1}'],resLosers:['Not paid: {0}','미지급: {0}명','未支付：{0}人'],resRefund:['Refunded to you: π {0}','환급: π {0}','退还给你：π {0}'],
+     piWallet:['Pi Wallet balance','Pi 지갑 잔액','Pi 钱包余额'],topup:['Add π (sandbox)','π 충전 (샌드박스)','充值 π（沙盒）'],earnings:['Earnings','내 수익','我的收益'],avail:['Available','인출 가능','可提现'],pend:['On hold','보류 중','保留中'],withdraw:['Withdraw','인출하기','提现'],
+     topupShort:['+ Top up','+ 충전','+ 充值'],withdrawShort:['Withdraw','인출','提现'],topupAmt:['Amount to add (π)','충전할 금액 (π)','充值金额 (π)'],topupSend:['Add π','충전하기','确认充值'],topupDone:['Top-up complete!','충전이 완료되었어요!','充值完成！'],
+     wRule:['Minimum π {0} · {1}-day hold after approval','최소 π {0} · 승인 후 {1}일 보류','最低 π {0} · 通过后保留 {1} 天'],releaseIn:['in {0}','{0} 후','{0} 后'],
+     wMin:['You need at least π {0} available.','인출 가능 금액이 π {0} 이상이어야 해요.','可提现金额需至少 π {0}。'],wSend:['Send to my Pi wallet','내 Pi 지갑으로 보내기','转入我的 Pi 钱包'],wDone:['Withdrawal sent.','인출이 완료되었어요.','提现完成。'],wAmt:['Amount (π)','인출 금액 (π)','提现金额 (π)'],
+     history:['History','내역','记录'],h_deposit:['Request payment','의뢰 결제','任务支付'],h_refund:['Refund','환급','退款'],h_earn:['Reward approved','보상 승인','奖励通过'],h_withdraw:['Withdrawal','인출','提现'],h_topup:['Top-up','충전','充值'],
+     searchHistory:['Search history (type, π amount, date)...','전체 내역 검색 (항목, π 금액, 날짜)...','搜索全部记录（类型、π 金额、日期）...'],
+     allTime:['All periods','전체 기간','全部时段'],dateRange:['Date range','기간 지정','日期范围'],fromDate:['Start date','시작일','开始日期'],toDate:['End date','종료일','结束日期'],clearFilter:['Reset','초기화','重置'],noHistory:['No matching history records found.','조건에 맞는 내역이 없어요.','没有找到符合条件的记录。'],historyCount:['{0} records','{0}건','{0} 条记录'],
+     kycOk:['Pi KYC verified (simulated)','Pi KYC 인증 완료 (시뮬레이션)','Pi KYC 已认证（模拟）'],uiLang:['Language','언어','语言'],textSize:['Text size','글씨 크기','字体大小'],fs_s:['Small','작게','小'],fs_m:['Medium','보통','中'],fs_l:['Large','크게','大'],
+     colorTheme:['Accent color','테마 색상','主题颜色'],addColor:['+ Add color','+ 색상 추가','+ 添加颜色'],colorAdded:['Color theme updated!','테마 색상이 변경되었어요!','主题颜色已更新！'],
+     myCountry:['My country','내 국가','我的国家'],mainLang:['Language I can verify','검증 가능한 언어','我可验证的语言'],secondLang:['Second language (optional)','두 번째 언어 (선택)','第二语言（可选）'],langWhy:['Only used for language-check requests. Self-declared.','언어 검수 의뢰에만 쓰여요. 본인 신고 기준이에요.','仅用于语言校对类任务，为自行申报。'],none:['— none —','— 없음 —','— 无 —'],
+     demo:['Sandbox tools','샌드박스 도구','沙盒工具'],ffwd:['⏩ Fast-forward 3 days','⏩ 3일 뒤로 이동','⏩ 快进3天'],settleMine:['Settle tasks I joined','내가 참여한 의뢰 정산','结算我参与的任务'],reset:['Reset data','데이터 초기화','重置数据'],ffDone:['3 days later: holds released.','3일 후: 보류가 해제되었어요.','3天后：保留已解除。'],settledMine:['Settled.','정산했어요.','已结算。'],
+     anywhere:['Anywhere','전 세계','不限地区'],anyLang:['Any language','모든 언어','不限语言'],yes:['Yes','예','是'],no:['No','아니요','否'],unsure:['Not sure','잘 모르겠음','不确定']
+    };
+    const CN={ANY:['Anywhere','전 세계','不限地区','🌍'],KR:['South Korea','한국','韩国','🇰🇷'],CN:['China','중국','中国','🇨🇳'],US:['United States','미국','美国','🇺🇸'],JP:['Japan','일본','日本','🇯🇵'],VN:['Vietnam','베트남','越南','🇻🇳'],ID:['Indonesia','인도네시아','印度尼西亚','🇮🇩'],PH:['Philippines','필리핀','菲律宾','🇵🇭'],IN:['India','인도','印度','🇮🇳'],NG:['Nigeria','나이지리아','尼日利亚','🇳🇬']};
+    const LN={any:['Any language','모든 언어','不限语言'],en:['English','영어','英语'],ko:['Korean','한국어','韩语'],zh:['Chinese','중국어','中文'],ja:['Japanese','일본어','日语'],vi:['Vietnamese','베트남어','越南语'],id:['Indonesian','인도네시아어','印尼语']};
+    const UILANG={en:'English',ko:'한국어',zh:'中文'};
+
+    /* =========================================================================
+       Application State, Auto Device Env Detection & Detailed App Test Logic
+       ========================================================================= */
+    function t(key,...a){const e=S[key];if(!e)return '['+key+']';let s=e[LANGS.indexOf(state.lang)]??e[0];a.forEach((v,i)=>{s=s.split('{'+i+'}').join(v)});return s}
+    const cname=c=>CN[c][LANGS.indexOf(state.lang)],flag=c=>CN[c][3],lname=l=>LN[l][LANGS.indexOf(state.lang)];
+    const ICON={apptest:'📱',survey:'📋',verify:'🔍'};
+    const KINDS=['apptest','survey','verify'];
+    const CHECKS=['login','pay','main','lang','speed','ui'];
+    const BANNED=['fake review','write a review','create account','sign up for','phishing','가짜 후기','후기 작성','리뷰 작성','계정 생성','계정을 만들','虚假评价','刷评','注册账号'];
+    const $=id=>document.getElementById(id);
+    const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const fmt=n=>Number((+n).toFixed(4)).toString();
+    const now=()=>Date.now()+state.timeOffset;
+    const H=3600e3,D=24*H;
+    const safeUrl=u=>/^https?:\/\//i.test(u||'')?u:'#';
+    function remain(ts){
+      const ms=(ts||0)-now();
+      if(ms<=0)return '0h';
+      const d=Math.floor(ms/D),h=Math.floor((ms%D)/H);
+      return d>0?`${d}d ${h}h`:`${Math.max(1,h)}h`;
+    }
+
+    function detectClientEnv(){
+      const ua=navigator.userAgent||'';
+      let os='desktop',osLabel='Desktop Web';
+      if(/Android/i.test(ua)){os='android';osLabel='Android'}
+      else if(/iPhone|iPad|iPod/i.test(ua)){os='ios';osLabel='iOS'}
+      const isPi=/PiBrowser/i.test(ua)||Boolean(window.Pi&&typeof window.Pi.authenticate==='function');
+      const res=`${window.innerWidth}×${window.innerHeight}`;
+      return {os,osLabel,isPi,res,summary:`${osLabel} · ${res}${isPi?' · Pi Browser':''}`};
+    }
+
+    function appQuestions(checks,customChecks){
+     const base=checks.map(c=>({id:'c_'+c,type:'choice',textKey:'ck_'+c,options:['works','problem','cant'],inline:true}));
+     const custom=(customChecks||[]).filter(x=>String(x||'').trim()).map((label,idx)=>({id:'cc_'+idx,type:'choice',text:label.trim(),options:['works','problem','cant'],inline:true}));
+     return [...base,...custom,
+      {id:'rating',type:'rating',textKey:'overall'},
+      {id:'issues',type:'text',textKey:'issues',optional:true}]
+    }
+    const qt=q=>q.textKey?t(q.textKey):q.text;
+    const ttl=tk=>tk.kind==='apptest'?t('testApp',tk.appName):tk.title;
+    const optLabel=o=>S['o_'+o]?t('o_'+o):({Yes:'yes',No:'no','Not sure':'unsure'}[o]?t({Yes:'yes',No:'no','Not sure':'unsure'}[o]):o);
+
+    function mkResp(task,list){
+      task.responses=list.map((r,i)=>({
+        id:task.id*1000+i,
+        user:r.u,
+        answers:r.a,
+        bugDetails:r.bugs||{},
+        env:r.env||['Android 14 · 360×800','iOS 17 · 390×844','Desktop · 1280×800'][i%3],
+        status:r.s||'submitted',
+        reason:r.r||'',
+        amount:r.amt||0,
+        paid:!!r.amt,
+        at:Date.now()-i*H
+      }));
+    }
+
+    const appAns=(checks,n,prob)=>Array.from({length:n},(_,i)=>{
+      const hasProb=(i%2===0);
+      const probKey='c_'+(checks[prob]||checks[0]);
+      const bugs={};
+      if(hasProb){
+        bugs[probKey]={
+          severity:i===0?'blocker':'major',
+          note:i===0?'App freezes after Pi wallet sign-in popup closes.':'Button overlaps bottom navigation bar on compact screen.',
+          hasShot:false
+        };
+      }
+      return {
+        u:'tester'+i,
+        env:['Android 14 · 360×800 · Pi Browser','iOS 17 · 393×852 · Pi Browser','Android 13 · 412×915'][i%3],
+        a:Object.assign(
+          {},
+          ...checks.map((c,j)=>({['c_'+c]:(j===prob&&hasProb)?'problem':'works'})),
+          {rating:String(3+(i%3)),issues:hasProb?'Reproduced twice after restarting Pi Browser.':''}
+        ),
+        bugs
+      };
+    });
+
+    function seed(){
+     const n=Date.now();
+     const mk=(o)=>Object.assign({rej:0,feePaid:0,mode:'review',autoApprove:false,minutes:5,country:'ANY',lang:'any',targetOs:'any',appVersion:'',steps:[],customChecks:[],sensitive:false,status:'open',desc:'',responses:[]},o);
+     const tasks=APP_ENV.SHOW_CORE_TEAM_TOOLS?[
+      mk({id:1,kind:'apptest',appName:'Pi Notes',appVersion:'v1.4.2-testnet',targetOs:'any',appUrl:'https://example.com/pi-notes',
+       desc:'Verify core note creation and Pi authentication flow inside Pi Browser.',
+       steps:['Sign in with your Pi account on the landing screen','Create a new note with title and 2 lines of text','Reload the page and verify the note is saved'],
+       checks:['login','main','speed','ui'],customChecks:['Dark mode readability'],
+       requester:'devteam_alpha',rej:4,reward:0.5,max:20,deadline:n+2*D,createdAt:n-1*H}),
+      mk({id:7,kind:'apptest',appName:'Pi Market',appVersion:'v2.0.1-beta',targetOs:'any',appUrl:'https://example.com/pi-market',
+       desc:'Browse the market, add an item to the cart and verify checkout calculation.',
+       steps:['Sign in with Pi and open Electronics category','Add any item to the cart and change quantity to 2','Proceed to checkout summary screen (do not pay)'],
+       checks:['login','pay','main','lang'],customChecks:['Cart total calculation'],
+       requester:'shopbuilder',rej:2,reward:0.4,max:15,minutes:6,deadline:n+3*D,createdAt:n-2*H}),
+      mk({id:2,kind:'verify',title:'Is this Chinese sentence natural?',desc:'Native Chinese speakers only.',requester:'lang_lab',mode:'consensus',minutes:1,reward:0.1,max:30,lang:'zh',deadline:n+3*D,createdAt:n-3*H,
+       questions:[{id:'q1',type:'choice',text:'「完成任务后，奖励会在三天后到账。」 Is this natural?',options:['Natural','Slightly odd','Wrong']}]}),
+      mk({id:3,kind:'verify',title:'Does this image have AI mistakes?',desc:'Look closely at hands, text, shadows and reflections.',requester:'studio_mono',rej:2,mode:'consensus',minutes:2,reward:0.15,max:25,deadline:n+2*D,image:true,createdAt:n-4*H,
+       questions:[{id:'q1',type:'choice',text:'Does the image contain visible AI errors?',options:['Yes','No','Not sure']}]}),
+      mk({id:4,kind:'verify',title:'What is the floor material of this lobby?',desc:'Gangnam Station Exit 3 (Seoul). Pick the closest match.',requester:'interior_kim',rej:6,minutes:15,reward:0.8,max:3,country:'KR',lang:'ko',deadline:n+5*D,createdAt:n-5*H,
+       questions:[{id:'q1',type:'choice',text:'Floor material',options:['Marble','Tile','Vinyl','Wood']}]}),
+      mk({id:5,kind:'survey',title:'Mobile payment habits (5 questions)',desc:'A short survey about how you pay in everyday life.',requester:'pay_research',autoApprove:true,minutes:3,reward:0.2,max:60,deadline:n+6*D,createdAt:n-6*H,
+       questions:[{id:'q1',type:'choice',text:'How often do you pay with your phone?',options:['Daily','Weekly','Rarely']},{id:'q2',type:'choice',text:'Where do you pay most?',options:['Shops','Online','Transport']},{id:'q3',type:'rating',text:'How safe do you feel? (1–5)'},{id:'q4',type:'choice',text:'Have you used crypto to pay?',options:['Yes','No']},{id:'q5',type:'text',text:'What would make paying easier?'}]}),
+      mk({id:6,kind:'verify',title:'Check posts for hateful symbols',desc:'You will see user posts that may contain hateful symbols.',requester:'safety_net',rej:1,mode:'consensus',minutes:4,reward:0.3,max:20,sensitive:true,deadline:n+3*D,createdAt:n-7*H,
+       questions:[{id:'q1',type:'choice',text:'Does the post contain a hateful symbol or slur?',options:['Yes','No','Not sure']}]}),
+      mk({id:8,kind:'verify',title:'이 한국어 문구가 자연스러운가요?',desc:'한국어 원어민만 참여해 주세요.',requester:'lang_lab',mode:'consensus',minutes:1,reward:0.1,max:15,country:'KR',lang:'ko',deadline:n+2*D,createdAt:n-8*H,
+       questions:[{id:'q1',type:'choice',text:'"의뢰를 완료하면 3일 뒤에 보상이 지급돼요." 자연스러운가요?',options:['Natural','Slightly odd','Wrong']}]}),
+      mk({id:9,kind:'apptest',appName:'Pi Ride Share',appVersion:'v0.9.8-alpha',targetOs:'any',appUrl:'https://example.com/pi-ride',
+       desc:'Enter pickup and drop-off points and check fare estimation speed.',
+       steps:['Allow location or type Seoul Station as pickup','Select Gangnam Station as destination','Verify estimated Pi fare appears within 3 seconds'],
+       checks:['login','main','speed','ui'],requester:'mobility_pi',rej:1,reward:0.45,max:25,minutes:5,deadline:n+4*D,createdAt:n-9*H}),
+      mk({id:10,kind:'survey',title:'Daily Pi Browser usage & speed survey',desc:'Tell us which dApps you open most frequently on Android or iOS.',requester:'ux_metrics',autoApprove:true,minutes:2,reward:0.18,max:80,deadline:n+5*D,createdAt:n-10*H,
+       questions:[{id:'q1',type:'choice',text:'How many times a week do you open Pi Browser?',options:['Every day','2-4 times','Once or less']},{id:'q2',type:'rating',text:'Rate overall page loading speed (1–5)'},{id:'q3',type:'text',text:'Any feature you wish Pi apps had?'}]}),
+      mk({id:13,kind:'verify',title:'Verify receipt total & date accuracy',desc:'Human eye check: compare handwritten tip and printed total.',requester:'fin_audit',mode:'consensus',minutes:2,reward:0.22,max:30,deadline:n+3*D,image:true,createdAt:n-11*H,
+       questions:[{id:'q1',type:'choice',text:'Do the handwritten tip and final total match?',options:['Yes','No','Not sure']}]}),
+      mk({id:14,kind:'apptest',appName:'Pi Travel Map',appVersion:'v1.1.0',targetOs:'any',appUrl:'https://example.com/pi-map',
+       desc:'Search 2 local cafes and test bookmarking and Korean/English labels.',
+       steps:['Search "Seogwipo Cafe" on the map','Tap a pin and save it to Favorites','Switch language toggle between EN and KO'],
+       checks:['main','lang','ui'],requester:'jeju_dev',rej:0,reward:0.35,max:18,minutes:4,deadline:n+4*D,createdAt:n-12*H}),
+      mk({id:11,kind:'verify',title:'Is this Korean button label natural?',desc:'"오늘의 보상을 받아가세요"',requester:'pioneer_kim',mode:'consensus',minutes:1,reward:0.1,max:12,country:'KR',lang:'ko',deadline:n+1*D,createdAt:n-13*H,
+       questions:[{id:'q1',type:'choice',text:'Is the button label natural?',options:['Natural','Slightly odd','Wrong']}]}),
+      mk({id:12,kind:'apptest',appName:'Pi Journal',appVersion:'v1.0.3',targetOs:'any',appUrl:'https://example.com/pi-journal',
+       desc:'Write one entry and tell me what feels wrong.',
+       steps:['Sign in with Pi','Write a short journal entry and attach an emoji mood','Open History tab and verify entry order'],
+       checks:['login','main','speed','ui'],customChecks:['Emoji picker layout'],requester:'pioneer_kim',reward:0.4,max:10,deadline:n+2*D,createdAt:n-14*H})
+     ]:[];
+
+     tasks.forEach(x=>{x.questions=x.kind==='apptest'?appQuestions(x.checks,x.customChecks):x.questions});
+     const by=Object.fromEntries(tasks.map(x=>[x.id,x]));
+     const mix=(arr,k)=>Array.from({length:k},(_,i)=>arr[i%arr.length]);
+
+     if(APP_ENV.SHOW_CORE_TEAM_TOOLS&&tasks.length){
+      mkResp(by[1],appAns(by[1].checks,7,1));
+      mkResp(by[7],appAns(by[7].checks,5,2));by[7].responses.push({id:7900,user:'pioneer_kim',env:'Android 14 · 390×844',answers:Object.assign({},...by[7].checks.map(c=>({['c_'+c]:'works'})),{cc_0:'works',rating:'4',issues:''}),bugDetails:{},status:'submitted',reason:'',amount:0,paid:false,at:n-2*H});
+      mkResp(by[2],mix(['Natural','Natural','Natural','Slightly odd'],18).map((a,i)=>({u:'cn_user'+i,a:{q1:a}})));
+      mkResp(by[3],mix(['Yes','Yes','Yes','No'],12).map((a,i)=>({u:'rev'+i,a:{q1:a}})));
+      mkResp(by[4],[{u:'v1',a:{q1:'Marble'}}]);
+      mkResp(by[5],[...Array(41)].map((_,i)=>({u:'sv'+i,a:{q1:'Daily',q2:'Shops',q3:'4',q4:'No',q5:'Simpler checkout'},s:'approved',amt:0.2})));
+      by[5].responses.push({id:5900,user:'pioneer_kim',answers:{q1:'Weekly',q2:'Online',q3:'5',q4:'Yes',q5:'Fewer taps'},status:'approved',reason:'',amount:0.2,paid:true,at:n-D});
+      mkResp(by[6],mix(['Yes','Yes','No'],6).map((a,i)=>({u:'mod'+i,a:{q1:a}})));
+      mkResp(by[8],mix(['Natural','Natural','Natural','Slightly odd'],14).map((a,i)=>({u:'kr_user'+i,a:{q1:a}})));by[8].responses.push({id:8900,user:'pioneer_kim',answers:{q1:'Natural'},status:'submitted',reason:'',amount:0,paid:false,at:n-3*H});
+      mkResp(by[9],appAns(by[9].checks,9,1));
+      mkResp(by[10],[...Array(24)].map((_,i)=>({u:'ux'+i,a:{q1:'Every day',q2:'4',q3:'Faster login'},s:'approved',amt:0.18})));
+      mkResp(by[13],mix(['Yes','Yes','No'],11).map((a,i)=>({u:'aud'+i,a:{q1:a}})));
+      mkResp(by[14],appAns(by[14].checks,4,0));
+      mkResp(by[11],['Natural','Natural','Natural','Natural','Natural','Natural','Natural','Natural','Natural','Slightly odd','Slightly odd','Wrong'].map((a,i)=>({u:'kr_v'+i,a:{q1:a}})));
+      mkResp(by[12],appAns(by[12].checks,5,2));
+     }
+     return {lang:'en',fs:'m',tab:'explore',view:null,from:null,kind:'all',browse:'all',search:'',histQuery:'',histFilterMode:'all',histFrom:'',histTo:'',seg:'all',adv:false,saved:[2,9],
+      accent:'#4f46e5',colorDrawerOpen:false,
+      me:{username:'pioneer_kim',country:'KR',lang:'ko',lang2:'en'},
+      piBalance:20,earn:{available:2.4,pending:APP_ENV.SHOW_CORE_TEAM_TOOLS?[{amount:0.2,releaseAt:n+2*D,note:'Mobile payment habits'}]:[]},
+      history:APP_ENV.SHOW_CORE_TEAM_TOOLS?[
+        {k:'h_earn',amt:0.2,at:n-1*D-2*H},
+        {k:'h_topup',amt:10,at:n-2*D-5*H},
+        {k:'h_deposit',amt:-3.5,at:n-3*D-1*H},
+        {k:'h_withdraw',amt:-1,at:n-4*D-6*H},
+        {k:'h_refund',amt:0.8,at:n-6*D-3*H},
+        {k:'h_earn',amt:1.5,at:n-9*D-4*H},
+        {k:'h_topup',amt:12.6,at:n-14*D-8*H}
+      ]:[],
+      tasks,reports:APP_ENV.SHOW_CORE_TEAM_TOOLS?[{taskId:6,user:'u_x',reason:'rp1'},{taskId:6,user:'u_y',reason:'rp1'}]:[],timeOffset:0,draft:null};
+    }
+
+    let state=load();
+    function load(){
+      try{
+        const s=localStorage.getItem('realtap-human-v4');
+        if(s){
+          const parsed=JSON.parse(s);
+          if(typeof parsed.search!=='string')parsed.search='';
+          if(typeof parsed.histQuery!=='string')parsed.histQuery='';
+          if(!parsed.histFilterMode)parsed.histFilterMode='all';
+          if(typeof parsed.histFrom!=='string')parsed.histFrom='';
+          if(typeof parsed.histTo!=='string')parsed.histTo='';
+          if(!parsed.accent)parsed.accent='#4f46e5';
+          if(typeof parsed.colorDrawerOpen!=='boolean')parsed.colorDrawerOpen=false;
+          return parsed;
+        }
+      }catch(e){}
+      return seed();
+    }
+    function save(){try{localStorage.setItem('realtap-human-v4',JSON.stringify(state))}catch(e){}}
+
+    function openModal(html){
+      const layer=$('layer');
+      if(layer)layer.innerHTML=`<div class="modalbg"><div class="sheet">${html}</div></div>`;
+    }
+    function closeModal(){
+      const layer=$('layer');
+      if(layer)layer.innerHTML='';
+    }
+    let toastT;
+    function toast(msg){
+      const appEl=$('app')||document.body;
+      const d=document.createElement('div');
+      d.className='toast';
+      d.textContent=msg;
+      appEl.appendChild(d);
+      clearTimeout(toastT);
+      toastT=setTimeout(()=>d.remove(),2400);
+    }
+
+    const PiLayer={
+      isLivePi(){
+        const ua=navigator.userAgent||'';
+        return /PiBrowser/i.test(ua)||Boolean(!APP_ENV.PI_SDK_SANDBOX&&window.Pi&&typeof window.Pi.authenticate==='function');
+      },
+      async authenticate(){
+        return {username:state.me.username};
+      },
+      pay(amount,memo){
+        return new Promise(res=>{
+          openModal(`<h3>🟣 ${t('piTitle')}</h3><div class="note warn">${t('piAsk')}</div>
+            <div class="card" style="margin:0.75rem 0;background:var(--surface-alt)"><div class="big pi">π ${fmt(amount)}</div><div class="small">${esc(memo)}</div></div>
+            <div class="g2"><button class="btn" id="pc">${t('cancel')}</button><button class="btn p" id="po">${t('piConfirm')}</button></div>`);
+          $('pc').onclick=()=>{closeModal();res(false)};
+          $('po').onclick=()=>{
+            openModal(`<div style="text-align:center;padding:0.9rem 0"><div class="spin"></div><b>${t('piWait')}</b></div>`);
+            setTimeout(()=>{closeModal();res(true)},700);
+          };
+        });
+      },
+      payout(amount){
+        return new Promise(res=>{
+          openModal(`<div style="text-align:center;padding:0.9rem 0"><div class="spin"></div><b>${t('piWait')}</b></div>`);
+          setTimeout(()=>{closeModal();res(true)},700);
+        });
+      }
+    };
+
+    const THEME_PALETTE=['#4f46e5','#059669','#e11d48','#d97706','#0284c7','#7c3aed'];
+    function applyPrefs(){
+      document.documentElement.lang=state.lang;
+      document.documentElement.className='fs-'+state.fs;
+      const hex=/^#[0-9a-fA-F]{6}$/.test(state.accent||'')?state.accent:'#4f46e5';
+      document.documentElement.style.setProperty('--accent',hex);
+    }
+    function toggleColorDrawer(){
+      state.colorDrawerOpen=!state.colorDrawerOpen;
+      save();
+      const drawer=$('colorSlideDrawer');
+      if(drawer)drawer.classList.toggle('open',state.colorDrawerOpen);
+      else render();
+    }
+    function selectAccentColor(hex){
+      if(!/^#[0-9a-fA-F]{6}$/.test(hex))return;
+      state.accent=hex;
+      state.colorDrawerOpen=false;
+      applyPrefs();
+      save();
+      render();
+      toast(t('colorAdded'));
+    }
+    function setLang(l){state.lang=l;applyPrefs();save();render()}
+    function setFs(s){state.fs=s;applyPrefs();save();render()}
+    function go(tab){state.tab=tab;state.view=null;state.from=null;save();render();$('main').scrollTop=0}
+    function view(v){state.view=v;save();render();$('main').scrollTop=0}
+    function openTask(id,from){state.tab='explore';state.from=from||null;view({name:'task',id})}
+    function openReview(id){state.tab='activity';state.view={name:'review',id};save();render();$('main').scrollTop=0}
+    function goBack(){const f=state.from;state.from=null;state.view=null;if(f)state.tab=f;save();render()}
+    function releasePending(){const a=state.earn;const keep=[];a.pending.forEach(p=>{if(p.releaseAt<=now())a.available+=p.amount;else keep.push(p)});a.pending=keep}
+    const taskById=id=>state.tasks.find(x=>x.id===id);
+    const myResp=tk=>tk.responses.find(r=>r.user===state.me.username);
+    function eligible(tk){
+     const m=state.me;
+     if(tk.requester===m.username)return{ok:false,msg:t('isMine')};
+     if(myResp(tk))return{ok:false,msg:t('alreadyDone')};
+     if(tk.status==='settled')return{ok:false,msg:t('isSettled')};
+     if(tk.status==='paused')return{ok:false,msg:t('isPaused')};
+     if(tk.responses.length>=tk.max)return{ok:false,msg:t('isFull')};
+     if(tk.country!=='ANY'&&tk.country!==m.country)return{ok:false,msg:t('needCountry',cname(tk.country))};
+     if(tk.lang!=='any'&&tk.lang!==m.lang&&tk.lang!==m.lang2)return{ok:false,msg:t('needLang',lname(tk.lang))};
+     if(tk.kind==='apptest'&&tk.targetOs&&tk.targetOs!=='any'){
+       const env=detectClientEnv();
+       if(tk.targetOs!==env.os)return{ok:false,msg:t('needOs',t('os_'+tk.targetOs),env.osLabel)};
+     }
+     return{ok:true}
+    }
+    function toggleSave(id,ev){if(ev)ev.stopPropagation();const i=state.saved.indexOf(id);if(i>=0)state.saved.splice(i,1);else state.saved.push(id);save();render()}
+
+    function onExploreSearch(val){
+      state.search=val;
+      save();
+      const box=$('exploreList');
+      const clr=$('searchClearBtn');
+      if(clr)clr.style.display=val?'inline-flex':'none';
+      if(box)box.innerHTML=renderExploreList();
+      else render();
+    }
+    function clearExploreSearch(){
+      state.search='';
+      save();
+      render();
+      const inp=$('exploreSearchInput');
+      if(inp)inp.focus();
+    }
+
+    function render(){
+     releasePending();
+     const live=PiLayer.isLivePi();
+     $('hdr').innerHTML=`<div class="hdr-left">${brandEmblemSvg()}<div class="hdr-copy"><b>RealTap</b><small>${t('tagline')}</small></div></div>
+       <span class="env-pill ${live?'pi-live':'sandbox'}">${live?t('piLiveBadge'):t('sandboxBadge')}</span>`;
+     const tabs=[['explore','🔎'],['create','➕'],['activity','📋'],['wallet','👛'],['me','🙂']];
+     $('nav').innerHTML=tabs.map(([k,i])=>`<button class="${state.tab===k?'on':''}" onclick="go('${k}')"><span class="ni">${i}</span>${t('t_'+k)}</button>`).join('');
+     const v=state.view,m=$('main');
+     if(state.tab==='explore')m.innerHTML=v?.name==='task'?vTask(v.id):v?.name==='answer'?vAnswer(v.id):vExplore();
+     else if(state.tab==='create')m.innerHTML=vCreate();
+     else if(state.tab==='activity')m.innerHTML=v?.name==='review'?vReview(v.id):vActivity();
+     else if(state.tab==='wallet')m.innerHTML=vWallet();
+     else m.innerHTML=vMe();
+     if(state.tab==='create')updateSummary();
+    }
+
+    function badges(tk,inline=false){
+     const cls=inline?'tag inline-tag':'tag';
+     const b=[`<span class="${cls} b">${t('k_'+tk.kind)}</span>`];
+     if(tk.kind==='apptest'&&tk.appVersion)b.push(`<span class="${cls}">${esc(tk.appVersion)}</span>`);
+     if(tk.kind==='apptest'&&tk.targetOs&&tk.targetOs!=='any')b.push(`<span class="${cls} b">${t('os_'+tk.targetOs)}</span>`);
+     if(!inline&&tk.mode==='consensus')b.push(`<span class="${cls}">${t('modeC').split(' — ')[0]}</span>`);
+     if(tk.sensitive)b.push(`<span class="${cls} r">⚠ ${t('sensitive')}</span>`);
+     if(tk.status==='paused')b.push(`<span class="${cls} y">${t('underReview')}</span>`);
+     if(tk.status==='settled')b.push(`<span class="${cls}">${t('finished')}</span>`);
+     if(tk.requester===state.me.username)b.push(`<span class="${cls} g">${t('yours')}</span>`);
+     else if(myResp(tk))b.push(`<span class="${cls} g">✓ ${t('done')}</span>`);
+     else if(!eligible(tk).ok&&tk.status==='open'&&tk.responses.length<tk.max)b.push(`<span class="${cls} y">${t('locked')}</span>`);
+     return b.join('')
+    }
+
+    function taskCard(tk){
+     const left=Math.max(0,tk.max-tk.responses.length),sv=state.saved.includes(tk.id);
+     const where=(tk.country!=='ANY'?flag(tk.country)+' ':'')+(tk.lang!=='any'?lname(tk.lang)+' · ':'');
+     return `<div class="card task compact" onclick="openTask(${tk.id})"><div class="row">${kindBadge3d(tk.kind)}
+      <div class="grow"><div class="title">${esc(ttl(tk))}</div><div class="meta">${where}${t('minutes',tk.minutes)} · ${t('spotsLeft',left)}${badges(tk,true)}</div></div>
+      <div class="reward"><b>π ${fmt(tk.reward)}</b></div>
+      <button class="heart ${sv?'on':''}" onclick="toggleSave(${tk.id},event)" aria-label="${t('save')}">${sv?'❤️':'🤍'}</button></div></div>`
+    }
+
+    function renderExploreList(){
+     const saved=state.browse==='saved';
+     const q=(state.search||'').trim().toLowerCase();
+     let list=state.tasks.filter(x=>saved?state.saved.includes(x.id):x.status!=='settled');
+     if(state.kind!=='all')list=list.filter(x=>x.kind===state.kind);
+     if(q){
+      list=list.filter(x=>{
+       const hay=[ttl(x),x.appName,x.appVersion,x.title,x.desc,x.requester,t('k_'+x.kind)].join(' ').toLowerCase();
+       return hay.includes(q);
+      });
+     }
+     list.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+     if(list.length)return list.map(taskCard).join('');
+     const emptyMsg=q?t('noSearch',esc(state.search.trim())):(saved?t('noSaved'):t('noTasks'));
+     return `<div class="card small" style="text-align:center">${emptyMsg}</div>`;
+    }
+
+    function vExplore(){
+     const saved=state.browse==='saved';
+     const hasQ=Boolean((state.search||'').trim());
+     return `<div class="search-wrap">
+       <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+       <input id="exploreSearchInput" class="search-in" type="search" value="${esc(state.search||'')}" placeholder="${t('searchPh')}" oninput="onExploreSearch(this.value)" />
+       <button id="searchClearBtn" type="button" class="search-clear" style="display:${hasQ?'inline-flex':'none'}" onclick="clearExploreSearch()" aria-label="Clear">✕</button>
+      </div>
+      <div class="seg"><button class="${!saved?'on':''}" onclick="state.browse='all';save();render()">${t('viewAll')}</button><button class="${saved?'on':''}" onclick="state.browse='saved';save();render()">${t('viewSaved')} (${state.saved.length})</button></div>
+      <div class="chips">${['all',...KINDS].map(c=>`<button class="chip ${state.kind===c?'on':''}" onclick="state.kind='${c}';save();render()">${t('k_'+c)}</button>`).join('')}</div>
+      <div id="exploreList">${renderExploreList()}</div>`
+    }
+
+    function qTypeLabel(q){return {choice:t('qChoice'),text:t('qText'),rating:t('qRating')}[q.type]}
+    function vTask(id){
+     const tk=taskById(id);if(!tk)return '';
+     const el=eligible(tk),sv=state.saved.includes(tk.id);
+     const where=flag(tk.country)+' '+cname(tk.country)+(tk.lang!=='any'?' · '+lname(tk.lang):'');
+     const stepsHtml=(tk.kind==='apptest'&&tk.steps&&tk.steps.length)?`<div style="margin-top:0.65rem"><div class="small" style="font-weight:700;color:var(--ink);margin-bottom:0.25rem">${t('steps')}</div>${tk.steps.map((st,i)=>`<div class="step-item" style="cursor:default"><span class="step-num">${i+1}</span><span>${esc(st)}</span></div>`).join('')}</div>`:'';
+     return `<button class="back" onclick="goBack()">${t('back')}</button>
+     <div class="card"><div class="row">${kindBadge3d(tk.kind)}<div class="grow"><div class="title" style="font-size:1.05rem">${esc(ttl(tk))}</div><div class="meta">${t('requester')}: ${esc(tk.requester)} · ${t('rejRate',tk.rej)}</div></div>
+       <button class="heart ${sv?'on':''}" onclick="toggleSave(${tk.id},event)">${sv?'❤️':'🤍'}</button></div>
+      <div class="tags">${badges(tk)}</div>
+      ${tk.desc?`<p style="margin:0.75rem 0 0;line-height:1.55">${esc(tk.desc)}</p>`:''}
+      ${stepsHtml}
+      ${tk.kind==='apptest'?`<a class="btn p full" style="display:block;text-align:center;text-decoration:none;margin-top:0.75rem" href="${esc(safeUrl(tk.appUrl))}" target="_blank" rel="noopener">${t('openApp')}</a>`:''}
+      ${tk.image?`<div class="imgph" title="${t('imgPlaceholder')}">🖼️</div>`:''}
+      <hr><div class="kv"><span>${t('perPerson')}</span><b class="pi">π ${fmt(tk.reward)}</b></div>
+      <div class="kv"><span>${t('spotsLeft','')}</span><b>${Math.max(0,tk.max-tk.responses.length)} / ${tk.max}</b></div>
+      <div class="kv"><span>⏱ ${t('minutes',tk.minutes)}</span><b>${remain(tk.deadline)}</b></div>
+      ${tk.kind==='apptest'?`<div class="kv"><span>${t('targetOs')}</span><b>${t('os_'+(tk.targetOs||'any'))}</b></div>`:''}
+      ${tk.country!=='ANY'||tk.lang!=='any'?`<div class="kv"><span>${where}</span><b></b></div>`:''}</div>
+     <div class="card"><h3>${t('howPaid')}</h3><div class="note">${tk.mode==='consensus'?t('expConsensus'):(tk.autoApprove?t('expAuto'):t('expReview'))}</div><p class="small" style="margin:0.5rem 0 0">${t('holdNote',CONFIG.holdDays)}</p></div>
+     ${el.ok?`<button class="btn p full" onclick="view({name:'answer',id:${tk.id}})">${t('start')}</button>`:`<div class="note warn" style="margin-bottom:0.5rem">${el.msg}</div>`}
+     <button class="btn line full" style="margin-top:0.5rem" onclick="reportTask(${tk.id})">⚑ ${t('report')}</button>`
+    }
+
+    function onCheckChoiceChange(qid,val){
+      const drawer=$('prob_drawer_'+qid);
+      if(drawer)drawer.style.display=val==='problem'?'block':'none';
+    }
+    function handleBugShot(qid,input){
+      const file=input.files&&input.files[0];
+      if(!file)return;
+      const reader=new FileReader();
+      reader.onload=e=>{
+        const raw=e.target.result;
+        if(!isSafeImageDataUri(raw))return;
+        const prev=$('shot_prev_'+qid);
+        const hidden=$('shot_data_'+qid);
+        if(hidden)hidden.value=raw;
+        if(prev){
+          prev.innerHTML=`<div class="small" style="color:var(--green);font-weight:700;margin-top:0.35rem">✓ ${t('shotAttached')} (${esc(file.name)})</div><img class="shot-thumb" src="${raw}" alt="Screenshot preview" />`;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function vAnswer(id){
+     const tk=taskById(id);if(!tk)return '';
+     const chk=tk.kind==='apptest'?tk.questions.filter(q=>q.id.startsWith('c_')||q.id.startsWith('cc_')):[];
+     const env=detectClientEnv();
+     const stepsBlock=(tk.kind==='apptest'&&tk.steps&&tk.steps.length)
+       ?`<div class="card"><h3>${t('steps')}</h3><div class="small" style="margin-bottom:0.45rem">${t('stepsCheckHint')}</div>
+          ${tk.steps.map((st,i)=>`<label class="step-item"><input type="checkbox" class="step-chk" style="margin-top:0.2rem" /><span class="step-num">${i+1}</span><span>${esc(st)}</span></label>`).join('')}
+          <a class="btn sm line" style="display:inline-block;text-decoration:none;margin-top:0.65rem" href="${esc(safeUrl(tk.appUrl))}" target="_blank" rel="noopener">${t('openApp')}</a></div>`
+       :(tk.kind==='apptest'?`<div class="card"><h3>${t('steps')}</h3><p style="margin:0 0 0.6rem;line-height:1.55">${esc(tk.desc||'')}</p><a href="${esc(safeUrl(tk.appUrl))}" target="_blank" rel="noopener">${t('openApp')}</a></div>`:'');
+
+     const envCard=tk.kind==='apptest'?`<div class="card" style="padding:0.6rem 0.78rem">
+       <div class="row" style="justify-content:space-between">
+         <span class="small" style="font-weight:700;color:var(--ink)">📡 ${t('autoEnvTitle')}</span>
+         <span class="env-badge">${esc(env.summary)}</span>
+       </div>
+       <div class="small" style="margin-top:0.25rem">${t('autoEnvNote')}</div>
+     </div>`:'';
+
+     return `<button class="back" onclick="view({name:'task',id:${id}})">${t('back')}</button>
+     <h2 style="font-size:1.05rem;font-weight:800;margin:0 0 0.6rem">${esc(ttl(tk))}</h2>
+     ${tk.sensitive?`<div class="note err" style="margin-bottom:0.6rem"><label style="display:flex;gap:0.5rem;align-items:flex-start"><input type="checkbox" id="consent"> ${t('consent')}</label></div>`:''}
+     ${envCard}
+     ${stepsBlock}
+     ${tk.image?`<div class="imgph">🖼️</div>`:''}
+     ${tk.kind==='apptest'?`<div class="card"><h3>${t('checklist')}</h3>${chk.map(q=>`<div style="margin:0.68rem 0"><div style="font-weight:700;margin-bottom:0.35rem">${esc(qt(q))}</div>${qInput(q,true)}</div>`).join('')}</div>
+       ${tk.questions.filter(q=>!q.id.startsWith('c_')&&!q.id.startsWith('cc_')).map(q=>qBlock(q)).join('')}`:tk.questions.map((q,i)=>qBlock(q,i+1)).join('')}
+     <button class="btn p full" onclick="submitAnswer(${id})">${t('submit')}</button>
+     <button class="btn line full" style="margin-top:0.5rem" onclick="reportTask(${id})">${t('reportContent')}</button>`
+    }
+    const qBlock=(q,n)=>`<div class="q"><b>${n?n+'. ':''}${esc(qt(q))}</b>${q.optional?` <span class="small">(${t('optional')})</span>`:''}<div style="margin-top:0.45rem">${qInput(q,false)}</div></div>`;
+    function qInput(q,withBugDrawer){
+     if(q.type==='choice'){
+      if(q.inline){
+        const pills=`<div class="pills">${q.options.map(o=>`<label class="${o==='problem'?'pr':''}"><input type="radio" name="a_${q.id}" value="${esc(o)}" onchange="onCheckChoiceChange('${q.id}',this.value)">${esc(optLabel(o))}</label>`).join('')}</div>`;
+        if(!withBugDrawer)return pills;
+        return `${pills}
+          <div id="prob_drawer_${q.id}" class="problem-drawer" style="display:none">
+            <div class="small" style="font-weight:800;color:var(--red)">${t('bugSeverity')}</div>
+            <div class="sev-pills">
+              <label class="sev-blocker"><input type="radio" name="sev_${q.id}" value="blocker">${t('sev_blocker').split(' (')[0]}</label>
+              <label class="sev-major"><input type="radio" name="sev_${q.id}" value="major" checked>${t('sev_major').split(' (')[0]}</label>
+              <label class="sev-minor"><input type="radio" name="sev_${q.id}" value="minor">${t('sev_minor').split(' (')[0]}</label>
+            </div>
+            <input class="in" style="margin-top:0.42rem;font-size:0.8rem" id="bnote_${q.id}" placeholder="${t('bugNotePh')}" />
+            <label class="btn sm line" style="display:inline-flex;align-items:center;gap:0.35rem;margin-top:0.42rem;cursor:pointer">
+              📷 ${t('attachShot')}
+              <input type="file" accept="image/*" style="display:none" onchange="handleBugShot('${q.id}',this)" />
+            </label>
+            <input type="hidden" id="shot_data_${q.id}" value="" />
+            <div id="shot_prev_${q.id}"></div>
+          </div>`;
+      }
+      return q.options.map(o=>`<label class="opt"><input type="radio" name="a_${q.id}" value="${esc(o)}"> ${esc(optLabel(o))}</label>`).join('')}
+     if(q.type==='rating')return `<div class="stars">${[1,2,3,4,5].map(n=>`<label><input type="radio" name="a_${q.id}" value="${n}">${n}</label>`).join('')}</div>`;
+     return `<textarea class="in" name="a_${q.id}" placeholder="${t('yourAnswer')}"></textarea>`
+    }
+    function submitAnswer(id){
+     const tk=taskById(id);if(!tk||!eligible(tk).ok)return;
+     if(tk.sensitive&&!$('consent').checked){toast(t('needConsent'));return}
+     if(tk.kind==='apptest'&&tk.steps&&tk.steps.length){
+       const stepBoxes=[...document.querySelectorAll('.step-chk')];
+       if(stepBoxes.some(cb=>!cb.checked)){toast(t('completeAllSteps'));return}
+     }
+     const ans={},bugDetails={};
+     for(const q of tk.questions){
+      let v='';
+      if(q.type==='choice'||q.type==='rating'){const c=document.querySelector(`input[name="a_${q.id}"]:checked`);v=c?c.value:''}
+      else v=document.querySelector(`textarea[name="a_${q.id}"]`).value.trim();
+      if(!v&&!q.optional){toast(t('answerAll'));return}
+      ans[q.id]=v;
+      if(v==='problem'){
+        const sevEl=document.querySelector(`input[name="sev_${q.id}"]:checked`);
+        const noteEl=$('bnote_'+q.id);
+        const shotEl=$('shot_data_'+q.id);
+        const rawShot=shotEl&&isSafeImageDataUri(shotEl.value)?shotEl.value:'';
+        bugDetails[q.id]={
+          severity:sevEl?sevEl.value:'major',
+          note:noteEl?noteEl.value.trim():'',
+          shot:rawShot,
+          hasShot:Boolean(rawShot)
+        };
+      }
+     }
+     const env=detectClientEnv();
+     const r={id:Date.now(),user:state.me.username,env:env.summary,answers:ans,bugDetails,status:'submitted',reason:'',amount:0,paid:false,at:Date.now()};
+     if(tk.mode==='review'&&tk.autoApprove){r.status='approved';r.amount=tk.reward;r.paid=true;addPending(tk.reward,tk)}
+     tk.responses.push(r);save();toast(t('submitted'));state.tab='activity';state.seg='done';state.view=null;state.from=null;render()
+    }
+    function addPending(amount,tk){state.earn.pending.push({amount,releaseAt:now()+CONFIG.holdDays*D,note:ttl(tk)});state.history.unshift({k:'h_earn',amt:amount,note:ttl(tk),at:now()})}
+
+    function reportTask(id){
+     const rs=['rp1','rp2','rp3','rp4','rp5','rp6'];
+     openModal(`<h3>⚑ ${t('rpTitle')}</h3><p class="small">${t('rpWhy')}</p>
+      ${rs.map((r,i)=>`<label class="opt"><input type="radio" name="rp" value="${r}" ${i===0?'checked':''}> ${t(r)}</label>`).join('')}
+      <label class="f">${t('rpNote')}</label><textarea class="in" id="rpn"></textarea>
+      <div class="g2" style="margin-top:0.75rem"><button class="btn" onclick="closeModal()">${t('cancel')}</button><button class="btn red" onclick="sendReport(${id})">${t('rpSend')}</button></div>`)
+    }
+    function sendReport(id){
+     const tk=taskById(id),reason=document.querySelector('input[name="rp"]:checked').value;
+     if(!state.reports.some(r=>r.taskId===id&&r.user===state.me.username))state.reports.push({taskId:id,user:state.me.username,reason,note:$('rpn').value});
+     const uniq=new Set(state.reports.filter(r=>r.taskId===id).map(r=>r.user)).size;
+     closeModal();
+     if(uniq>=CONFIG.reportsToPause&&tk.status==='open'){tk.status='paused';toast(t('rpPaused'))}else toast(t('rpDone'));
+     save();render()
+    }
+
+    function newDraft(kind){
+     const d={kind,appName:'',appVersion:'',targetOs:'any',appUrl:'',steps:['',''],checks:['login','main','speed','ui'],customChecks:[],title:'',desc:'',questions:[],mode:'review',autoApprove:false,country:'ANY',lang:'any',max:20,reward:0.3,minutes:5,hours:72,sensitive:false,ack:false,errors:[]};
+     const Q=(type,text,options)=>({type,text,options:options||[]});
+     if(kind==='survey'){d.questions=[Q('choice','',['','']),Q('text','')];d.autoApprove=true;d.max=50;d.reward=0.1;d.minutes=3}
+     if(kind==='verify'){d.questions=[Q('choice','',['',''])];d.mode='consensus';d.max=20;d.reward=0.1;d.minutes=1}
+     return d
+    }
+    function suggestMin(d){return d.kind==='apptest'?CONFIG.minAppTest:Math.max(CONFIG.minPerQuestion*d.questions.length,0.02)}
+    function opts(arr,cur){return arr.map(a=>`<option value="${a[0]}" ${cur==a[0]?'selected':''}>${a[1]}</option>`).join('')}
+
+    function addDraftStep(){if(state.draft.steps.length<5){state.draft.steps.push('');render()}}
+    function delDraftStep(i){state.draft.steps.splice(i,1);render()}
+    function addDraftCustomCheck(){if(state.draft.customChecks.length<4){state.draft.customChecks.push('');render()}}
+    function delDraftCustomCheck(i){state.draft.customChecks.splice(i,1);render()}
+
+    function vCreate(){
+     if(!state.draft)state.draft=newDraft('apptest');
+     const d=state.draft,k=d.kind;
+     return `<div class="kind">${KINDS.map(c=>`<button class="${k===c?'on':''}" onclick="state.draft=newDraft('${c}');render()"><span>${ICON[c]}</span>${t('k_'+c)}</button>`).join('')}</div>
+     <p class="small" style="margin:-0.25rem 0.15rem 0.6rem">${t('d_'+k)}</p>
+     ${d.errors.length?`<div class="note err" style="margin-bottom:0.6rem"><b>${t('errs')}</b><br>${d.errors.map(e=>'• '+e).join('<br>')}</div>`:''}
+     ${k==='apptest'?`<div class="card">
+       <label class="f" style="margin-top:0">${t('appName')}</label><input class="in" id="f_name" value="${esc(d.appName)}" placeholder="${t('appNamePh')}" oninput="state.draft.appName=this.value">
+       <div class="g2">
+         <div><label class="f">${t('appVersion')}</label><input class="in" value="${esc(d.appVersion)}" placeholder="${t('appVersionPh')}" oninput="state.draft.appVersion=this.value"></div>
+         <div><label class="f">${t('targetOs')}</label><select class="in" onchange="state.draft.targetOs=this.value">${opts([['any',t('os_any')],['android',t('os_android')],['ios',t('os_ios')],['desktop',t('os_desktop')]],d.targetOs)}</select></div>
+       </div>
+       <label class="f">${t('appUrl')}</label><input class="in" id="f_url" value="${esc(d.appUrl)}" placeholder="https://" oninput="state.draft.appUrl=this.value">
+       <label class="f">${t('testSteps')}</label><textarea class="in" id="f_steps" placeholder="${t('testStepsPh')}" oninput="state.draft.desc=this.value">${esc(d.desc)}</textarea>
+       <label class="f">${t('scenarioSteps')}</label>
+       ${d.steps.map((st,i)=>`<div class="row" style="margin-top:0.35rem"><span class="step-num">${i+1}</span><input class="in" value="${esc(st)}" placeholder="${t('stepPh',i+1)}" oninput="state.draft.steps[${i}]=this.value"><button class="btn sm" onclick="delDraftStep(${i})">✕</button></div>`).join('')}
+       ${d.steps.length<5?`<button class="btn sm line" style="margin-top:0.45rem" onclick="addDraftStep()">${t('addStep')}</button>`:''}
+      </div>
+      <div class="card"><h3>${t('pickChecks')}</h3>${CHECKS.map(c=>`<label class="opt"><input type="checkbox" ${d.checks.includes(c)?'checked':''} onchange="toggleCheck('${c}',this.checked)"> ${t('ck_'+c)}</label>`).join('')}
+       <label class="f" style="margin-top:0.65rem">${t('customChecks')}</label>
+       ${d.customChecks.map((cc,i)=>`<div class="row" style="margin-top:0.35rem"><input class="in" value="${esc(cc)}" placeholder="${t('customCheckPh')}" oninput="state.draft.customChecks[${i}]=this.value"><button class="btn sm" onclick="delDraftCustomCheck(${i})">✕</button></div>`).join('')}
+       ${d.customChecks.length<4?`<button class="btn sm line" style="margin-top:0.45rem" onclick="addDraftCustomCheck()">${t('addCustomCheck')}</button>`:''}
+      </div>`:''}
+     ${k==='survey'?`<div class="card"><label class="f" style="margin-top:0">${t('title')}</label><input class="in" id="f_title" value="${esc(d.title)}" placeholder="${t('titlePh')}" oninput="state.draft.title=this.value">
+       <label class="f">${t('desc')}</label><textarea class="in" oninput="state.draft.desc=this.value">${esc(d.desc)}</textarea></div>
+      <div class="card"><h3>${t('addQ').replace('+ ','')} (${d.questions.length})</h3>${d.questions.map((q,i)=>qBuilder(q,i,true)).join('')}
+      ${d.questions.length<CONFIG.maxQuestions?`<button class="btn sm line" onclick="addQ()">${t('addQ')}</button>`:''}</div>`:''}
+     ${k==='verify'?`<div class="card"><label class="f" style="margin-top:0">${t('vQuestion')}</label><input class="in" id="f_vq" value="${esc(d.questions[0].text)}" placeholder="${t('vQuestionPh')}" oninput="state.draft.questions[0].text=this.value;state.draft.title=this.value">
+       <label class="f">${t('vOptions')}</label>${optInputs(d.questions[0],0)}
+       <button class="btn sm line" style="margin-top:0.5rem" onclick="state.draft.questions[0].options.push('');render()">${t('addOpt')}</button>
+       <label class="f">${t('desc')}</label><textarea class="in" oninput="state.draft.desc=this.value">${esc(d.desc)}</textarea></div>`:''}
+     <div class="card"><div class="g2">
+      <div><label class="f" style="margin-top:0">${t('people')}</label><input class="in" type="number" min="1" max="500" value="${d.max}" oninput="setDraft('max',+this.value||0,false)"></div>
+      <div><label class="f" style="margin-top:0">${t('rewardPer')}</label><input class="in" type="number" min="0" step="0.01" value="${d.reward}" oninput="setDraft('reward',+this.value||0,false)"></div></div>
+      <p class="small" id="sugg" style="margin:0.5rem 0 0"></p></div>
+     <details ${state.adv?'open':''} ontoggle="state.adv=this.open"><summary>${t('advanced')}</summary><div class="card">
+      ${k==='verify'?`<label class="f" style="margin-top:0">${t('mode')}</label>
+       <label class="opt"><input type="radio" name="md" ${d.mode==='consensus'?'checked':''} onchange="setDraft('mode','consensus',true)"> ${t('modeC')}</label>
+       <label class="opt"><input type="radio" name="md" ${d.mode==='review'?'checked':''} onchange="setDraft('mode','review',true)"> ${t('modeR')}</label>`:''}
+      ${k!=='verify'?`<label class="opt" style="margin-top:0"><input type="checkbox" ${d.autoApprove?'checked':''} onchange="setDraft('autoApprove',this.checked)"> ${t('autoAppr')}</label>`:''}
+      <div class="g2"><div><label class="f">${t('country')}</label><select class="in" onchange="setDraft('country',this.value)">${opts(Object.keys(CN).map(c=>[c,flag(c)+' '+cname(c)]),d.country)}</select></div>
+      <div><label class="f">${t('language')}</label><select class="in" onchange="setDraft('lang',this.value)">${opts(Object.keys(LN).map(l=>[l,lname(l)]),d.lang)}</select></div>
+      <div><label class="f">${t('estMin')}</label><input class="in" type="number" min="1" value="${d.minutes}" oninput="setDraft('minutes',+this.value||1)"></div>
+      <div><label class="f">${t('deadline')}</label><select class="in" onchange="setDraft('hours',+this.value)">${opts([[24,t('hrs',24)],[48,t('hrs',48)],[72,t('days',3)],[168,t('days',7)]],d.hours)}</select></div></div>
+      <label class="opt"><input type="checkbox" ${d.sensitive?'checked':''} onchange="setDraft('sensitive',this.checked)"> ${t('sensFlag')}</label></div></details>
+     <div class="card"><div id="summary"></div>
+      <label class="opt" style="margin-top:0.6rem"><input type="checkbox" ${d.ack?'checked':''} onchange="setDraft('ack',this.checked)"> ${t('rulesAck')}</label>
+      <details><summary>${t('rulesTitle')}</summary><div class="small">${['r1','r2','r3','r4','r5'].map(r=>'• '+t(r)).join('<br>')}</div></details></div>
+     <button class="btn p full" id="payb" onclick="publishDraft()"></button>`
+    }
+    function optInputs(q,i){return q.options.map((o,j)=>`<div class="row" style="margin-top:0.35rem"><input class="in" value="${esc(o)}" placeholder="${t('optPh')} ${j+1}" oninput="state.draft.questions[${i}].options[${j}]=this.value"><button class="btn sm" onclick="state.draft.questions[${i}].options.splice(${j},1);render()">✕</button></div>`).join('')}
+    function qBuilder(q,i){
+     return `<div class="q"><div class="row" style="margin-bottom:0.45rem"><select class="in" style="width:auto" onchange="changeQType(${i},this.value)">${['choice','text','rating'].map(ty=>`<option value="${ty}" ${q.type===ty?'selected':''}>${qTypeLabel({type:ty})}</option>`).join('')}</select>
+      <div class="grow"></div><button class="btn sm" onclick="delQ(${i})">✕</button></div>
+      <input class="in" value="${esc(q.text)}" placeholder="${t('qPh')}" oninput="state.draft.questions[${i}].text=this.value">
+      ${q.type==='choice'?`${optInputs(q,i)}<button class="btn sm line" style="margin-top:0.35rem" onclick="state.draft.questions[${i}].options.push('');render()">${t('addOpt')}</button>`:''}</div>`
+    }
+    function toggleCheck(c,on){const a=state.draft.checks;if(on&&!a.includes(c))a.push(c);if(!on)state.draft.checks=a.filter(x=>x!==c);updateSummary()}
+    function addQ(){state.draft.questions.push({type:'text',text:'',options:[]});render()}
+    function delQ(i){state.draft.questions.splice(i,1);render()}
+    function changeQType(i,ty){const q=state.draft.questions[i];q.type=ty;if(ty==='choice'&&q.options.length<2)q.options=['',''];render()}
+    function setDraft(k,v,rerender){state.draft[k]=v;if(k==='mode'&&v==='consensus'){state.draft.autoApprove=false;if(state.draft.max<CONFIG.minConsensus)state.draft.max=CONFIG.minConsensus}
+     if(rerender)render();else updateSummary()}
+    function totals(d){const pool=d.reward*d.max,fee=pool*CONFIG.feePct/100;return{pool,fee,total:pool+fee}}
+    function updateSummary(){
+     const d=state.draft,tt=totals(d);if(!$('summary'))return;
+     $('summary').innerHTML=`<div class="kv"><span>${t('escrow')}</span><b>π ${fmt(tt.pool)}</b></div>${CONFIG.feePct>0?`<div class="kv"><span>${t('fee',CONFIG.feePct)}</span><b>π ${fmt(tt.fee)}</b></div>`:''}<hr><div class="kv"><span>${t('total')}</span><b class="pi" style="font-size:1.15rem">π ${fmt(tt.total)}</b></div><div class="small">${t('balance')}: π ${fmt(state.piBalance)} · ${t('escrowNote')}</div>`;
+     $('payb').textContent=t('payBtn',fmt(tt.total));
+     $('sugg').textContent=t('suggestMin',fmt(suggestMin(d)))
+    }
+    function validate(d){
+     const e=[],tt=totals(d);
+     if(d.kind==='apptest'){
+       if(!d.appName.trim())e.push(t('e_name'));
+       if(!/^https?:\/\/\S+\.\S+/i.test(d.appUrl.trim()))e.push(t('e_url'));
+       if(!d.checks.length&&!d.customChecks.some(x=>x.trim()))e.push(t('e_checks'));
+     }
+     else{
+      if(d.kind==='survey'&&!d.title.trim())e.push(t('e_title'));
+      if(!d.questions.length)e.push(t('e_q'));
+      if(d.questions.some(q=>!q.text.trim()))e.push(t('e_qtext'));
+      if(d.questions.some(q=>q.type==='choice'&&q.options.filter(o=>o.trim()).length<2))e.push(t('e_opts'));
+     }
+     if(d.mode==='consensus'&&d.max<CONFIG.minConsensus)e.push(t('e_min',CONFIG.minConsensus));
+     if(d.reward<suggestMin(d)-1e-9)e.push(t('e_reward'));
+     if(tt.total>state.piBalance+1e-9)e.push(t('e_bal'));
+     if(!d.ack)e.push(t('e_rules'));
+     const text=(d.appName+' '+d.title+' '+d.desc+' '+d.steps.join(' ')+' '+d.customChecks.join(' ')+' '+d.questions.map(q=>q.text).join(' ')).toLowerCase();
+     if(BANNED.some(b=>text.includes(b)))e.push(t('e_banned'));
+     return e
+    }
+    async function publishDraft(){
+     const d=state.draft;d.errors=validate(d);
+     if(d.errors.length){render();$('main').scrollTop=0;return}
+     const tt=totals(d);
+     const ok=await PiLayer.pay(tt.total,'RealTap request escrow');
+     if(!ok)return;
+     const reqLabel=d.kind==='apptest'?d.appName.trim():(d.kind==='verify'?d.questions[0].text:d.title).trim();
+     state.piBalance-=tt.total;state.history.unshift({k:'h_deposit',amt:-tt.total,note:reqLabel,at:now()});
+     const id=(state.tasks.reduce((mx,x)=>Math.max(mx,x.id||0),0))+1;
+     const base={id,kind:d.kind,desc:d.desc.trim(),requester:state.me.username,rej:0,feePaid:tt.fee,mode:d.mode,autoApprove:d.mode==='review'&&d.autoApprove,minutes:d.minutes,reward:d.reward,max:d.max,country:d.country,lang:d.lang,sensitive:d.sensitive,status:'open',deadline:now()+d.hours*H,createdAt:now(),responses:[]};
+     if(d.kind==='apptest'){
+       const cleanSteps=d.steps.map(s=>s.trim()).filter(Boolean);
+       const cleanCustom=d.customChecks.map(c=>c.trim()).filter(Boolean);
+       Object.assign(base,{
+         appName:d.appName.trim(),
+         appVersion:d.appVersion.trim(),
+         targetOs:d.targetOs||'any',
+         appUrl:d.appUrl.trim(),
+         steps:cleanSteps,
+         checks:[...d.checks],
+         customChecks:cleanCustom,
+         title:'',
+         questions:appQuestions(d.checks,cleanCustom)
+       });
+     }
+     else{d.questions.forEach((q,i)=>{q.id='q'+(i+1);q.options=q.options.filter(o=>o.trim())});Object.assign(base,{title:(d.kind==='verify'?d.questions[0].text:d.title).trim(),questions:d.questions})}
+     state.tasks.unshift(base);
+     state.draft=null;state.tab='activity';state.seg='req';state.view=null;save();toast(t('published'));render()
+    }
+
+    function vActivity(){
+     const me=state.me.username;
+     const done=state.tasks.filter(tk=>myResp(tk)).map(tk=>({tk,role:'done',at:myResp(tk).at}));
+     const req=state.tasks.filter(tk=>tk.requester===me).map(tk=>({tk,role:'req',at:tk.createdAt||0}));
+     let items=[...done,...req].sort((a,b)=>b.at-a.at);
+     if(state.seg==='done')items=items.filter(x=>x.role==='done');
+     if(state.seg==='req')items=items.filter(x=>x.role==='req');
+     const body=items.map(({tk,role})=>{
+      if(role==='done'){const r=myResp(tk);const col=['approved','correct'].includes(r.status)?'g':['rejected','wrong'].includes(r.status)?'r':'y';
+       return `<div class="card task" onclick="openTask(${tk.id},'activity')"><div class="row">${kindBadge3d(tk.kind)}<div class="grow"><div class="title">${esc(ttl(tk))}</div><div class="meta">${t('role_done')} · ${esc(tk.requester)}</div></div><span class="tag ${col}">${t('st_'+r.status)}</span></div>
+       ${r.amount>0?`<div class="kv"><span></span><b class="pi">${t('earned',fmt(r.amount))}</b></div>`:''}
+       ${r.status==='rejected'?`<div class="note err" style="margin-top:0.5rem">${esc(r.reason)}</div>${r.appealed?`<div class="small">${t('appealed')}</div>`:`<button class="btn sm line" style="margin-top:0.5rem" onclick="event.stopPropagation();appeal(${tk.id})">${t('appeal')}</button>`}`:''}</div>`}
+      return `<div class="card task" onclick="openReview(${tk.id})"><div class="row">${kindBadge3d(tk.kind)}<div class="grow"><div class="title">${esc(ttl(tk))}</div><div class="meta">${t('role_req')} · ${t('progress',tk.responses.length,tk.max)} · π ${fmt(tk.reward*tk.max)}</div></div><span class="tag ${tk.status==='settled'?'g':'b'}">${tk.status==='settled'?t('settled'):t('results')}</span></div>
+       <div class="bar"><i style="width:${Math.min(100,tk.responses.length/tk.max*100)}%"></i></div></div>`}).join('')||`<div class="card small" style="text-align:center">${t('noAct')}</div>`;
+     const c=s=>s==='all'?done.length+req.length:s==='done'?done.length:req.length;
+     return `<div class="seg">${['all','done','req'].map(s=>`<button class="${state.seg===s?'on':''}" onclick="state.seg='${s}';save();render()">${t('seg_'+s)} ${c(s)}</button>`).join('')}</div>${body}`
+    }
+    function appeal(id){const r=myResp(taskById(id));r.appealed=true;save();toast(t('appealed'));render()}
+
+    function results(tk){
+     const n=tk.responses.length||1;
+     return tk.questions.map(q=>{
+      if(q.type==='choice'){
+        const c={};
+        let blockerCnt=0,majorCnt=0,minorCnt=0;
+        tk.responses.forEach(r=>{
+          const a=r.answers[q.id];
+          if(a)c[a]=(c[a]||0)+1;
+          if(a==='problem'&&r.bugDetails&&r.bugDetails[q.id]){
+            const sev=r.bugDetails[q.id].severity;
+            if(sev==='blocker')blockerCnt++;
+            else if(sev==='minor')minorCnt++;
+            else majorCnt++;
+          }
+        });
+        const worksCnt=c['works']||0;
+        const passBadge=tk.kind==='apptest'?`<span class="tag ${worksCnt/n>=0.8?'g':'y'}" style="margin-left:0.35rem">${t('passRate',Math.round(worksCnt/n*100))}</span>`:'';
+        const sevBadges=(blockerCnt||majorCnt||minorCnt)?`<div class="tags" style="margin-top:0.25rem">
+          ${blockerCnt?`<span class="tag r">${t('sev_blocker').split(' (')[0]}: ${blockerCnt}</span>`:''}
+          ${majorCnt?`<span class="tag y">${t('sev_major').split(' (')[0]}: ${majorCnt}</span>`:''}
+          ${minorCnt?`<span class="tag b">${t('sev_minor').split(' (')[0]}: ${minorCnt}</span>`:''}
+        </div>`:'';
+        return `<div style="margin:0.75rem 0"><b style="font-size:0.86rem">${esc(qt(q))}</b>${passBadge}${sevBadges}${Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([a,k])=>`<div class="kv" style="padding:0.18rem 0"><span style="color:${a==='problem'?'var(--red)':'var(--ink)'}">${esc(optLabel(a))}</span><span>${k} · ${Math.round(k/n*100)}%</span></div><div class="bar"><i style="width:${k/n*100}%;${a==='problem'?'background:var(--red)':''}"></i></div>`).join('')}</div>`;
+      }
+      if(q.type==='rating'){const v=tk.responses.map(r=>+r.answers[q.id]).filter(x=>x);const avg=v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):'–';
+       return `<div class="kv"><span>${esc(qt(q))}</span><b>★ ${avg}</b></div>`}
+      const tx=tk.responses.map(r=>r.answers[q.id]).filter(Boolean).slice(0,4);
+      return tx.length?`<div style="margin:0.75rem 0"><b style="font-size:0.86rem">${esc(qt(q))}</b>${tx.map(x=>`<div class="small" style="color:var(--sub);margin-top:0.25rem">“${esc(x)}”</div>`).join('')}</div>`:''}).join('')
+    }
+
+    function vReview(id){
+     const tk=taskById(id);if(!tk)return '';
+     const pend=tk.responses.filter(r=>r.status==='submitted').length,s=tk.settlement;
+     const manual=tk.mode==='review'&&!tk.autoApprove;
+     const isPaused=tk.status==='paused';
+     let head='';
+     if(tk.kind==='apptest'){
+      const withP=tk.responses.filter(r=>Object.entries(r.answers).some(([k,v])=>(k.startsWith('c_')||k.startsWith('cc_'))&&v==='problem')).length;
+      head=`<div class="note ${withP?'warn':'ok'}" style="margin-bottom:0.5rem">${t('issuesFound',withP,tk.responses.length)}</div>`}
+     const list=manual?tk.responses.map(r=>`<div class="card">
+       <div class="row"><b class="grow">${esc(r.user)}</b><span class="tag ${r.status==='approved'?'g':r.status==='rejected'?'r':'y'}">${r.status==='submitted'?t('pendingReview'):t('st_'+r.status)}</span></div>
+       ${r.env?`<div style="margin-top:0.35rem"><span class="env-badge">📱 ${esc(r.env)}</span></div>`:''}
+       ${tk.questions.map(q=>{
+         const a=r.answers[q.id];if(!a)return '';
+         const bd=(a==='problem'&&r.bugDetails&&r.bugDetails[q.id])?r.bugDetails[q.id]:null;
+         const sevTag=bd?`<span class="tag ${bd.severity==='blocker'?'r':bd.severity==='minor'?'b':'y'}" style="margin-left:0.3rem">${esc(t('sev_'+(bd.severity||'major')).split(' (')[0])}</span>`:'';
+         const bugNote=bd&&bd.note?`<div class="small" style="color:var(--red);margin-top:0.15rem">↳ ${esc(bd.note)}</div>`:'';
+         const safeShot=bd&&isSafeImageDataUri(bd.shot)?bd.shot:'';
+         const shotBadge=bd&&bd.hasShot?(safeShot?`<img class="shot-thumb" src="${safeShot}" alt="Bug screenshot" />`:`<div class="small" style="color:var(--accent);margin-top:0.15rem">📷 ${t('shotAttached')}</div>`):'';
+         return `<div class="small" style="margin-top:0.42rem">${esc(qt(q))}</div><div style="${a==='problem'?'color:var(--red);font-weight:700':''}">${esc(optLabel(a))}${sevTag}</div>${bugNote}${shotBadge}`;
+       }).join('')}
+       ${r.reason?`<div class="small" style="margin-top:0.35rem">↳ ${esc(r.reason)}</div>`:''}
+       ${tk.status==='open'?`<div class="g2" style="margin-top:0.6rem"><button class="btn sm g" onclick="setResp(${tk.id},${r.id},'approved')">${t('accept')}</button><button class="btn sm red" onclick="rejectModal(${tk.id},${r.id})">${t('reject')}</button></div>`:''}</div>`).join(''):'';
+     return `<button class="back" onclick="view(null)">${t('back')}</button><h2 style="font-size:1.05rem;font-weight:800;margin:0 0 0.6rem">${esc(ttl(tk))}</h2>
+      <div class="card"><div class="kv"><span>${t('progress',tk.responses.length,tk.max)}</span><b>π ${fmt(tk.reward*tk.max)}</b></div>
+      ${tk.status==='settled'&&s?`<hr><div class="note ok">${t('settled')}</div>
+       ${s.lowSample?`<div class="note warn" style="margin-top:0.35rem">${t('lowSample',CONFIG.minConsensus)}</div>`:''}${s.noConsensus?`<div class="note warn" style="margin-top:0.35rem">${t('noCons')}</div>`:''}
+       <div class="kv"><span>${t('resWinners',s.winners,fmt(s.each))}</span></div><div class="kv"><span>${t('resLosers',s.losers)}</span></div><div class="kv"><span>${t('resRefund',fmt(s.refund))}</span></div>`
+      :(isPaused
+        ?`<div class="note err" style="margin-top:0.5rem">${t('pausedSettleBlock')}</div>`
+        :`<div class="note warn" style="margin-top:0.5rem">${manual?t('settleWarn'):t(tk.mode==='consensus'?'expConsensus':'expAuto')}</div><button class="btn p full" style="margin-top:0.6rem" onclick="settleTask(${tk.id})">${t('closeSettle')}${manual&&pend?' ('+pend+')':''}</button>`)}</div>
+      <div class="card"><h3>${tk.kind==='apptest'?t('qaSummaryTitle'):t('resultTitle')}</h3>${head}${results(tk)}</div>${list}`
+    }
+    function setResp(tid,rid,st){const tk=taskById(tid);if(!tk||tk.status!=='open')return;const r=tk.responses.find(x=>x.id===rid);r.status=st;r.reason='';save();render()}
+    function rejectModal(tid,rid){
+     openModal(`<h3>${t('reject')}</h3><label class="f">${t('rejectWhy')}</label>
+      ${['rj1','rj2','rj3','rj4'].map((k,i)=>`<label class="opt"><input type="radio" name="rj" value="${k}" ${i===0?'checked':''}> ${t(k)}</label>`).join('')}
+      <div class="g2" style="margin-top:0.75rem"><button class="btn" onclick="closeModal()">${t('cancel')}</button><button class="btn red" onclick="doReject(${tid},${rid})">${t('reject')}</button></div>`)
+    }
+    function doReject(tid,rid){const tk=taskById(tid);if(!tk||tk.status!=='open')return;const k=document.querySelector('input[name="rj"]:checked').value;const r=tk.responses.find(x=>x.id===rid);r.status='rejected';r.reason=t(k);closeModal();save();render()}
+    function settleTask(id){
+     const tk=taskById(id);if(!tk||tk.status!=='open')return;
+     const rs=tk.responses,n=rs.length,r=tk.reward,info={lowSample:false,noConsensus:false};
+     let win=[],lose=[];
+     if(tk.mode==='review'){rs.forEach(x=>{if(x.status==='submitted')x.status='approved'});win=rs.filter(x=>x.status==='approved');lose=rs.filter(x=>x.status==='rejected')}
+     else{
+      let match=rs.map(()=>true);
+      if(n<CONFIG.minConsensus)info.lowSample=true;
+      else tk.questions.forEach(q=>{if(q.type!=='choice')return;let target=q.gold;
+        if(!target){const c={};rs.forEach(x=>{c[x.answers[q.id]]=(c[x.answers[q.id]]||0)+1});const top=Object.entries(c).sort((a,b)=>b[1]-a[1])[0];if(top&&top[1]/n>0.5)target=top[0];else info.noConsensus=true}
+        if(target)rs.forEach((x,i)=>{if(x.answers[q.id]!==target)match[i]=false})});
+      if(info.lowSample||info.noConsensus)match=rs.map(()=>true);
+      rs.forEach((x,i)=>x.status=match[i]?'correct':'wrong');
+      win=rs.filter(x=>x.status==='correct');lose=rs.filter(x=>x.status==='wrong')
+     }
+     const pool=r*n;let each=0,back=0;
+     if(win.length)each=pool/win.length;else back=pool;
+     win.forEach(x=>{if(x.user===state.me.username&&!x.paid){x.paid=true;addPending(each,tk)}x.amount=each});lose.forEach(x=>x.amount=0);
+     const refund=(tk.max-n)*r+back;
+     if(tk.requester===state.me.username&&refund>0){state.piBalance+=refund;state.history.unshift({k:'h_refund',amt:refund,note:ttl(tk),at:now()})}
+     tk.status='settled';tk.settlement={each,winners:win.length,losers:lose.length,refund,...info};
+     save();toast(t('settled'));render()
+    }
+
+    /* Wallet History Search, Date-Range Filter & Timestamps */
+    function formatDateTime(ts){
+      const d=new Date(ts||now());
+      if(Number.isNaN(d.getTime()))return '';
+      const pad=v=>String(v).padStart(2,'0');
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+    function formatDateInputValue(ts){
+      const d=new Date(ts||now());
+      if(Number.isNaN(d.getTime()))return '';
+      const pad=v=>String(v).padStart(2,'0');
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    }
+    function getFilteredHistory(){
+      const q=(state.histQuery||'').trim().toLowerCase();
+      const rangeMode=state.histFilterMode==='range';
+      const fromTs=rangeMode&&state.histFrom?new Date(state.histFrom+'T00:00:00').getTime():null;
+      const toTs=rangeMode&&state.histTo?new Date(state.histTo+'T23:59:59.999').getTime():null;
+      return (state.history||[]).filter(h=>{
+        const ts=h.at||now();
+        if(rangeMode){
+          if(fromTs&&!Number.isNaN(fromTs)&&ts<fromTs)return false;
+          if(toTs&&!Number.isNaN(toTs)&&ts>toTs)return false;
+        }
+        if(!q)return true;
+        const label=t(h.k).toLowerCase();
+        const note=String(h.note||'').toLowerCase();
+        const amtStr=((h.amt>=0?'+':'')+fmt(h.amt)+' π').toLowerCase();
+        const dtStr=formatDateTime(ts).toLowerCase();
+        return label.includes(q)||note.includes(q)||amtStr.includes(q)||dtStr.includes(q)||String(h.k||'').toLowerCase().includes(q);
+      });
+    }
+    function renderHistoryListHtml(){
+      const list=getFilteredHistory();
+      if(!list.length){
+        return `<div class="small" style="text-align:center;padding:0.75rem 0.25rem">${t('noHistory')}</div>`;
+      }
+      return list.map(h=>{
+        const amtText=(h.amt>=0?'+':'')+fmt(h.amt)+' π';
+        const dtText=formatDateTime(h.at||now());
+        return `<div class="hist-item">
+          <div>
+            <div class="hist-label">${esc(t(h.k))}${h.note?` <span class="small">· ${esc(h.note)}</span>`:''}</div>
+            <div class="hist-time">🕒 ${esc(dtText)}</div>
+          </div>
+          <b class="hist-amt" style="color:${h.amt>=0?'var(--green)':'var(--red)'}">${esc(amtText)}</b>
+        </div>`;
+      }).join('');
+    }
+    function onHistorySearch(val){
+      state.histQuery=val;
+      save();
+      const box=$('walletHistoryList');
+      const cnt=$('walletHistoryCount');
+      const clr=$('histSearchClear');
+      if(clr)clr.style.display=val?'inline-flex':'none';
+      if(box)box.innerHTML=renderHistoryListHtml();
+      if(cnt)cnt.textContent=t('historyCount',getFilteredHistory().length);
+    }
+    function setHistoryFilterMode(mode){
+      state.histFilterMode=mode;
+      if(mode==='range'){
+        if(!state.histFrom)state.histFrom=formatDateInputValue(now()-14*D);
+        if(!state.histTo)state.histTo=formatDateInputValue(now());
+      }
+      save();
+      render();
+    }
+    function onHistoryDateChange(){
+      const f=$('histFromInput');
+      const to=$('histToInput');
+      if(f)state.histFrom=f.value;
+      if(to)state.histTo=to.value;
+      save();
+      const box=$('walletHistoryList');
+      const cnt=$('walletHistoryCount');
+      if(box)box.innerHTML=renderHistoryListHtml();
+      if(cnt)cnt.textContent=t('historyCount',getFilteredHistory().length);
+    }
+    function resetHistoryFilters(){
+      state.histQuery='';
+      state.histFilterMode='all';
+      state.histFrom='';
+      state.histTo='';
+      save();
+      render();
+    }
+
+    function vWallet(){
+     const e=state.earn,min=CONFIG.minWithdraw,can=e.available>=min;
+     const filtered=getFilteredHistory();
+     const isRange=state.histFilterMode==='range';
+     const hasQuery=Boolean((state.histQuery||'').trim());
+     return `<div class="card">
+       <div class="row" style="justify-content:space-between;align-items:center">
+         <div><div class="small">${t('piWallet')}</div><div class="big pi">π ${fmt(state.piBalance)}</div></div>
+         <button class="btn sm line" onclick="topupModal()">${t('topupShort')}</button>
+       </div>
+     </div>
+     <div class="card">
+       <h3>${t('earnings')}</h3>
+       <div class="g2">
+         <div><div class="small">${t('avail')}</div><div class="big pi">π ${fmt(e.available)}</div></div>
+         <div><div class="small">${t('pend')}</div><div class="big" style="color:var(--mute)">π ${fmt(e.pending.reduce((s,p)=>s+p.amount,0))}</div></div>
+       </div>
+       <div class="row" style="justify-content:space-between;align-items:center;margin-top:0.48rem">
+         <span class="small">${t('wRule',min,CONFIG.holdDays)}</span>
+         <button class="btn sm p" ${can?'':'disabled'} onclick="withdrawModal()">${t('withdrawShort')}</button>
+       </div>
+       ${can?'':`<div class="small" style="margin-top:0.25rem">${t('wMin',min)}</div>`}
+       ${e.pending.map(p=>`<div class="kv"><span>${esc(p.note)}</span><span>π ${fmt(p.amount)} · ${t('releaseIn',remain(p.releaseAt))}</span></div>`).join('')}
+     </div>
+     <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:0.45rem">
+        <h3 style="margin:0">${t('history')}</h3>
+        <span id="walletHistoryCount" class="tag b">${t('historyCount',filtered.length)}</span>
+      </div>
+      <div class="hist-controls">
+        <div class="search-wrap" style="margin-bottom:0">
+          <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input id="walletHistorySearch" class="search-in" type="search" value="${esc(state.histQuery||'')}" placeholder="${t('searchHistory')}" oninput="onHistorySearch(this.value)" />
+          <button id="histSearchClear" type="button" class="search-clear" style="display:${hasQuery?'inline-flex':'none'}" onclick="onHistorySearch('');$('walletHistorySearch').value='';$('walletHistorySearch').focus()" aria-label="Clear">✕</button>
+        </div>
+        <div class="hist-filter-row">
+          <div class="hist-mode-pills">
+            <button type="button" class="hist-mode-btn ${!isRange?'on':''}" onclick="setHistoryFilterMode('all')">${t('allTime')}</button>
+            <button type="button" class="hist-mode-btn ${isRange?'on':''}" onclick="setHistoryFilterMode('range')">${t('dateRange')}</button>
+          </div>
+          ${(hasQuery||isRange)?`<button type="button" class="btn sm line" onclick="resetHistoryFilters()">${t('clearFilter')}</button>`:''}
+        </div>
+        ${isRange?`<div class="hist-dates">
+          <input id="histFromInput" class="hist-date-in" type="date" value="${esc(state.histFrom||'')}" aria-label="${t('fromDate')}" onchange="onHistoryDateChange()" />
+          <input id="histToInput" class="hist-date-in" type="date" value="${esc(state.histTo||'')}" aria-label="${t('toDate')}" onchange="onHistoryDateChange()" />
+          <button type="button" class="btn sm" onclick="resetHistoryFilters()">${t('allTime')}</button>
+        </div>`:''}
+      </div>
+      <div id="walletHistoryList">${renderHistoryListHtml()}</div>
+     </div>`
+    }
+
+    function topupModal(){
+     openModal(`<h3>${t('topupShort')}</h3>
+      <label class="f">${t('topupAmt')}</label>
+      <input class="in" id="ta" type="number" step="0.5" min="0.5" value="10">
+      <div class="g2" style="margin-top:0.75rem">
+        <button class="btn" onclick="closeModal()">${t('cancel')}</button>
+        <button class="btn p" onclick="doTopup()">${t('topupSend')}</button>
+      </div>`)
+    }
+
+    async function doTopup(){
+     const a=+$('ta').value;
+     if(!(a>0))return;
+     closeModal();
+     const ok=await PiLayer.pay(a,'RealTap wallet top-up');
+     if(!ok)return;
+     state.piBalance+=a;
+     state.history.unshift({k:'h_topup',amt:a,note:'Wallet top-up',at:now()});
+     save();
+     toast(t('topupDone'));
+     render();
+    }
+
+    function withdrawModal(){
+     openModal(`<h3>${t('withdraw')}</h3><label class="f">${t('wAmt')}</label><input class="in" id="wa" type="number" step="0.01" min="${CONFIG.minWithdraw}" max="${fmt(state.earn.available)}" value="${fmt(state.earn.available)}">
+      <p class="small">${t('wRule',CONFIG.minWithdraw,CONFIG.holdDays)}</p>
+      <div class="g2"><button class="btn" onclick="closeModal()">${t('cancel')}</button><button class="btn p" onclick="doWithdraw()">${t('wSend')}</button></div>`)
+    }
+    async function doWithdraw(){
+     const a=+$('wa').value;
+     if(!(a>=CONFIG.minWithdraw)||a>state.earn.available+1e-9){toast(t('wMin',CONFIG.minWithdraw));return}
+     closeModal();await PiLayer.payout(a);
+     state.earn.available-=a;state.history.unshift({k:'h_withdraw',amt:-a,note:'Pi Wallet payout',at:now()});save();toast(t('wDone'));render()
+    }
+
+    function vMe(){
+     const m=state.me,lo=Object.keys(LN).filter(l=>l!=='any');
+     const curHex=(state.accent||'#4f46e5').toLowerCase();
+     const isOpen=Boolean(state.colorDrawerOpen);
+     return `<div class="card"><div class="row">${kindBadge3d('avatar')}<div class="grow"><div class="title">@${esc(m.username)}</div><span class="tag g">✓ ${t('kycOk')}</span></div></div></div>
+     <div class="card">
+      <label class="f" style="margin-top:0">${t('uiLang')}</label><select class="in" id="uil" onchange="setLang(this.value)">${Object.entries(UILANG).map(([k,v])=>`<option value="${k}" ${state.lang===k?'selected':''}>${v}</option>`).join('')}</select>
+      <label class="f">${t('textSize')}</label><div class="seg" style="margin-bottom:0">${['s','m','l'].map(s=>`<button class="${state.fs===s?'on':''}" onclick="setFs('${s}')">${t('fs_'+s)}</button>`).join('')}</div>
+      <label class="f">${t('colorTheme')}</label>
+      <div class="row" style="flex-wrap:wrap;gap:0.4rem;margin-top:0.25rem">
+        <span style="width:1.45rem;height:1.45rem;border-radius:999px;background:${curHex};border:2px solid #ffffff;box-shadow:0 0.2rem 0.5rem rgba(15,23,42,0.22);display:inline-block;flex-shrink:0"></span>
+        <div class="color-add-wrap">
+          <button type="button" class="btn sm line" onclick="toggleColorDrawer()">${t('addColor')}</button>
+          <div id="colorSlideDrawer" class="color-slide-drawer ${isOpen?'open':''}">
+            ${THEME_PALETTE.map(c=>`<button type="button" class="color-swatch-dot" style="background:${c};outline:${curHex===c?'2px solid var(--ink)':'none'}" onclick="selectAccentColor('${c}')" aria-label="${c}"></button>`).join('')}
+            <label title="${t('addColor')}" style="display:inline-flex;align-items:center;justify-content:center;width:1.35rem;height:1.35rem;border-radius:999px;border:1px dashed var(--mute);font-size:0.75rem;font-weight:800;cursor:pointer;background:#fff;color:var(--ink);flex-shrink:0">
+              <span>+</span>
+              <input type="color" value="${esc(curHex)}" onchange="selectAccentColor(this.value)" style="position:opacity:0;width:0;height:0;opacity:0;pointer-events:none" />
+            </label>
+          </div>
+        </div>
+      </div></div>
+     <div class="card">
+      <label class="f" style="margin-top:0">${t('myCountry')}</label><select class="in" onchange="state.me.country=this.value;save()">${Object.keys(CN).filter(c=>c!=='ANY').map(c=>`<option value="${c}" ${m.country===c?'selected':''}>${flag(c)} ${cname(c)}</option>`).join('')}</select>
+      <label class="f">${t('mainLang')}</label><select class="in" onchange="state.me.lang=this.value;save()">${lo.map(l=>`<option value="${l}" ${m.lang===l?'selected':''}>${lname(l)}</option>`).join('')}</select>
+      <label class="f">${t('secondLang')}</label><select class="in" onchange="state.me.lang2=this.value;save()"><option value="">${t('none')}</option>${lo.map(l=>`<option value="${l}" ${m.lang2===l?'selected':''}>${lname(l)}</option>`).join('')}</select>
+      <p class="small" style="margin:0.5rem 0 0">${t('langWhy')}</p></div>
+     <details><summary>${t('rulesTitle')}</summary><div class="card small">${['r1','r2','r3','r4','r5'].map(r=>'• '+t(r)).join('<br>')}</div></details>
+     ${sandboxSection()}`
+    }
+    function sandboxSection(){
+     if(!APP_ENV.SHOW_CORE_TEAM_TOOLS)return '';
+     return `<details><summary>${t('demo')}</summary><div class="card"><button class="btn full" onclick="ffwd()">${t('ffwd')}</button>
+      <button class="btn full" style="margin-top:0.5rem" onclick="settleMine()">${t('settleMine')}</button>
+      <button class="btn full" style="margin-top:0.5rem" onclick="topupModal()">${t('topup')}</button>
+      <button class="btn red full" style="margin-top:0.5rem" onclick="resetDemo()">${t('reset')}</button></div></details>`
+    }
+    function ffwd(){state.timeOffset+=3*D;releasePending();save();toast(t('ffDone'));render()}
+    function settleMine(){state.tasks.filter(tk=>myResp(tk)&&tk.status!=='settled'&&tk.mode==='consensus').forEach(tk=>settleTask(tk.id));toast(t('settledMine'));render()}
+    function resetDemo(){const l=state.lang,f=state.fs;state=seed();state.lang=l;state.fs=f;save();render()}
+
+    applyPrefs();
+    render();
+  </script>
+</body>
+</html>
