@@ -1,22 +1,14 @@
 <!DOCTYPE html>
-<html lang="ko" class="fs-m">
+<html lang="en" class="fs-m">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>RealTap — Pi Network Human Testing &amp; QA</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Pi Network 공식 SDK (Pi Browser 환경에서 자동 활성화) -->
-  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RealTap — Real people test your Pi app</title>
   <style>
     :root {
+      --a1:#6366f1;--a2:#4338ca;--a3:#3730a3;--accent-rgb:79,70,229;
       --bg: #eef2ff;
-      --surface: rgba(255, 255, 255, 0.92);
+      --surface: rgba(255, 255, 255, 0.9);
       --surface-solid: #ffffff;
       --surface-alt: #f8fafc;
       --ink: #0f172a;
@@ -25,7 +17,7 @@
       --line: rgba(148, 163, 184, 0.28);
       --accent: #4f46e5;
       --accent-2: #10b981;
-      --accent-soft: rgba(79, 70, 229, 0.11);
+      --accent-soft: rgba(var(--accent-rgb), 0.11);
       --pi: #6d28d9;
       --pi-soft: rgba(109, 40, 217, 0.12);
       --green: #059669;
@@ -36,19 +28,19 @@
       --yellow-soft: rgba(217, 119, 6, 0.14);
       --shadow-3d:
         0 0.65rem 1.4rem -0.5rem rgba(15, 23, 42, 0.14),
-        0 0.2rem 0.5rem -0.15rem rgba(79, 70, 229, 0.08),
+        0 0.2rem 0.5rem -0.15rem rgba(var(--accent-rgb), 0.08),
         inset 0 0.08rem 0.1rem rgba(255, 255, 255, 0.94),
         inset 0 -0.12rem 0.3rem rgba(148, 163, 184, 0.2);
       --shadow-btn:
-        0 0.75rem 1.5rem -0.5rem rgba(79, 70, 229, 0.45),
+        0 0.75rem 1.5rem -0.5rem rgba(var(--accent-rgb), 0.45),
         0 0.2rem 0.5rem -0.12rem rgba(15, 23, 42, 0.2),
         inset 0 0.09rem 0.12rem rgba(255, 255, 255, 0.55),
         inset 0 -0.18rem 0.45rem rgba(49, 46, 129, 0.55);
     }
 
-    html.fs-s { font-size: 13px; }
-    html.fs-m { font-size: 15.5px; }
-    html.fs-l { font-size: 18px; }
+    html.fs-s { font-size: 11.5px; }
+    html.fs-m { font-size: 13px; }
+    html.fs-l { font-size: 15.5px; }
 
     * {
       box-sizing: border-box;
@@ -56,53 +48,106 @@
       font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Noto Sans SC', 'Inter', sans-serif;
     }
 
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
-      height: 100dvh;
-      width: 100%;
-      overflow: hidden;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Noto Sans SC', 'Inter', sans-serif;
       font-size: 1rem;
       color: var(--ink);
       background:
-        radial-gradient(circle at 15% 12%, rgba(99, 102, 241, 0.18), transparent 45%),
+        radial-gradient(circle at 15% 12%, rgba(var(--accent-rgb), 0.18), transparent 45%),
         radial-gradient(circle at 85% 20%, rgba(16, 185, 129, 0.16), transparent 42%),
         radial-gradient(circle at 50% 95%, rgba(139, 92, 246, 0.14), transparent 50%),
         #e8eef9;
+      min-height: 100vh;
     }
 
-    /* 네이티브 모바일 / Pi Browser 전체화면(100dvh) 프레임 */
-    #app {
-      position: relative;
-      width: 100%;
-      max-width: 540px;
-      height: 100dvh;
-      margin: 0 auto;
-      background: linear-gradient(180deg, #f8faff 0%, #eef2ff 55%, #f1f5f9 100%);
+    .preview-shell {
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      padding: 0.9rem 0.75rem 1.75rem;
+      gap: 0.9rem;
+    }
+
+    .preview-toolbar {
+      width: 100%;
+      max-width: 960px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.65rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: 1.25rem;
+      background: rgba(255, 255, 255, 0.84);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.92);
+      box-shadow: 0 0.75rem 1.75rem -0.75rem rgba(15, 23, 42, 0.18);
+    }
+
+    .viewport-stage {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      transition: all 0.25s ease;
+    }
+
+    .viewport-stage.mode-mobile #phone {
+      width: 100%;
+      max-width: 416px;
+      height: 820px;
+      max-height: calc(100vh - 5.2rem);
+      border-radius: 2.3rem;
+      border: 6px solid #0f172a;
+      box-shadow:
+        0 1.75rem 4rem -1rem rgba(15, 23, 42, 0.35),
+        0 0 0 2px rgba(255, 255, 255, 0.65),
+        inset 0 2px 4px rgba(255, 255, 255, 0.35);
+    }
+
+    .viewport-stage.mode-responsive #phone {
+      width: 100%;
+      max-width: 820px;
+      height: 820px;
+      max-height: calc(100vh - 5.2rem);
+      border-radius: 1.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 1.5rem 3.5rem -1rem rgba(15, 23, 42, 0.22);
+    }
+
+    #phone {
+      position: relative;
+      background: linear-gradient(180deg, #f8faff 0%, #eef2ff 55%, #f1f5f9 100%);
       overflow: hidden;
-      box-shadow: 0 0 40px rgba(15, 23, 42, 0.08);
+      display: flex;
+      flex-direction: column;
+      transition: max-width 0.25s ease, border-radius 0.25s ease;
+    }
+
+    .proto-bar {
+      background: linear-gradient(90deg, #1e1b4b 0%, #312e81 50%, #065f46 100%);
+      color: #e0e7ff;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.36rem 0.75rem;
+      text-align: center;
+      letter-spacing: -0.01em;
+      flex-shrink: 0;
+      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.14);
     }
 
     #hdr {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 0.65rem;
-      padding: calc(0.55rem + env(safe-area-inset-top)) 0.85rem 0.55rem;
-      background: rgba(255, 255, 255, 0.88);
+      padding: 0.55rem 0.85rem;
+      background: rgba(255, 255, 255, 0.86);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--line);
       flex-shrink: 0;
       z-index: 15;
-    }
-
-    .hdr-left {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-      min-width: 0;
     }
 
     .hdr-copy {
@@ -123,38 +168,18 @@
 
     #hdr small {
       color: var(--sub);
-      font-size: 0.73rem;
+      font-size: 0.74rem;
       font-weight: 500;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .env-pill {
-      font-size: 0.68rem;
-      font-weight: 700;
-      padding: 0.25rem 0.55rem;
-      border-radius: 999px;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .env-pill.pi-live {
-      background: rgba(16, 185, 129, 0.15);
-      color: #047857;
-      border: 1px solid rgba(16, 185, 129, 0.35);
-    }
-    .env-pill.sandbox {
-      background: rgba(109, 40, 217, 0.12);
-      color: #6d28d9;
-      border: 1px solid rgba(109, 40, 217, 0.25);
-    }
-
     #main {
       flex: 1;
       overflow-y: auto;
-      padding: 0.55rem 0.75rem 1.25rem;
+      padding: 0.55rem 0.75rem 4.6rem;
       scroll-behavior: smooth;
-      -webkit-overflow-scrolling: touch;
     }
 
     .emblem-3d {
@@ -164,9 +189,10 @@
       flex-shrink: 0;
       width: 2.35rem;
       height: 2.35rem;
-      filter: drop-shadow(0 0.35rem 0.65rem rgba(79, 70, 229, 0.25));
+      filter: drop-shadow(0 0.35rem 0.65rem rgba(var(--accent-rgb), 0.25));
       transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
+
     .emblem-3d svg { width: 100%; height: 100%; }
     .emblem-3d:hover { transform: translateY(-0.1rem) scale(1.04); }
 
@@ -184,6 +210,7 @@
         inset 0 0.1rem 0.12rem rgba(255, 255, 255, 0.75),
         inset 0 -0.15rem 0.3rem rgba(15, 23, 42, 0.14);
     }
+
     .ico-3d svg { width: 1.25rem; height: 1.25rem; }
     .ico-3d.kind-apptest { background: linear-gradient(145deg, #818cf8 0%, #4f46e5 60%, #3730a3 100%); }
     .ico-3d.kind-survey { background: linear-gradient(145deg, #34d399 0%, #10b981 60%, #047857 100%); }
@@ -197,6 +224,7 @@
       align-items: center;
       margin-bottom: 0.45rem;
     }
+
     .search-ico {
       position: absolute;
       left: 0.72rem;
@@ -205,6 +233,7 @@
       color: var(--mute);
       pointer-events: none;
     }
+
     .search-in {
       width: 100%;
       padding: 0.48rem 2.1rem 0.48rem 2.15rem;
@@ -219,11 +248,13 @@
         inset 0 0.08rem 0.15rem rgba(15, 23, 42, 0.05);
       transition: border-color 0.16s ease, box-shadow 0.16s ease;
     }
+
     .search-in:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 0.18rem rgba(79, 70, 229, 0.15);
+      box-shadow: 0 0 0 0.18rem rgba(var(--accent-rgb), 0.15);
     }
+
     .search-clear {
       position: absolute;
       right: 0.5rem;
@@ -252,6 +283,7 @@
       background: rgba(248, 250, 252, 0.82);
       border: 1px solid var(--line);
     }
+
     .hist-filter-row {
       display: flex;
       align-items: center;
@@ -259,6 +291,7 @@
       gap: 0.35rem;
       flex-wrap: wrap;
     }
+
     .hist-mode-pills {
       display: inline-flex;
       gap: 0.25rem;
@@ -266,6 +299,7 @@
       padding: 0.18rem;
       border-radius: 0.72rem;
     }
+
     .hist-mode-btn {
       border: 0;
       background: transparent;
@@ -277,11 +311,13 @@
       cursor: pointer;
       transition: all 0.15s ease;
     }
+
     .hist-mode-btn.on {
       background: #ffffff;
       color: var(--accent);
       box-shadow: 0 0.18rem 0.45rem -0.15rem rgba(15, 23, 42, 0.16);
     }
+
     .hist-dates {
       display: grid;
       grid-template-columns: 1fr 1fr auto;
@@ -289,6 +325,7 @@
       align-items: center;
       margin-top: 0.1rem;
     }
+
     .hist-date-in {
       width: 100%;
       padding: 0.38rem 0.48rem;
@@ -298,6 +335,7 @@
       color: var(--ink);
       font-size: 0.74rem;
     }
+
     .hist-item {
       display: flex;
       align-items: center;
@@ -306,6 +344,7 @@
       padding: 0.44rem 0;
       border-bottom: 1px solid rgba(148, 163, 184, 0.16);
     }
+
     .hist-item:last-child { border-bottom: 0; padding-bottom: 0.1rem; }
     .hist-label { font-size: 0.84rem; font-weight: 700; color: var(--ink); line-height: 1.25; }
     .hist-time { font-size: 0.71rem; color: var(--mute); margin-top: 0.14rem; font-variant-numeric: tabular-nums; }
@@ -322,16 +361,19 @@
       box-shadow: var(--shadow-3d);
       transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease, border-color 0.18s ease;
     }
+
     .card.task {
       cursor: pointer;
       position: relative;
       overflow: hidden;
     }
+
     .card.task.compact {
       padding: 0.44rem 0.62rem;
       margin-bottom: 0.36rem;
       border-radius: 0.92rem;
     }
+
     .card.task.compact .ico-3d { width: 1.95rem; height: 1.95rem; border-radius: 0.6rem; }
     .card.task.compact .ico-3d svg { width: 1.05rem; height: 1.05rem; }
     .card.task.compact .title { font-size: 0.84rem; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -347,14 +389,16 @@
       background: linear-gradient(125deg, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0) 42%);
       pointer-events: none;
     }
+
     .card.task:hover {
       transform: translateY(-0.08rem);
-      border-color: rgba(99, 102, 241, 0.38);
+      border-color: rgba(var(--accent-rgb), 0.38);
       box-shadow:
-        0 0.85rem 1.6rem -0.5rem rgba(79, 70, 229, 0.2),
+        0 0.85rem 1.6rem -0.5rem rgba(var(--accent-rgb), 0.2),
         0 0.3rem 0.7rem -0.2rem rgba(15, 23, 42, 0.12),
         inset 0 0.08rem 0.1rem rgba(255, 255, 255, 0.96);
     }
+
     .card.task:active { transform: translateY(0.05rem) scale(0.994); }
     .card h3 { margin: 0 0 0.45rem; font-size: 0.92rem; font-weight: 700; }
 
@@ -368,13 +412,14 @@
 
     .reward {
       text-align: right;
-      background: linear-gradient(145deg, rgba(109, 40, 217, 0.12), rgba(79, 70, 229, 0.06));
+      background: linear-gradient(145deg, rgba(109, 40, 217, 0.12), rgba(var(--accent-rgb), 0.06));
       padding: 0.34rem 0.58rem;
       border-radius: 0.78rem;
       border: 1px solid rgba(109, 40, 217, 0.16);
       box-shadow: inset 0 0.06rem 0.06rem rgba(255, 255, 255, 0.8);
       flex-shrink: 0;
     }
+
     .reward b { display: block; color: var(--pi); font-size: 0.86rem; font-weight: 800; line-height: 1.15; }
     .reward small { color: var(--sub); font-size: 0.66rem; }
 
@@ -390,6 +435,7 @@
       transition: transform 0.16s ease;
       flex-shrink: 0;
     }
+
     .heart:active { transform: scale(0.9); }
 
     .tags { display: flex; flex-wrap: wrap; gap: 0.32rem; margin-top: 0.52rem; }
@@ -402,6 +448,7 @@
       color: var(--sub);
       border: 1px solid rgba(255, 255, 255, 0.7);
     }
+
     .tag.inline-tag { font-size: 0.63rem; padding: 0.08rem 0.38rem; margin-left: 0.28rem; vertical-align: middle; }
     .tag.b { background: var(--accent-soft); color: var(--accent); }
     .tag.g { background: var(--green-soft); color: var(--green); }
@@ -418,6 +465,7 @@
       margin-bottom: 0.45rem;
       box-shadow: inset 0 0.12rem 0.28rem rgba(15, 23, 42, 0.08);
     }
+
     .seg button {
       flex: 1;
       border: 0;
@@ -430,6 +478,7 @@
       cursor: pointer;
       transition: all 0.18s ease;
     }
+
     .seg button.on {
       background: linear-gradient(145deg, #ffffff, #f8fafc);
       color: var(--ink);
@@ -459,11 +508,12 @@
       box-shadow: 0 0.28rem 0.65rem -0.25rem rgba(15, 23, 42, 0.14), inset 0 0.06rem 0.06rem #fff;
       transition: all 0.16s ease;
     }
+
     .chip.on {
-      background: linear-gradient(145deg, #6366f1, #4338ca);
+      background: linear-gradient(145deg, var(--a1), var(--a2));
       color: #fff;
       border-color: transparent;
-      box-shadow: 0 0.45rem 0.95rem -0.3rem rgba(79, 70, 229, 0.5), inset 0 0.06rem 0.12rem rgba(255, 255, 255, 0.45);
+      box-shadow: 0 0.45rem 0.95rem -0.3rem rgba(var(--accent-rgb), 0.5), inset 0 0.06rem 0.12rem rgba(255, 255, 255, 0.45);
     }
 
     /* Buttons */
@@ -479,35 +529,40 @@
       box-shadow: 0 0.45rem 0.9rem -0.32rem rgba(15, 23, 42, 0.14), inset 0 0.08rem 0.08rem #fff;
       transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
+
     .btn:hover:not(:disabled) { transform: translateY(-0.06rem); }
     .btn:active:not(:disabled) { transform: translateY(0.1rem) scale(0.985); }
     .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
     .btn.p {
-      background: linear-gradient(145deg, #6366f1 0%, #4338ca 65%, #3730a3 100%);
+      background: linear-gradient(145deg, var(--a1) 0%, var(--a2) 65%, var(--a3) 100%);
       color: #fff;
       border-color: rgba(165, 180, 252, 0.35);
       box-shadow: var(--shadow-btn);
     }
+
     .btn.g {
       background: linear-gradient(145deg, #34d399, #059669);
       color: #fff;
       border-color: rgba(167, 243, 208, 0.35);
       box-shadow: 0 0.55rem 1.1rem -0.35rem rgba(16, 185, 129, 0.45), inset 0 0.08rem 0.1rem rgba(255, 255, 255, 0.5);
     }
+
     .btn.red {
       background: linear-gradient(145deg, #f87171, #dc2626);
       color: #fff;
       border-color: rgba(254, 202, 202, 0.35);
       box-shadow: 0 0.55rem 1.1rem -0.35rem rgba(220, 38, 38, 0.42), inset 0 0.08rem 0.1rem rgba(255, 255, 255, 0.45);
     }
+
     .btn.line {
-      background: rgba(255, 255, 255, 0.72);
-      border: 1px solid rgba(79, 70, 229, 0.25);
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(var(--accent-rgb), 0.25);
       color: var(--accent);
-      box-shadow: 0 0.25rem 0.65rem -0.3rem rgba(79, 70, 229, 0.2);
+      box-shadow: 0 0.25rem 0.65rem -0.3rem rgba(var(--accent-rgb), 0.2);
     }
-    .btn.sm { padding: 0.34rem 0.58rem; font-size: 0.74rem; border-radius: 0.65rem; }
+
+    .btn.sm { padding: 0.36rem 0.62rem; font-size: 0.76rem; border-radius: 0.68rem; }
     .btn.full { width: 100%; }
 
     .back {
@@ -541,8 +596,9 @@
       line-height: 1.45;
       background: var(--accent-soft);
       color: var(--ink);
-      border: 1px solid rgba(79, 70, 229, 0.14);
+      border: 1px solid rgba(var(--accent-rgb), 0.14);
     }
+
     .note.warn { background: var(--yellow-soft); border-color: rgba(217, 119, 6, 0.22); }
     .note.err { background: var(--red-soft); color: var(--red); border-color: rgba(220, 38, 38, 0.22); }
     .note.ok { background: var(--green-soft); color: var(--green); border-color: rgba(16, 185, 129, 0.22); }
@@ -568,11 +624,13 @@
       font-family: inherit;
       box-shadow: inset 0 0.1rem 0.22rem rgba(15, 23, 42, 0.05);
     }
+
     .in:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 0.18rem rgba(79, 70, 229, 0.16);
+      box-shadow: 0 0 0 0.18rem rgba(var(--accent-rgb), 0.16);
     }
+
     textarea.in { min-height: 4.1rem; resize: vertical; }
 
     .kind {
@@ -581,6 +639,7 @@
       gap: 0.45rem;
       margin-bottom: 0.55rem;
     }
+
     .kind button {
       border: 1px solid rgba(255, 255, 255, 0.88);
       background: var(--surface);
@@ -593,10 +652,12 @@
       box-shadow: var(--shadow-3d);
       transition: all 0.18s ease;
     }
+
     .kind button span { display: block; font-size: 1.25rem; margin-bottom: 0.22rem; }
+
     .kind button.on {
       border-color: var(--accent);
-      background: linear-gradient(145deg, rgba(99, 102, 241, 0.18), rgba(16, 185, 129, 0.12));
+      background: linear-gradient(145deg, rgba(var(--accent-rgb), 0.18), rgba(16, 185, 129, 0.12));
       color: var(--accent);
       transform: translateY(-0.1rem);
     }
@@ -609,6 +670,7 @@
       margin-bottom: 0.58rem;
       box-shadow: inset 0 0.06rem 0.12rem rgba(255, 255, 255, 0.9);
     }
+
     .opt {
       display: flex;
       align-items: center;
@@ -621,6 +683,7 @@
       font-size: 0.83rem;
       background: rgba(255, 255, 255, 0.78);
     }
+
     .pills { display: flex; gap: 0.35rem; }
     .pills label {
       flex: 1;
@@ -633,8 +696,9 @@
       cursor: pointer;
       background: rgba(255, 255, 255, 0.82);
     }
+
     .pills input, .stars input { display: none; }
-    .pills label:has(input:checked) { background: linear-gradient(145deg, #6366f1, #4338ca); color: #fff; border-color: transparent; }
+    .pills label:has(input:checked) { background: linear-gradient(145deg, var(--a1), var(--a2)); color: #fff; border-color: transparent; }
     .pills label.pr:has(input:checked) { background: linear-gradient(145deg, #f87171, #dc2626); color: #fff; border-color: transparent; }
 
     .stars { display: flex; gap: 0.35rem; }
@@ -650,6 +714,7 @@
     }
     .stars label:has(input:checked) { background: linear-gradient(145deg, #fbbf24, #d97706); color: #fff; border-color: transparent; }
 
+    /* Detailed App Test Specific Styles */
     .step-item {
       display: flex;
       align-items: flex-start;
@@ -690,6 +755,7 @@
       background: rgba(220, 38, 38, 0.06);
       border: 1px solid rgba(220, 38, 38, 0.22);
     }
+
     .sev-pills {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -724,6 +790,7 @@
       font-weight: 700;
       color: var(--ink);
     }
+
     .shot-thumb {
       width: 100%;
       max-height: 8.5rem;
@@ -731,51 +798,6 @@
       border-radius: 0.68rem;
       margin-top: 0.4rem;
       border: 1px solid var(--line);
-    }
-
-    /* Slide-out color palette drawer in Me tab */
-    .color-add-wrap {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-    .color-slide-drawer {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.32rem;
-      max-width: 0;
-      opacity: 0;
-      overflow: hidden;
-      transform: translateX(-0.35rem);
-      padding: 0;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.96);
-      border: 1px solid transparent;
-      transition: max-width 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), padding 0.25s ease, border-color 0.2s ease;
-      pointer-events: none;
-    }
-    .color-slide-drawer.open {
-      max-width: 15rem;
-      opacity: 1;
-      transform: translateX(0);
-      padding: 0.22rem 0.42rem;
-      border-color: var(--line);
-      box-shadow: 0 0.35rem 0.85rem -0.25rem rgba(15, 23, 42, 0.18);
-      pointer-events: auto;
-    }
-    .color-swatch-dot {
-      width: 1.35rem;
-      height: 1.35rem;
-      border-radius: 999px;
-      border: 2px solid #ffffff;
-      box-shadow: 0 0.16rem 0.38rem rgba(15, 23, 42, 0.22);
-      cursor: pointer;
-      flex-shrink: 0;
-      transition: transform 0.15s ease;
-    }
-    .color-swatch-dot:hover {
-      transform: scale(1.12);
     }
 
     .bar {
@@ -789,7 +811,7 @@
     .bar > i {
       display: block;
       height: 100%;
-      background: linear-gradient(90deg, #6366f1, #10b981);
+      background: linear-gradient(90deg, var(--a1), #10b981);
       border-radius: 99px;
     }
 
@@ -798,12 +820,12 @@
       border-radius: 1rem;
       background: repeating-linear-gradient(
         -45deg,
-        rgba(99, 102, 241, 0.08),
-        rgba(99, 102, 241, 0.08) 0.6rem,
+        rgba(var(--accent-rgb), 0.08),
+        rgba(var(--accent-rgb), 0.08) 0.6rem,
         rgba(16, 185, 129, 0.08) 0.6rem,
         rgba(16, 185, 129, 0.08) 1.2rem
       );
-      border: 1px dashed rgba(99, 102, 241, 0.35);
+      border: 1px dashed rgba(var(--accent-rgb), 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -821,8 +843,12 @@
     }
 
     #nav {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
       display: flex;
-      background: rgba(255, 255, 255, 0.94);
+      background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(16px);
       border-top: 1px solid var(--line);
       padding: 0.32rem 0.35rem calc(0.32rem + env(safe-area-inset-bottom));
@@ -830,6 +856,7 @@
       z-index: 15;
       box-shadow: 0 -0.45rem 1.4rem -0.55rem rgba(15, 23, 42, 0.14);
     }
+
     #nav button {
       flex: 1;
       border: 0;
@@ -846,11 +873,13 @@
       gap: 0.12rem;
       transition: all 0.16s ease;
     }
+
     #nav button.on {
       color: var(--accent);
-      background: rgba(79, 70, 229, 0.11);
+      background: rgba(var(--accent-rgb), 0.11);
       box-shadow: inset 0 0.06rem 0.06rem rgba(255, 255, 255, 0.8);
     }
+
     #nav .ni { font-size: 1.08rem; line-height: 1.1; }
 
     .modalbg {
@@ -864,6 +893,7 @@
       z-index: 50;
       padding: 0.65rem;
     }
+
     @media (min-width: 640px) { .modalbg { align-items: center; } }
 
     .sheet {
@@ -874,11 +904,12 @@
       padding: 1.15rem 1.05rem;
       box-shadow: 0 1.5rem 3.5rem -0.75rem rgba(15, 23, 42, 0.4), inset 0 0.08rem 0.12rem #fff;
     }
+
     .sheet h3 { margin: 0 0 0.48rem; font-size: 1rem; font-weight: 800; }
 
     .toast {
       position: fixed;
-      bottom: 4.6rem;
+      bottom: 4.8rem;
       left: 50%;
       transform: translateX(-50%);
       background: #0f172a;
@@ -895,35 +926,83 @@
     .spin {
       width: 1.9rem;
       height: 1.9rem;
-      border: 0.18rem solid rgba(79, 70, 229, 0.18);
+      border: 0.18rem solid rgba(var(--accent-rgb), 0.18);
       border-top-color: var(--accent);
       border-radius: 50%;
       animation: sp 0.8s linear infinite;
       margin: 0 auto 0.6rem;
     }
+
     @keyframes sp { to { transform: rotate(360deg); } }
+  
+    /* toolbar (replaces Tailwind classes) */
+    .tb-brand{display:flex;align-items:center;gap:.7rem}.tb-title{font-weight:800;font-size:.95rem;color:#0f172a}.tb-sub{font-size:.72rem;color:#64748b}
+    .tb-btns{display:flex;gap:.4rem}
+    .vp{border:1px solid #e2e8f0;background:#fff;color:#334155;font-weight:700;font-size:.75rem;padding:.4rem .75rem;border-radius:.75rem;cursor:pointer;font-family:inherit}
+    .vp.on{background:var(--a2);color:#fff;border-color:transparent}
+    /* colour swatches */
+    .swatches{display:flex;gap:.6rem;flex-wrap:wrap}
+    .sw{width:2.1rem;height:2.1rem;border-radius:50%;border:2px solid #fff;cursor:pointer;box-shadow:0 .3rem .6rem -.2rem rgba(15,23,42,.4),inset 0 .08rem .1rem rgba(255,255,255,.6)}
+    .sw.on{outline:2px solid var(--a2);outline-offset:2px}
+    .swrow{display:flex;align-items:center;gap:.5rem}
+    .swarrow{color:var(--mute);font-weight:800;font-size:1.2rem;transition:transform .3s ease}
+    .swrow.open .swarrow{transform:rotate(180deg)}
+    .swpanel{display:flex;gap:.6rem;align-items:center;overflow:hidden;max-width:0;opacity:0;padding:.3rem 0;transition:max-width .4s ease,opacity .3s ease}
+    .swrow.open .swpanel{max-width:22rem;opacity:1}
+    .btn.act{min-width:7.5rem;height:2.7rem;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
   </style>
 </head>
 <body>
-  <div id="app">
-    <header id="hdr"></header>
-    <main id="main"></main>
-    <nav id="nav" aria-label="Primary"></nav>
+  <div class="preview-shell">
+    <div class="preview-toolbar">
+      <div class="tb-brand">
+        <span class="emblem-3d" style="width:2.1rem;height:2.1rem;" aria-hidden="true">
+          <svg viewBox="0 0 160 160" fill="none">
+            <defs>
+              <linearGradient id="prevSquircle" x1="20" y1="12" x2="140" y2="148" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#6366F1" />
+                <stop offset="52%" stop-color="#3B82F6" />
+                <stop offset="100%" stop-color="#10B981" />
+              </linearGradient>
+              <linearGradient id="prevShield" x1="50" y1="34" x2="115" y2="128" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FFFFFF" />
+                <stop offset="65%" stop-color="#E2E8F0" />
+                <stop offset="100%" stop-color="#94A3B8" />
+              </linearGradient>
+              <linearGradient id="prevCheck" x1="62" y1="68" x2="102" y2="98" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#10B981" />
+                <stop offset="100%" stop-color="#047857" />
+              </linearGradient>
+            </defs>
+            <rect x="16" y="16" width="128" height="128" rx="34" fill="url(#prevSquircle)" />
+            <ellipse cx="80" cy="40" rx="46" ry="18" fill="white" fill-opacity="0.18" />
+            <path d="M80 36L114 49V78C114 101.5 99.5 119.5 80 127C60.5 119.5 46 101.5 46 78V49L80 36Z" fill="url(#prevShield)" />
+            <path d="M65 81.5L75.5 92L97 69.5" stroke="url(#prevCheck)" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="122" cy="38" r="13" fill="#10B981" stroke="#FFFFFF" stroke-width="3" />
+          </svg>
+        </span>
+        <div><div class="tb-title">RealTap</div><div class="tb-sub">Real people test your Pi app</div></div>
+      </div>
+
+      <div class="tb-btns">
+        <button type="button" id="vpMobileBtn" class="vp on" onclick="setViewportMode('mobile')">📱 Mobile</button>
+        <button type="button" id="vpWideBtn" class="vp" onclick="setViewportMode('responsive')">🖥️ Wide</button>
+      </div>
+    </div>
+
+    <div id="viewportStage" class="viewport-stage mode-mobile">
+      <div id="phone">
+        <div id="proto" class="proto-bar"></div>
+        <header id="hdr"></header>
+        <main id="main"></main>
+        <nav id="nav" aria-label="Primary"></nav>
+      </div>
+    </div>
   </div>
+
   <div id="layer"></div>
 
   <script>
-    /* =========================================================================
-       Runtime Environment & Pi SDK Config
-       ========================================================================= */
-    const APP_ENV = {
-      PI_SDK_SANDBOX: true,          // 실제 메인넷 출시 시 false로 변경
-      SHOW_CORE_TEAM_TOOLS: true     // 코어팀 샘플 데이터 및 샌드박스 테스트 도구 표시 여부
-    };
-
-    const isSafeImageDataUri = uri =>
-      typeof uri === 'string' && /^data:image\/(png|jpeg|jpg|webp|gif);base64,[A-Za-z0-9+/=]+$/i.test(uri);
-
     /* =========================================================================
        3D Glossy Tactile SVG Emblem & Category Icons
        ========================================================================= */
@@ -1004,14 +1083,19 @@
       </div>`;
     }
 
+    function setViewportMode(mode) {
+      $('viewportStage').className = 'viewport-stage ' + (mode === 'mobile' ? 'mode-mobile' : 'mode-responsive');
+      $('vpMobileBtn').className = 'vp' + (mode === 'mobile' ? ' on' : '');
+      $('vpWideBtn').className = 'vp' + (mode !== 'mobile' ? ' on' : '');
+    }
+
     /* =========================================================================
        Localization Strings, Countries, Languages (RealTap)
        ========================================================================= */
-    const CONFIG={minWithdraw:1,holdDays:3,feePct:0.3,minConsensus:10,maxQuestions:20,reportsToPause:3,minPerQuestion:0.02,minAppTest:0.1};
+    const CONFIG={minWithdraw:1,holdDays:3,feePct:1,withdrawFeePct:1,minConsensus:10,maxQuestions:20,reportsToPause:3,minPerQuestion:0.02,minAppTest:0.1};
     const LANGS=['en','ko','zh'];
     const S={
-     piLiveBadge:['Pi Browser','Pi 브라우저','Pi 浏览器'],
-     sandboxBadge:['Sandbox','샌드박스','沙盒模式'],
+     proto:['Prototype · Pi sign-in and payments are simulated','프로토타입 · Pi 로그인과 결제는 시뮬레이션입니다','原型 · Pi 登录与支付为模拟'],
      tagline:['Real people test your Pi app','진짜 사람이 내 Pi 앱을 테스트해요','真人帮你测试 Pi 应用'],
      t_explore:['Explore','탐색','探索'],t_create:['Request','의뢰','发布'],t_activity:['Activity','내 활동','我的活动'],t_wallet:['Wallet','지갑','钱包'],t_me:['Me','내 정보','我的'],
      k_all:['All','전체','全部'],k_apptest:['App test','앱 테스트','应用测试'],k_survey:['Survey','설문','问卷'],k_verify:['Verify','검증 질문','验证问题'],
@@ -1036,6 +1120,7 @@
      consent:['This task may show sensitive or disturbing content. I understand and want to continue.','불쾌하거나 민감한 내용이 있을 수 있음을 이해하고 계속합니다.','此任务可能包含敏感或令人不适的内容，我已了解并愿意继续。'],needConsent:['Please confirm the content warning first.','먼저 민감 콘텐츠 안내에 동의해 주세요.','请先确认内容提示。'],
      reportContent:['⚑ Report this content','⚑ 이 내용 신고하기','⚑ 举报此内容'],submit:['Submit','제출하기','提交'],answerAll:['Please answer every required question.','필수 질문에 모두 답해 주세요.','请回答所有必答问题。'],submitted:['Submitted! See it in Activity.','제출했어요! 내 활동에서 확인하세요.','已提交！可在“我的活动”查看。'],
      qChoice:['Choice','객관식','选择题'],qText:['Text','서술형','简答题'],qRating:['Rating','별점','评分'],optional:['optional','선택','可选'],yourAnswer:['Your answer','내 답변','你的回答'],imgPlaceholder:['Image placeholder','이미지 자리 표시','图片占位'],
+     /* Detailed App Test strings */
      testApp:['Test {0}','{0} 테스트','测试 {0}'],openApp:['Open the app ↗','앱 열기 ↗','打开应用 ↗'],
      steps:['Step-by-step test scenario','단계별 테스트 시나리오','分步测试场景'],
      stepsCheckHint:['Complete each step in the app and check it off:','앱에서 각 단계를 순서대로 실행하고 체크하세요:','在应用中完成每一步并勾选：'],
@@ -1084,28 +1169,48 @@
      e_name:['Add the app name.','앱 이름을 입력하세요.','请填写应用名称。'],e_url:['Add a valid link (https://…).','올바른 링크(https://…)를 입력하세요.','请填写有效链接（https://…）。'],e_checks:['Pick at least one item to check.','확인할 항목을 하나 이상 고르세요.','请至少选择一个检查项目。'],
      e_title:['Add a title.','제목을 입력하세요.','请填写标题。'],e_q:['Add at least one question.','질문을 1개 이상 추가하세요.','请至少添加一个问题。'],e_qtext:['Every question needs text.','모든 질문에 내용을 입력하세요.','每个问题都需要内容。'],e_opts:['Choice questions need at least 2 options.','객관식은 보기가 2개 이상 필요해요.','选择题至少需要2个选项。'],e_cons:['Majority mode: choice questions only.','다수결은 객관식 질문만 가능해요.','多数决仅限选择题。'],e_min:['Majority mode needs at least {0} people.','다수결은 최소 {0}명이 필요해요.','多数决至少需要{0}人。'],e_reward:['Reward is below the minimum.','보상이 최소 금액보다 낮아요.','奖励低于最低金额。'],e_bal:['Not enough Pi in your wallet.','지갑의 Pi가 부족해요.','钱包中的 Pi 不足。'],e_rules:['Please agree to the rules.','규칙에 동의해 주세요.','请同意规则。'],e_banned:['This looks like it breaks the rules (auto-screening). Please rephrase.','규칙 위반으로 보이는 내용이 있어요 (자동 검토). 수정해 주세요.','检测到可能违规的内容（自动审核），请修改。'],
      published:['Request published!','의뢰가 등록되었어요!','任务已发布！'],
-     piTitle:['Pi Sandbox Wallet','Pi 샌드박스 지갑','Pi 沙盒钱包'],piAsk:['RealTap requests a payment','RealTap이 결제를 요청합니다','RealTap 请求支付'],piConfirm:['Sign & pay','서명하고 결제','签名并支付'],piWait:['Confirming on Pi Network…','Pi 네트워크에서 확인 중…','正在 Pi 网络确认…'],cancel:['Cancel','취소','取消'],
+     piTitle:['Pi Wallet (simulated)','Pi 지갑 (시뮬레이션)','Pi 钱包（模拟）'],piAsk:['RealTap requests a payment','RealTap이 결제를 요청합니다','RealTap 请求支付'],piConfirm:['Sign & pay','서명하고 결제','签名并支付'],piWait:['Confirming on Pi Network…','Pi 네트워크에서 확인 중…','正在 Pi 网络确认…'],cancel:['Cancel','취소','取消'],
      seg_all:['All','전체','全部'],seg_done:['I joined','참여','我参与的'],seg_req:['I requested','의뢰','我发布的'],role_done:['Joined','참여','参与'],role_req:['Requested','의뢰','发布'],noAct:['Nothing here yet.','아직 내역이 없어요.','暂无记录。'],
-     st_submitted:['Awaiting result','결과 대기','等待结果'],st_approved:['Approved','승인됨','已通过'],st_rejected:['Rejected','거절됨','已拒绝'],st_correct:['Matched majority','다수와 일치','与多数一致'],st_wrong:['Different from majority','다수와 불일치','与多数不一致'],appeal:['Appeal','이의신청','申诉'],appealed:['Appeal sent','이의신청 접수됨','已提交申诉'],
+     st_submitted:['Awaiting result','결과 대기','等待结果'],st_approved:['Approved','승인됨','已通过'],st_rejected:['Rejected','거절됨','已拒绝'],st_correct:['Matched majority','다수와 일치','与多数一致'],st_wrong:['Different from majority','다수와 불일치','与多数不一致'],appeal:['Appeal','이의신청','申诉'],appealed:['Appeal sent (demo)','이의신청 접수 (데모)','已提交申诉（演示）'],
      earned:['+ π {0}','+ π {0}','+ π {0}'],progress:['{0}/{1} joined','{0}/{1}명 참여','{0}/{1}人参与'],results:['Results','결과 보기','查看结果'],
      resultTitle:['Results','결과','结果'],avgRating:['Average rating','평균 별점','平均评分'],issuesFound:['{0} of {1} testers reported a problem','테스터 {1}명 중 {0}명이 문제를 알렸어요','{1}位测试者中有{0}位反馈了问题'],feedback:['Written feedback','서술 답변','文字反馈'],
      pendingReview:['Needs your decision','검토 대기','待你审核'],accept:['Accept','승인','通过'],reject:['Reject','거절','拒绝'],rejectWhy:['Reason (required)','거절 사유 (필수)','拒绝原因（必填）'],rj1:['Low effort / too short','성의 없음 / 너무 짧음','敷衍 / 过短'],rj2:['Off-topic','주제와 무관','与主题无关'],rj3:['Incorrect','틀린 답','答案错误'],rj4:['Duplicate / copied','중복·복사','重复/抄袭'],
-     closeSettle:['Close & pay out','마감하고 정산','截止并结算'],settleWarn:['Unreviewed responses will be approved automatically.','검토하지 않은 응답은 자동 승인돼요.','未审核的回答将自动通过。'],pausedSettleBlock:['This task is paused for report review and cannot be settled right now.','신고 검토 중인 의뢰는 현재 정산할 수 없어요.','任务因举报审核暂停，暂无法结算。'],settled:['Settled','정산 완료','已结算'],
+     closeSettle:['Close & pay out','마감하고 정산','截止并结算'],settleWarn:['Unreviewed responses will be approved automatically.','검토하지 않은 응답은 자동 승인돼요.','未审核的回答将自动通过。'],settled:['Settled','정산 완료','已结算'],
      lowSample:['Fewer than {0} responses — everyone is paid equally.','응답이 {0}명 미만이라 모두 동일하게 지급돼요.','回答少于{0}人，全员平分。'],noCons:['No clear majority — everyone is paid equally.','뚜렷한 다수가 없어 모두 동일하게 지급돼요.','没有明显多数，全员平分。'],
      resWinners:['Paid: {0} people × π {1}','지급: {0}명 × π {1}','已支付：{0}人 × π {1}'],resLosers:['Not paid: {0}','미지급: {0}명','未支付：{0}人'],resRefund:['Refunded to you: π {0}','환급: π {0}','退还给你：π {0}'],
-     piWallet:['Pi Wallet balance','Pi 지갑 잔액','Pi 钱包余额'],topup:['Add π (sandbox)','π 충전 (샌드박스)','充值 π（沙盒）'],earnings:['Earnings','내 수익','我的收益'],avail:['Available','인출 가능','可提现'],pend:['On hold','보류 중','保留中'],withdraw:['Withdraw','인출하기','提现'],
-     topupShort:['+ Top up','+ 충전','+ 充值'],withdrawShort:['Withdraw','인출','提现'],topupAmt:['Amount to add (π)','충전할 금액 (π)','充值金额 (π)'],topupSend:['Add π','충전하기','确认充值'],topupDone:['Top-up complete!','충전이 완료되었어요!','充值完成！'],
+     piWallet:['Pi Wallet balance','Pi 지갑 잔액','Pi 钱包余额'],topup:['Add π (demo)','π 충전 (데모)','充值 π（演示）'],earnings:['Earnings','내 수익','我的收益'],avail:['Available','인출 가능','可提现'],pend:['On hold','보류 중','保留中'],withdraw:['Withdraw','인출하기','提现'],
      wRule:['Minimum π {0} · {1}-day hold after approval','최소 π {0} · 승인 후 {1}일 보류','最低 π {0} · 通过后保留 {1} 天'],releaseIn:['in {0}','{0} 후','{0} 后'],
-     wMin:['You need at least π {0} available.','인출 가능 금액이 π {0} 이상이어야 해요.','可提现金额需至少 π {0}。'],wSend:['Send to my Pi wallet','내 Pi 지갑으로 보내기','转入我的 Pi 钱包'],wDone:['Withdrawal sent.','인출이 완료되었어요.','提现完成。'],wAmt:['Amount (π)','인출 금액 (π)','提现金额 (π)'],
+     wMin:['You need at least π {0} available.','인출 가능 금액이 π {0} 이상이어야 해요.','可提现金额需至少 π {0}。'],wSend:['Send to my Pi wallet','내 Pi 지갑으로 보내기','转入我的 Pi 钱包'],wDone:['Withdrawal sent (simulated).','인출이 완료되었어요 (시뮬레이션).','提现完成（模拟）。'],wAmt:['Amount (π)','인출 금액 (π)','提现金额 (π)'],
      history:['History','내역','记录'],h_deposit:['Request payment','의뢰 결제','任务支付'],h_refund:['Refund','환급','退款'],h_earn:['Reward approved','보상 승인','奖励通过'],h_withdraw:['Withdrawal','인출','提现'],h_topup:['Top-up','충전','充值'],
      searchHistory:['Search history (type, π amount, date)...','전체 내역 검색 (항목, π 금액, 날짜)...','搜索全部记录（类型、π 金额、日期）...'],
      allTime:['All periods','전체 기간','全部时段'],dateRange:['Date range','기간 지정','日期范围'],fromDate:['Start date','시작일','开始日期'],toDate:['End date','종료일','结束日期'],clearFilter:['Reset','초기화','重置'],noHistory:['No matching history records found.','조건에 맞는 내역이 없어요.','没有找到符合条件的记录。'],historyCount:['{0} records','{0}건','{0} 条记录'],
      kycOk:['Pi KYC verified (simulated)','Pi KYC 인증 완료 (시뮬레이션)','Pi KYC 已认证（模拟）'],uiLang:['Language','언어','语言'],textSize:['Text size','글씨 크기','字体大小'],fs_s:['Small','작게','小'],fs_m:['Medium','보통','中'],fs_l:['Large','크게','大'],
-     colorTheme:['Accent color','테마 색상','主题颜色'],addColor:['+ Add color','+ 색상 추가','+ 添加颜色'],colorAdded:['Color theme updated!','테마 색상이 변경되었어요!','主题颜色已更新！'],
      myCountry:['My country','내 국가','我的国家'],mainLang:['Language I can verify','검증 가능한 언어','我可验证的语言'],secondLang:['Second language (optional)','두 번째 언어 (선택)','第二语言（可选）'],langWhy:['Only used for language-check requests. Self-declared.','언어 검수 의뢰에만 쓰여요. 본인 신고 기준이에요.','仅用于语言校对类任务，为自行申报。'],none:['— none —','— 없음 —','— 无 —'],
-     demo:['Sandbox tools','샌드박스 도구','沙盒工具'],ffwd:['⏩ Fast-forward 3 days','⏩ 3일 뒤로 이동','⏩ 快进3天'],settleMine:['Settle tasks I joined','내가 참여한 의뢰 정산','结算我参与的任务'],reset:['Reset data','데이터 초기화','重置数据'],ffDone:['3 days later: holds released.','3일 후: 보류가 해제되었어요.','3天后：保留已解除。'],settledMine:['Settled.','정산했어요.','已结算。'],
+     demo:['Demo tools','데모 도구','演示工具'],ffwd:['⏩ Fast-forward 3 days','⏩ 3일 뒤로 이동','⏩ 快进3天'],settleMine:['Settle tasks I joined','내가 참여한 의뢰 정산','结算我参与的任务'],reset:['Reset demo data','데모 데이터 초기화','重置演示数据'],ffDone:['3 days later: holds released.','3일 후: 보류가 해제되었어요.','3天后：保留已解除。'],settledMine:['Settled.','정산했어요.','已结算。'],
      anywhere:['Anywhere','전 세계','不限地区'],anyLang:['Any language','모든 언어','不限语言'],yes:['Yes','예','是'],no:['No','아니요','否'],unsure:['Not sure','잘 모르겠음','不确定']
     };
+    Object.assign(S,{
+ k_verify:['Quick check','빠른 질문','快速提问'],
+ d_verify:['One quick question only a human can answer','사람만 답할 수 있는 빠른 질문 하나','只有真人能回答的一个快速问题'],
+ kycOk:['Pi account (sign-in simulated)','Pi 계정 (로그인 시뮬레이션)','Pi 账号（登录为模拟）'],
+ autoEnvNote:['Attached automatically so developers can reproduce bugs. See Me → Privacy policy.','개발자가 버그를 재현할 수 있도록 자동 첨부됩니다. 내 정보 → 개인정보처리방침 참고.','自动附带以便开发者复现问题。详见“我的”→隐私政策。'],
+ privacy:['Privacy policy','개인정보처리방침','隐私政策'],
+ privacyNote:['Device OS and screen size are collected automatically when you submit an app test, only so developers can reproduce bugs.','앱 테스트를 제출하면 개발자가 버그를 재현할 수 있도록 기기 OS와 화면 크기가 자동 수집됩니다.','提交应用测试时会自动收集设备系统和屏幕尺寸，仅用于帮助开发者复现问题。'],
+ privacyBody:['The full privacy policy link will be added before launch. Placeholder: https://example.com/privacy','정식 개인정보처리방침 링크는 출시 전에 추가됩니다. 임시 주소: https://example.com/privacy','正式隐私政策链接将在上线前添加。占位地址：https://example.com/privacy'],
+ themeColor:['Color','색상','颜色'],
+ th_indigo:['Indigo','인디고','靛蓝'],th_blue:['Blue','블루','蓝色'],th_green:['Green','그린','绿色'],th_rose:['Rose','로즈','玫红'],th_orange:['Orange','오렌지','橙色'],th_slate:['Slate','슬레이트','石板灰'],
+ topupTitle:['Add π','π 충전','充值 π'],topupAmt:['Amount (π)','충전 금액 (π)','充值金额 (π)'],
+ topupNote:['Paid from your Pi wallet (simulated). Used to fund requests.','내 Pi 지갑에서 결제됩니다 (시뮬레이션). 의뢰 결제에 사용돼요.','从你的 Pi 钱包支付（模拟），用于支付任务。'],
+ topupDone:['π {0} added.','π {0} 충전됐어요.','已充值 π {0}。'],topupMin:['Enter an amount above 0.','0보다 큰 금액을 입력하세요.','请输入大于 0 的金额。'],
+ fee:['Platform fee ({0}%)','플랫폼 수수료 ({0}%)','平台手续费 ({0}%)'],
+ escrowNote:['Unfilled spots are refunded; the fee is not refunded.','채워지지 않은 자리의 보상은 환급되며, 수수료는 환급되지 않아요.','未满员名额的奖励将退还，手续费不退。'],
+ wRule:['Minimum π {0} · {1}-day hold · {2}% withdrawal fee','최소 π {0} · 승인 후 {1}일 보류 · 출금 수수료 {2}%','最低 π {0} · 保留{1}天 · 提现手续费 {2}%'],
+ wFee:['Withdrawal fee ({0}%)','출금 수수료 ({0}%)','提现手续费 ({0}%)'],wNet:['You receive','실제 수령액','实际到账'],
+ topupMax:['Up to π 100 per top-up.','1회 최대 π 100까지 충전할 수 있어요.','单次最多充值 π 100。'],
+ mainLang:['Language I can answer in','답변 가능한 언어','我可回答的语言'],
+ noActCta:['Browse tasks','의뢰 둘러보기','浏览任务'],noActHint:['Join an app test from Explore to see it here.','탐색에서 앱 테스트에 참여하면 여기에 나타나요.','在“探索”中参与应用测试后会显示在这里。'],
+ demoNotice:['This is demo data, not real users. Reset anytime in Me → Demo tools.','데모 데이터이며 실제 사용자가 아닙니다. 내 정보 → 데모 도구에서 언제든 초기화할 수 있어요.','这是演示数据，并非真实用户。可随时在“我的”→演示工具中重置。'],gotIt:['Got it','확인','知道了']
+});
     const CN={ANY:['Anywhere','전 세계','不限地区','🌍'],KR:['South Korea','한국','韩国','🇰🇷'],CN:['China','중국','中国','🇨🇳'],US:['United States','미국','美国','🇺🇸'],JP:['Japan','일본','日本','🇯🇵'],VN:['Vietnam','베트남','越南','🇻🇳'],ID:['Indonesia','인도네시아','印度尼西亚','🇮🇩'],PH:['Philippines','필리핀','菲律宾','🇵🇭'],IN:['India','인도','印度','🇮🇳'],NG:['Nigeria','나이지리아','尼日利亚','🇳🇬']};
     const LN={any:['Any language','모든 언어','不限语言'],en:['English','영어','英语'],ko:['Korean','한국어','韩语'],zh:['Chinese','중국어','中文'],ja:['Japanese','일본어','日语'],vi:['Vietnamese','베트남어','越南语'],id:['Indonesian','인도네시아어','印尼语']};
     const UILANG={en:'English',ko:'한국어',zh:'中文'};
@@ -1125,19 +1230,15 @@
     const now=()=>Date.now()+state.timeOffset;
     const H=3600e3,D=24*H;
     const safeUrl=u=>/^https?:\/\//i.test(u||'')?u:'#';
-    function remain(ts){
-      const ms=(ts||0)-now();
-      if(ms<=0)return '0h';
-      const d=Math.floor(ms/D),h=Math.floor((ms%D)/H);
-      return d>0?`${d}d ${h}h`:`${Math.max(1,h)}h`;
-    }
+    function remain(ts){let ms=ts-now();if(ms<=0)return '0h';const d=Math.floor(ms/D),h=Math.floor((ms%D)/H);return d>0?d+'d '+h+'h':Math.max(1,h)+'h'}
 
+    /* Auto-detect current tester device OS, viewport resolution & Pi Browser status */
     function detectClientEnv(){
       const ua=navigator.userAgent||'';
       let os='desktop',osLabel='Desktop Web';
       if(/Android/i.test(ua)){os='android';osLabel='Android'}
       else if(/iPhone|iPad|iPod/i.test(ua)){os='ios';osLabel='iOS'}
-      const isPi=/PiBrowser/i.test(ua)||Boolean(window.Pi&&typeof window.Pi.authenticate==='function');
+      const isPi=/PiBrowser/i.test(ua);
       const res=`${window.innerWidth}×${window.innerHeight}`;
       return {os,osLabel,isPi,res,summary:`${osLabel} · ${res}${isPi?' · Pi Browser':''}`};
     }
@@ -1176,7 +1277,7 @@
         bugs[probKey]={
           severity:i===0?'blocker':'major',
           note:i===0?'App freezes after Pi wallet sign-in popup closes.':'Button overlaps bottom navigation bar on compact screen.',
-          hasShot:false
+          hasShot:i===0
         };
       }
       return {
@@ -1193,8 +1294,8 @@
 
     function seed(){
      const n=Date.now();
-     const mk=(o)=>Object.assign({rej:0,feePaid:0,mode:'review',autoApprove:false,minutes:5,country:'ANY',lang:'any',targetOs:'any',appVersion:'',steps:[],customChecks:[],sensitive:false,status:'open',desc:'',responses:[]},o);
-     const tasks=APP_ENV.SHOW_CORE_TEAM_TOOLS?[
+     const mk=(o)=>Object.assign({rej:0,mode:'review',autoApprove:false,minutes:5,country:'ANY',lang:'any',targetOs:'any',appVersion:'',steps:[],customChecks:[],sensitive:false,status:'open',desc:'',responses:[]},o);
+     const tasks=[
       mk({id:1,kind:'apptest',appName:'Pi Notes',appVersion:'v1.4.2-testnet',targetOs:'any',appUrl:'https://example.com/pi-notes',
        desc:'Verify core note creation and Pi authentication flow inside Pi Browser.',
        steps:['Sign in with your Pi account on the landing screen','Create a new note with title and 2 lines of text','Reload the page and verify the note is saved'],
@@ -1207,14 +1308,20 @@
        requester:'shopbuilder',rej:2,reward:0.4,max:15,minutes:6,deadline:n+3*D,createdAt:n-2*H}),
       mk({id:2,kind:'verify',title:'Is this Chinese sentence natural?',desc:'Native Chinese speakers only.',requester:'lang_lab',mode:'consensus',minutes:1,reward:0.1,max:30,lang:'zh',deadline:n+3*D,createdAt:n-3*H,
        questions:[{id:'q1',type:'choice',text:'「完成任务后，奖励会在三天后到账。」 Is this natural?',options:['Natural','Slightly odd','Wrong']}]}),
-      mk({id:3,kind:'verify',title:'Does this image have AI mistakes?',desc:'Look closely at hands, text, shadows and reflections.',requester:'studio_mono',rej:2,mode:'consensus',minutes:2,reward:0.15,max:25,deadline:n+2*D,image:true,createdAt:n-4*H,
-       questions:[{id:'q1',type:'choice',text:'Does the image contain visible AI errors?',options:['Yes','No','Not sure']}]}),
+      mk({id:15,kind:'verify',title:'Is this Pi-accepting café actually open for business?',desc:'Check on site or by phone today. Pick what you find.',requester:'pi_map_team',rej:1,mode:'consensus',minutes:10,reward:0.5,max:15,country:'KR',lang:'any',deadline:n+4*D,createdAt:n-3.2*H,
+       questions:[{id:'q1',type:'choice',text:'What is the status of this café today?',options:['Open and takes Pi','Open but no Pi','Closed or not found']}]}),
+      mk({id:16,kind:'verify',title:'Is the intercity bus route from City A to City B running?',desc:'Check the terminal timetable or ask the staff. Answer for today.',requester:'transit_watch',rej:0,mode:'consensus',minutes:10,reward:0.4,max:20,deadline:n+3*D,createdAt:n-3.4*H,
+       questions:[{id:'q1',type:'choice',text:'Is this route operating today?',options:['Running as scheduled','Reduced service','Not running']}]}),
+      mk({id:17,kind:'verify',title:'Is the public EV charger at this station working?',desc:'Visit the station and try to start a session (no payment needed).',requester:'ev_helper',rej:2,mode:'consensus',minutes:8,reward:0.35,max:12,deadline:n+3*D,createdAt:n-3.6*H,
+       questions:[{id:'q1',type:'choice',text:'Does the charger start a session?',options:['Works','Broken','Occupied / cannot tell']}]}),
+      mk({id:18,kind:'survey',title:'City mayoral election: who do you expect to win? (fictional candidates)',desc:'Opinion poll with made-up candidates. Paid for taking part, there is no right answer.',requester:'civic_poll',autoApprove:true,minutes:2,reward:0.1,max:100,deadline:n+5*D,createdAt:n-3.8*H,
+       questions:[{id:'q1',type:'choice',text:'Who do you expect to win the City mayoral election?',options:['Candidate A','Candidate B','Candidate C','Undecided']},{id:'q2',type:'choice',text:'How sure are you?',options:['Very sure','Somewhat','Not sure']},{id:'q3',type:'text',text:'What matters most to you in this election?'}]}),
+      mk({id:19,kind:'survey',title:'Voting experience survey',desc:'Short survey about the last election. Paid for taking part.',requester:'civic_poll',autoApprove:true,minutes:2,reward:0.12,max:80,deadline:n+5*D,createdAt:n-3.9*H,
+       questions:[{id:'q1',type:'choice',text:'Did you vote in the last election?',options:['Yes','No']},{id:'q2',type:'choice',text:'What drove your choice most?',options:['Candidate','Party','Policy','Other']},{id:'q3',type:'rating',text:'How easy was it to find polling information? (1–5)'}]}),
       mk({id:4,kind:'verify',title:'What is the floor material of this lobby?',desc:'Gangnam Station Exit 3 (Seoul). Pick the closest match.',requester:'interior_kim',rej:6,minutes:15,reward:0.8,max:3,country:'KR',lang:'ko',deadline:n+5*D,createdAt:n-5*H,
        questions:[{id:'q1',type:'choice',text:'Floor material',options:['Marble','Tile','Vinyl','Wood']}]}),
       mk({id:5,kind:'survey',title:'Mobile payment habits (5 questions)',desc:'A short survey about how you pay in everyday life.',requester:'pay_research',autoApprove:true,minutes:3,reward:0.2,max:60,deadline:n+6*D,createdAt:n-6*H,
        questions:[{id:'q1',type:'choice',text:'How often do you pay with your phone?',options:['Daily','Weekly','Rarely']},{id:'q2',type:'choice',text:'Where do you pay most?',options:['Shops','Online','Transport']},{id:'q3',type:'rating',text:'How safe do you feel? (1–5)'},{id:'q4',type:'choice',text:'Have you used crypto to pay?',options:['Yes','No']},{id:'q5',type:'text',text:'What would make paying easier?'}]}),
-      mk({id:6,kind:'verify',title:'Check posts for hateful symbols',desc:'You will see user posts that may contain hateful symbols.',requester:'safety_net',rej:1,mode:'consensus',minutes:4,reward:0.3,max:20,sensitive:true,deadline:n+3*D,createdAt:n-7*H,
-       questions:[{id:'q1',type:'choice',text:'Does the post contain a hateful symbol or slur?',options:['Yes','No','Not sure']}]}),
       mk({id:8,kind:'verify',title:'이 한국어 문구가 자연스러운가요?',desc:'한국어 원어민만 참여해 주세요.',requester:'lang_lab',mode:'consensus',minutes:1,reward:0.1,max:15,country:'KR',lang:'ko',deadline:n+2*D,createdAt:n-8*H,
        questions:[{id:'q1',type:'choice',text:'"의뢰를 완료하면 3일 뒤에 보상이 지급돼요." 자연스러운가요?',options:['Natural','Slightly odd','Wrong']}]}),
       mk({id:9,kind:'apptest',appName:'Pi Ride Share',appVersion:'v0.9.8-alpha',targetOs:'any',appUrl:'https://example.com/pi-ride',
@@ -1223,46 +1330,42 @@
        checks:['login','main','speed','ui'],requester:'mobility_pi',rej:1,reward:0.45,max:25,minutes:5,deadline:n+4*D,createdAt:n-9*H}),
       mk({id:10,kind:'survey',title:'Daily Pi Browser usage & speed survey',desc:'Tell us which dApps you open most frequently on Android or iOS.',requester:'ux_metrics',autoApprove:true,minutes:2,reward:0.18,max:80,deadline:n+5*D,createdAt:n-10*H,
        questions:[{id:'q1',type:'choice',text:'How many times a week do you open Pi Browser?',options:['Every day','2-4 times','Once or less']},{id:'q2',type:'rating',text:'Rate overall page loading speed (1–5)'},{id:'q3',type:'text',text:'Any feature you wish Pi apps had?'}]}),
-      mk({id:13,kind:'verify',title:'Verify receipt total & date accuracy',desc:'Human eye check: compare handwritten tip and printed total.',requester:'fin_audit',mode:'consensus',minutes:2,reward:0.22,max:30,deadline:n+3*D,image:true,createdAt:n-11*H,
-       questions:[{id:'q1',type:'choice',text:'Do the handwritten tip and final total match?',options:['Yes','No','Not sure']}]}),
       mk({id:14,kind:'apptest',appName:'Pi Travel Map',appVersion:'v1.1.0',targetOs:'any',appUrl:'https://example.com/pi-map',
        desc:'Search 2 local cafes and test bookmarking and Korean/English labels.',
        steps:['Search "Seogwipo Cafe" on the map','Tap a pin and save it to Favorites','Switch language toggle between EN and KO'],
        checks:['main','lang','ui'],requester:'jeju_dev',rej:0,reward:0.35,max:18,minutes:4,deadline:n+4*D,createdAt:n-12*H}),
+      /* mine */
       mk({id:11,kind:'verify',title:'Is this Korean button label natural?',desc:'"오늘의 보상을 받아가세요"',requester:'pioneer_kim',mode:'consensus',minutes:1,reward:0.1,max:12,country:'KR',lang:'ko',deadline:n+1*D,createdAt:n-13*H,
        questions:[{id:'q1',type:'choice',text:'Is the button label natural?',options:['Natural','Slightly odd','Wrong']}]}),
       mk({id:12,kind:'apptest',appName:'Pi Journal',appVersion:'v1.0.3',targetOs:'any',appUrl:'https://example.com/pi-journal',
        desc:'Write one entry and tell me what feels wrong.',
        steps:['Sign in with Pi','Write a short journal entry and attach an emoji mood','Open History tab and verify entry order'],
        checks:['login','main','speed','ui'],customChecks:['Emoji picker layout'],requester:'pioneer_kim',reward:0.4,max:10,deadline:n+2*D,createdAt:n-14*H})
-     ]:[];
-
+     ];
      tasks.forEach(x=>{x.questions=x.kind==='apptest'?appQuestions(x.checks,x.customChecks):x.questions});
      const by=Object.fromEntries(tasks.map(x=>[x.id,x]));
      const mix=(arr,k)=>Array.from({length:k},(_,i)=>arr[i%arr.length]);
-
-     if(APP_ENV.SHOW_CORE_TEAM_TOOLS&&tasks.length){
-      mkResp(by[1],appAns(by[1].checks,7,1));
-      mkResp(by[7],appAns(by[7].checks,5,2));by[7].responses.push({id:7900,user:'pioneer_kim',env:'Android 14 · 390×844',answers:Object.assign({},...by[7].checks.map(c=>({['c_'+c]:'works'})),{cc_0:'works',rating:'4',issues:''}),bugDetails:{},status:'submitted',reason:'',amount:0,paid:false,at:n-2*H});
-      mkResp(by[2],mix(['Natural','Natural','Natural','Slightly odd'],18).map((a,i)=>({u:'cn_user'+i,a:{q1:a}})));
-      mkResp(by[3],mix(['Yes','Yes','Yes','No'],12).map((a,i)=>({u:'rev'+i,a:{q1:a}})));
-      mkResp(by[4],[{u:'v1',a:{q1:'Marble'}}]);
-      mkResp(by[5],[...Array(41)].map((_,i)=>({u:'sv'+i,a:{q1:'Daily',q2:'Shops',q3:'4',q4:'No',q5:'Simpler checkout'},s:'approved',amt:0.2})));
-      by[5].responses.push({id:5900,user:'pioneer_kim',answers:{q1:'Weekly',q2:'Online',q3:'5',q4:'Yes',q5:'Fewer taps'},status:'approved',reason:'',amount:0.2,paid:true,at:n-D});
-      mkResp(by[6],mix(['Yes','Yes','No'],6).map((a,i)=>({u:'mod'+i,a:{q1:a}})));
-      mkResp(by[8],mix(['Natural','Natural','Natural','Slightly odd'],14).map((a,i)=>({u:'kr_user'+i,a:{q1:a}})));by[8].responses.push({id:8900,user:'pioneer_kim',answers:{q1:'Natural'},status:'submitted',reason:'',amount:0,paid:false,at:n-3*H});
-      mkResp(by[9],appAns(by[9].checks,9,1));
-      mkResp(by[10],[...Array(24)].map((_,i)=>({u:'ux'+i,a:{q1:'Every day',q2:'4',q3:'Faster login'},s:'approved',amt:0.18})));
-      mkResp(by[13],mix(['Yes','Yes','No'],11).map((a,i)=>({u:'aud'+i,a:{q1:a}})));
-      mkResp(by[14],appAns(by[14].checks,4,0));
-      mkResp(by[11],['Natural','Natural','Natural','Natural','Natural','Natural','Natural','Natural','Natural','Slightly odd','Slightly odd','Wrong'].map((a,i)=>({u:'kr_v'+i,a:{q1:a}})));
-      mkResp(by[12],appAns(by[12].checks,5,2));
-     }
-     return {lang:'en',fs:'m',tab:'explore',view:null,from:null,kind:'all',browse:'all',search:'',histQuery:'',histFilterMode:'all',histFrom:'',histTo:'',seg:'all',adv:false,saved:[2,9],
-      accent:'#4f46e5',colorDrawerOpen:false,
+     mkResp(by[1],appAns(by[1].checks,7,1));
+     mkResp(by[7],appAns(by[7].checks,5,2));by[7].responses.push({id:7900,user:'pioneer_kim',env:'Android 14 · 390×844',answers:Object.assign({},...by[7].checks.map(c=>({['c_'+c]:'works'})),{cc_0:'works',rating:'4',issues:''}),bugDetails:{},status:'submitted',reason:'',amount:0,paid:false,at:n-2*H});
+     mkResp(by[2],mix(['Natural','Natural','Natural','Slightly odd'],18).map((a,i)=>({u:'cn_user'+i,a:{q1:a}})));
+     mkResp(by[4],[{u:'v1',a:{q1:'Marble'}}]);
+     mkResp(by[15],mix(['Open and takes Pi','Open and takes Pi','Open but no Pi'],8).map((a,i)=>({u:'cafe'+i,a:{q1:a}})));
+     mkResp(by[16],mix(['Running as scheduled','Running as scheduled','Reduced service'],6).map((a,i)=>({u:'bus'+i,a:{q1:a}})));
+     mkResp(by[17],mix(['Works','Broken','Works'],5).map((a,i)=>({u:'ev'+i,a:{q1:a}})));
+     mkResp(by[18],[...Array(34)].map((_,i)=>({u:'pl'+i,a:{q1:['Candidate A','Candidate B','Candidate C','Undecided'][i%4],q2:['Very sure','Somewhat','Not sure'][i%3],q3:'Housing and transport'},s:'approved',amt:0.1})));
+     mkResp(by[19],[...Array(21)].map((_,i)=>({u:'vt'+i,a:{q1:i%4?'Yes':'No',q2:['Candidate','Party','Policy','Other'][i%4],q3:String(3+(i%3))},s:'approved',amt:0.12})));
+     mkResp(by[5],[...Array(41)].map((_,i)=>({u:'sv'+i,a:{q1:'Daily',q2:'Shops',q3:'4',q4:'No',q5:'Simpler checkout'},s:'approved',amt:0.2})));
+     by[5].responses.push({id:5900,user:'pioneer_kim',answers:{q1:'Weekly',q2:'Online',q3:'5',q4:'Yes',q5:'Fewer taps'},status:'approved',reason:'',amount:0.2,paid:true,at:n-D});
+     mkResp(by[8],mix(['Natural','Natural','Natural','Slightly odd'],14).map((a,i)=>({u:'kr_user'+i,a:{q1:a}})));by[8].responses.push({id:8900,user:'pioneer_kim',answers:{q1:'Natural'},status:'submitted',reason:'',amount:0,paid:false,at:n-3*H});
+     mkResp(by[9],appAns(by[9].checks,9,1));
+     mkResp(by[10],[...Array(24)].map((_,i)=>({u:'ux'+i,a:{q1:'Every day',q2:'4',q3:'Faster login'},s:'approved',amt:0.18})));
+     mkResp(by[14],appAns(by[14].checks,4,0));
+     mkResp(by[11],['Natural','Natural','Natural','Natural','Natural','Natural','Natural','Natural','Natural','Slightly odd','Slightly odd','Wrong'].map((a,i)=>({u:'kr_v'+i,a:{q1:a}})));
+     mkResp(by[12],appAns(by[12].checks,5,2));
+     return {lang:'en',fs:'m',tab:'explore',view:null,from:null,kind:'all',browse:'all',search:'',histQuery:'',histFilterMode:'all',histFrom:'',histTo:'',seg:'all',adv:false,saved:[2,9],theme:'indigo',
       me:{username:'pioneer_kim',country:'KR',lang:'ko',lang2:'en'},
-      piBalance:20,earn:{available:2.4,pending:APP_ENV.SHOW_CORE_TEAM_TOOLS?[{amount:0.2,releaseAt:n+2*D,note:'Mobile payment habits'}]:[]},
-      history:APP_ENV.SHOW_CORE_TEAM_TOOLS?[
+      piBalance:20,earn:{available:2.4,pending:[{amount:0.2,releaseAt:n+2*D,note:'Mobile payment habits'}]},
+      history:[
         {k:'h_earn',amt:0.2,at:n-1*D-2*H},
         {k:'h_topup',amt:10,at:n-2*D-5*H},
         {k:'h_deposit',amt:-3.5,at:n-3*D-1*H},
@@ -1270,100 +1373,48 @@
         {k:'h_refund',amt:0.8,at:n-6*D-3*H},
         {k:'h_earn',amt:1.5,at:n-9*D-4*H},
         {k:'h_topup',amt:12.6,at:n-14*D-8*H}
-      ]:[],
-      tasks,reports:APP_ENV.SHOW_CORE_TEAM_TOOLS?[{taskId:6,user:'u_x',reason:'rp1'},{taskId:6,user:'u_y',reason:'rp1'}]:[],timeOffset:0,draft:null};
+      ],
+      tasks,reports:[],timeOffset:0,draft:null};
     }
 
     let state=load();
     function load(){
       try{
-        const s=localStorage.getItem('realtap-human-v4');
+        const s=localStorage.getItem('realtap-human-v6');
         if(s){
           const parsed=JSON.parse(s);
-          if(typeof parsed.search!=='string')parsed.search='';
+          if(typeof parsed.search!=='string')parsed.search='';if(!parsed.theme)parsed.theme='indigo';
           if(typeof parsed.histQuery!=='string')parsed.histQuery='';
           if(!parsed.histFilterMode)parsed.histFilterMode='all';
           if(typeof parsed.histFrom!=='string')parsed.histFrom='';
           if(typeof parsed.histTo!=='string')parsed.histTo='';
-          if(!parsed.accent)parsed.accent='#4f46e5';
-          if(typeof parsed.colorDrawerOpen!=='boolean')parsed.colorDrawerOpen=false;
           return parsed;
         }
       }catch(e){}
       return seed();
     }
-    function save(){try{localStorage.setItem('realtap-human-v4',JSON.stringify(state))}catch(e){}}
-
-    function openModal(html){
-      const layer=$('layer');
-      if(layer)layer.innerHTML=`<div class="modalbg"><div class="sheet">${html}</div></div>`;
-    }
-    function closeModal(){
-      const layer=$('layer');
-      if(layer)layer.innerHTML='';
-    }
-    let toastT;
-    function toast(msg){
-      const appEl=$('app')||document.body;
-      const d=document.createElement('div');
-      d.className='toast';
-      d.textContent=msg;
-      appEl.appendChild(d);
-      clearTimeout(toastT);
-      toastT=setTimeout(()=>d.remove(),2400);
-    }
+    function save(){try{localStorage.setItem('realtap-human-v6',JSON.stringify(state))}catch(e){}}
 
     const PiLayer={
-      isLivePi(){
-        const ua=navigator.userAgent||'';
-        return /PiBrowser/i.test(ua)||Boolean(!APP_ENV.PI_SDK_SANDBOX&&window.Pi&&typeof window.Pi.authenticate==='function');
-      },
-      async authenticate(){
-        return {username:state.me.username};
-      },
-      pay(amount,memo){
-        return new Promise(res=>{
-          openModal(`<h3>🟣 ${t('piTitle')}</h3><div class="note warn">${t('piAsk')}</div>
-            <div class="card" style="margin:0.75rem 0;background:var(--surface-alt)"><div class="big pi">π ${fmt(amount)}</div><div class="small">${esc(memo)}</div></div>
-            <div class="g2"><button class="btn" id="pc">${t('cancel')}</button><button class="btn p" id="po">${t('piConfirm')}</button></div>`);
-          $('pc').onclick=()=>{closeModal();res(false)};
-          $('po').onclick=()=>{
-            openModal(`<div style="text-align:center;padding:0.9rem 0"><div class="spin"></div><b>${t('piWait')}</b></div>`);
-            setTimeout(()=>{closeModal();res(true)},700);
-          };
-        });
-      },
-      payout(amount){
-        return new Promise(res=>{
-          openModal(`<div style="text-align:center;padding:0.9rem 0"><div class="spin"></div><b>${t('piWait')}</b></div>`);
-          setTimeout(()=>{closeModal();res(true)},700);
-        });
-      }
+      async authenticate(){return {username:state.me.username}},
+      pay(amount,memo){return new Promise(res=>{
+        openModal(`<h3>🟣 ${t('piTitle')}</h3><div class="note warn">${t('piAsk')}</div>
+          <div class="card" style="margin:0.75rem 0;background:var(--surface-alt)"><div class="big pi">π ${fmt(amount)}</div><div class="small">${esc(memo)}</div></div>
+          <div class="g2"><button class="btn" id="pc">${t('cancel')}</button><button class="btn p" id="po">${t('piConfirm')}</button></div>`);
+        $('pc').onclick=()=>{closeModal();res(false)};
+        $('po').onclick=()=>{openModal(`<div style="text-align:center;padding:0.9rem 0"><div class="spin"></div><b>${t('piWait')}</b></div>`);setTimeout(()=>{closeModal();res(true)},750)};
+      })},
+      payout(amount){return new Promise(res=>{openModal(`<div style="text-align:center;padding:0.9rem 0"><div class="spin"></div><b>${t('piWait')}</b></div>`);setTimeout(()=>{closeModal();res(true)},750)})}
     };
 
-    const THEME_PALETTE=['#4f46e5','#059669','#e11d48','#d97706','#0284c7','#7c3aed'];
-    function applyPrefs(){
-      document.documentElement.lang=state.lang;
-      document.documentElement.className='fs-'+state.fs;
-      const hex=/^#[0-9a-fA-F]{6}$/.test(state.accent||'')?state.accent:'#4f46e5';
-      document.documentElement.style.setProperty('--accent',hex);
-    }
-    function toggleColorDrawer(){
-      state.colorDrawerOpen=!state.colorDrawerOpen;
-      save();
-      const drawer=$('colorSlideDrawer');
-      if(drawer)drawer.classList.toggle('open',state.colorDrawerOpen);
-      else render();
-    }
-    function selectAccentColor(hex){
-      if(!/^#[0-9a-fA-F]{6}$/.test(hex))return;
-      state.accent=hex;
-      state.colorDrawerOpen=false;
-      applyPrefs();
-      save();
-      render();
-      toast(t('colorAdded'));
-    }
+    function openModal(html){$('layer').innerHTML=`<div class="modalbg"><div class="sheet">${html}</div></div>`}
+    function closeModal(){$('layer').innerHTML=''}
+    let toastT;function toast(msg){const d=document.createElement('div');d.className='toast';d.textContent=msg;$('phone').appendChild(d);clearTimeout(toastT);toastT=setTimeout(()=>d.remove(),2400)}
+    const THEMES={indigo:{a1:'#6366f1',a2:'#4338ca',a3:'#3730a3',ac:'#4f46e5',rgb:'79,70,229'},blue:{a1:'#3b82f6',a2:'#1d4ed8',a3:'#1e40af',ac:'#2563eb',rgb:'37,99,235'},green:{a1:'#10b981',a2:'#047857',a3:'#065f46',ac:'#059669',rgb:'5,150,105'},rose:{a1:'#fb7185',a2:'#e11d48',a3:'#9f1239',ac:'#e11d48',rgb:'225,29,72'},orange:{a1:'#fb923c',a2:'#ea580c',a3:'#9a3412',ac:'#ea580c',rgb:'234,88,12'},slate:{a1:'#64748b',a2:'#334155',a3:'#1e293b',ac:'#334155',rgb:'51,65,85'}};
+    function applyTheme(){const th=THEMES[state.theme]||THEMES.indigo,r=document.documentElement.style;r.setProperty('--a1',th.a1);r.setProperty('--a2',th.a2);r.setProperty('--a3',th.a3);r.setProperty('--accent',th.ac);r.setProperty('--accent-rgb',th.rgb)}
+    function toggleSw(){const r=$('swrow');if(r)r.classList.toggle('open')}
+    function setTheme(k){state.theme=k;applyTheme();save();const th=THEMES[k],c=$('swcur');if(c)c.style.background=`linear-gradient(145deg,${th.a1},${th.a2})`;document.querySelectorAll('.swpanel .sw').forEach(b=>b.classList.toggle('on',b.dataset.k===k));const r=$('swrow');if(r)r.classList.remove('open')}
+    function applyPrefs(){document.documentElement.lang=state.lang;document.documentElement.className='fs-'+state.fs;applyTheme()}
     function setLang(l){state.lang=l;applyPrefs();save();render()}
     function setFs(s){state.fs=s;applyPrefs();save();render()}
     function go(tab){state.tab=tab;state.view=null;state.from=null;save();render();$('main').scrollTop=0}
@@ -1410,9 +1461,8 @@
 
     function render(){
      releasePending();
-     const live=PiLayer.isLivePi();
-     $('hdr').innerHTML=`<div class="hdr-left">${brandEmblemSvg()}<div class="hdr-copy"><b>RealTap</b><small>${t('tagline')}</small></div></div>
-       <span class="env-pill ${live?'pi-live':'sandbox'}">${live?t('piLiveBadge'):t('sandboxBadge')}</span>`;
+     $('proto').textContent=t('proto');
+     $('hdr').innerHTML=`${brandEmblemSvg()}<div class="hdr-copy"><b>RealTap</b><small>${t('tagline')}</small></div>`;
      const tabs=[['explore','🔎'],['create','➕'],['activity','📋'],['wallet','👛'],['me','🙂']];
      $('nav').innerHTML=tabs.map(([k,i])=>`<button class="${state.tab===k?'on':''}" onclick="go('${k}')"><span class="ni">${i}</span>${t('t_'+k)}</button>`).join('');
      const v=state.view,m=$('main');
@@ -1468,7 +1518,8 @@
     function vExplore(){
      const saved=state.browse==='saved';
      const hasQ=Boolean((state.search||'').trim());
-     return `<div class="search-wrap">
+     const demoBanner=state.demoSeen?'':`<div class="note warn" style="margin-bottom:0.55rem"><div>${t('demoNotice')}</div><button class="btn sm" style="margin-top:0.4rem" onclick="state.demoSeen=true;save();render()">${t('gotIt')}</button></div>`;
+     return `${demoBanner}<div class="search-wrap">
        <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
        <input id="exploreSearchInput" class="search-in" type="search" value="${esc(state.search||'')}" placeholder="${t('searchPh')}" oninput="onExploreSearch(this.value)" />
        <button id="searchClearBtn" type="button" class="search-clear" style="display:${hasQ?'inline-flex':'none'}" onclick="clearExploreSearch()" aria-label="Clear">✕</button>
@@ -1502,6 +1553,7 @@
      <button class="btn line full" style="margin-top:0.5rem" onclick="reportTask(${tk.id})">⚑ ${t('report')}</button>`
     }
 
+    /* Progressive disclosure when tester picks "Problem" on an app check item */
     function onCheckChoiceChange(qid,val){
       const drawer=$('prob_drawer_'+qid);
       if(drawer)drawer.style.display=val==='problem'?'block':'none';
@@ -1511,13 +1563,11 @@
       if(!file)return;
       const reader=new FileReader();
       reader.onload=e=>{
-        const raw=e.target.result;
-        if(!isSafeImageDataUri(raw))return;
         const prev=$('shot_prev_'+qid);
         const hidden=$('shot_data_'+qid);
-        if(hidden)hidden.value=raw;
+        if(hidden)hidden.value=e.target.result;
         if(prev){
-          prev.innerHTML=`<div class="small" style="color:var(--green);font-weight:700;margin-top:0.35rem">✓ ${t('shotAttached')} (${esc(file.name)})</div><img class="shot-thumb" src="${raw}" alt="Screenshot preview" />`;
+          prev.innerHTML=`<div class="small" style="color:var(--green);font-weight:700;margin-top:0.35rem">✓ ${t('shotAttached')} (${esc(file.name)})</div><img class="shot-thumb" src="${e.target.result}" alt="Screenshot preview" />`;
         }
       };
       reader.readAsDataURL(file);
@@ -1597,12 +1647,11 @@
         const sevEl=document.querySelector(`input[name="sev_${q.id}"]:checked`);
         const noteEl=$('bnote_'+q.id);
         const shotEl=$('shot_data_'+q.id);
-        const rawShot=shotEl&&isSafeImageDataUri(shotEl.value)?shotEl.value:'';
         bugDetails[q.id]={
           severity:sevEl?sevEl.value:'major',
           note:noteEl?noteEl.value.trim():'',
-          shot:rawShot,
-          hasShot:Boolean(rawShot)
+          shot:shotEl?shotEl.value:'',
+          hasShot:Boolean(shotEl&&shotEl.value)
         };
       }
      }
@@ -1743,8 +1792,8 @@
      if(!ok)return;
      const reqLabel=d.kind==='apptest'?d.appName.trim():(d.kind==='verify'?d.questions[0].text:d.title).trim();
      state.piBalance-=tt.total;state.history.unshift({k:'h_deposit',amt:-tt.total,note:reqLabel,at:now()});
-     const id=(state.tasks.reduce((mx,x)=>Math.max(mx,x.id||0),0))+1;
-     const base={id,kind:d.kind,desc:d.desc.trim(),requester:state.me.username,rej:0,feePaid:tt.fee,mode:d.mode,autoApprove:d.mode==='review'&&d.autoApprove,minutes:d.minutes,reward:d.reward,max:d.max,country:d.country,lang:d.lang,sensitive:d.sensitive,status:'open',deadline:now()+d.hours*H,createdAt:now(),responses:[]};
+     const id=Math.max(...state.tasks.map(x=>x.id))+1;
+     const base={id,kind:d.kind,desc:d.desc.trim(),requester:state.me.username,rej:0,mode:d.mode,autoApprove:d.mode==='review'&&d.autoApprove,minutes:d.minutes,reward:d.reward,max:d.max,country:d.country,lang:d.lang,sensitive:d.sensitive,status:'open',deadline:now()+d.hours*H,createdAt:now(),responses:[]};
      if(d.kind==='apptest'){
        const cleanSteps=d.steps.map(s=>s.trim()).filter(Boolean);
        const cleanCustom=d.customChecks.map(c=>c.trim()).filter(Boolean);
@@ -1778,7 +1827,7 @@
        ${r.amount>0?`<div class="kv"><span></span><b class="pi">${t('earned',fmt(r.amount))}</b></div>`:''}
        ${r.status==='rejected'?`<div class="note err" style="margin-top:0.5rem">${esc(r.reason)}</div>${r.appealed?`<div class="small">${t('appealed')}</div>`:`<button class="btn sm line" style="margin-top:0.5rem" onclick="event.stopPropagation();appeal(${tk.id})">${t('appeal')}</button>`}`:''}</div>`}
       return `<div class="card task" onclick="openReview(${tk.id})"><div class="row">${kindBadge3d(tk.kind)}<div class="grow"><div class="title">${esc(ttl(tk))}</div><div class="meta">${t('role_req')} · ${t('progress',tk.responses.length,tk.max)} · π ${fmt(tk.reward*tk.max)}</div></div><span class="tag ${tk.status==='settled'?'g':'b'}">${tk.status==='settled'?t('settled'):t('results')}</span></div>
-       <div class="bar"><i style="width:${Math.min(100,tk.responses.length/tk.max*100)}%"></i></div></div>`}).join('')||`<div class="card small" style="text-align:center">${t('noAct')}</div>`;
+       <div class="bar"><i style="width:${Math.min(100,tk.responses.length/tk.max*100)}%"></i></div></div>`}).join('')||`<div class="card" style="text-align:center"><div class="small" style="margin-bottom:0.6rem">${t('noAct')}<br>${t('noActHint')}</div><button class="btn p" onclick="go('explore')">${t('noActCta')}</button></div>`;
      const c=s=>s==='all'?done.length+req.length:s==='done'?done.length:req.length;
      return `<div class="seg">${['all','done','req'].map(s=>`<button class="${state.seg===s?'on':''}" onclick="state.seg='${s}';save();render()">${t('seg_'+s)} ${c(s)}</button>`).join('')}</div>${body}`
     }
@@ -1819,7 +1868,6 @@
      const tk=taskById(id);if(!tk)return '';
      const pend=tk.responses.filter(r=>r.status==='submitted').length,s=tk.settlement;
      const manual=tk.mode==='review'&&!tk.autoApprove;
-     const isPaused=tk.status==='paused';
      let head='';
      if(tk.kind==='apptest'){
       const withP=tk.responses.filter(r=>Object.entries(r.answers).some(([k,v])=>(k.startsWith('c_')||k.startsWith('cc_'))&&v==='problem')).length;
@@ -1832,31 +1880,28 @@
          const bd=(a==='problem'&&r.bugDetails&&r.bugDetails[q.id])?r.bugDetails[q.id]:null;
          const sevTag=bd?`<span class="tag ${bd.severity==='blocker'?'r':bd.severity==='minor'?'b':'y'}" style="margin-left:0.3rem">${esc(t('sev_'+(bd.severity||'major')).split(' (')[0])}</span>`:'';
          const bugNote=bd&&bd.note?`<div class="small" style="color:var(--red);margin-top:0.15rem">↳ ${esc(bd.note)}</div>`:'';
-         const safeShot=bd&&isSafeImageDataUri(bd.shot)?bd.shot:'';
-         const shotBadge=bd&&bd.hasShot?(safeShot?`<img class="shot-thumb" src="${safeShot}" alt="Bug screenshot" />`:`<div class="small" style="color:var(--accent);margin-top:0.15rem">📷 ${t('shotAttached')}</div>`):'';
+         const shotBadge=bd&&bd.hasShot?(bd.shot?`<img class="shot-thumb" src="${bd.shot}" alt="Bug screenshot" />`:`<div class="small" style="color:var(--accent);margin-top:0.15rem">📷 ${t('shotAttached')}</div>`):'';
          return `<div class="small" style="margin-top:0.42rem">${esc(qt(q))}</div><div style="${a==='problem'?'color:var(--red);font-weight:700':''}">${esc(optLabel(a))}${sevTag}</div>${bugNote}${shotBadge}`;
        }).join('')}
        ${r.reason?`<div class="small" style="margin-top:0.35rem">↳ ${esc(r.reason)}</div>`:''}
-       ${tk.status==='open'?`<div class="g2" style="margin-top:0.6rem"><button class="btn sm g" onclick="setResp(${tk.id},${r.id},'approved')">${t('accept')}</button><button class="btn sm red" onclick="rejectModal(${tk.id},${r.id})">${t('reject')}</button></div>`:''}</div>`).join(''):'';
+       ${tk.status!=='settled'?`<div class="g2" style="margin-top:0.6rem"><button class="btn sm g" onclick="setResp(${tk.id},${r.id},'approved')">${t('accept')}</button><button class="btn sm red" onclick="rejectModal(${tk.id},${r.id})">${t('reject')}</button></div>`:''}</div>`).join(''):'';
      return `<button class="back" onclick="view(null)">${t('back')}</button><h2 style="font-size:1.05rem;font-weight:800;margin:0 0 0.6rem">${esc(ttl(tk))}</h2>
       <div class="card"><div class="kv"><span>${t('progress',tk.responses.length,tk.max)}</span><b>π ${fmt(tk.reward*tk.max)}</b></div>
       ${tk.status==='settled'&&s?`<hr><div class="note ok">${t('settled')}</div>
        ${s.lowSample?`<div class="note warn" style="margin-top:0.35rem">${t('lowSample',CONFIG.minConsensus)}</div>`:''}${s.noConsensus?`<div class="note warn" style="margin-top:0.35rem">${t('noCons')}</div>`:''}
        <div class="kv"><span>${t('resWinners',s.winners,fmt(s.each))}</span></div><div class="kv"><span>${t('resLosers',s.losers)}</span></div><div class="kv"><span>${t('resRefund',fmt(s.refund))}</span></div>`
-      :(isPaused
-        ?`<div class="note err" style="margin-top:0.5rem">${t('pausedSettleBlock')}</div>`
-        :`<div class="note warn" style="margin-top:0.5rem">${manual?t('settleWarn'):t(tk.mode==='consensus'?'expConsensus':'expAuto')}</div><button class="btn p full" style="margin-top:0.6rem" onclick="settleTask(${tk.id})">${t('closeSettle')}${manual&&pend?' ('+pend+')':''}</button>`)}</div>
+      :`<div class="note warn" style="margin-top:0.5rem">${manual?t('settleWarn'):t(tk.mode==='consensus'?'expConsensus':'expAuto')}</div><button class="btn p full" style="margin-top:0.6rem" onclick="settleTask(${tk.id})">${t('closeSettle')}${manual&&pend?' ('+pend+')':''}</button>`}</div>
       <div class="card"><h3>${tk.kind==='apptest'?t('qaSummaryTitle'):t('resultTitle')}</h3>${head}${results(tk)}</div>${list}`
     }
-    function setResp(tid,rid,st){const tk=taskById(tid);if(!tk||tk.status!=='open')return;const r=tk.responses.find(x=>x.id===rid);r.status=st;r.reason='';save();render()}
+    function setResp(tid,rid,st){const r=taskById(tid).responses.find(x=>x.id===rid);r.status=st;r.reason='';save();render()}
     function rejectModal(tid,rid){
      openModal(`<h3>${t('reject')}</h3><label class="f">${t('rejectWhy')}</label>
       ${['rj1','rj2','rj3','rj4'].map((k,i)=>`<label class="opt"><input type="radio" name="rj" value="${k}" ${i===0?'checked':''}> ${t(k)}</label>`).join('')}
       <div class="g2" style="margin-top:0.75rem"><button class="btn" onclick="closeModal()">${t('cancel')}</button><button class="btn red" onclick="doReject(${tid},${rid})">${t('reject')}</button></div>`)
     }
-    function doReject(tid,rid){const tk=taskById(tid);if(!tk||tk.status!=='open')return;const k=document.querySelector('input[name="rj"]:checked').value;const r=tk.responses.find(x=>x.id===rid);r.status='rejected';r.reason=t(k);closeModal();save();render()}
+    function doReject(tid,rid){const k=document.querySelector('input[name="rj"]:checked').value;const r=taskById(tid).responses.find(x=>x.id===rid);r.status='rejected';r.reason=t(k);closeModal();save();render()}
     function settleTask(id){
-     const tk=taskById(id);if(!tk||tk.status!=='open')return;
+     const tk=taskById(id);if(!tk||tk.status==='settled')return;
      const rs=tk.responses,n=rs.length,r=tk.reward,info={lowSample:false,noConsensus:false};
      let win=[],lose=[];
      if(tk.mode==='review'){rs.forEach(x=>{if(x.status==='submitted')x.status='approved'});win=rs.filter(x=>x.status==='approved');lose=rs.filter(x=>x.status==='rejected')}
@@ -1972,25 +2017,11 @@
      const filtered=getFilteredHistory();
      const isRange=state.histFilterMode==='range';
      const hasQuery=Boolean((state.histQuery||'').trim());
-     return `<div class="card">
-       <div class="row" style="justify-content:space-between;align-items:center">
-         <div><div class="small">${t('piWallet')}</div><div class="big pi">π ${fmt(state.piBalance)}</div></div>
-         <button class="btn sm line" onclick="topupModal()">${t('topupShort')}</button>
-       </div>
-     </div>
-     <div class="card">
-       <h3>${t('earnings')}</h3>
-       <div class="g2">
-         <div><div class="small">${t('avail')}</div><div class="big pi">π ${fmt(e.available)}</div></div>
-         <div><div class="small">${t('pend')}</div><div class="big" style="color:var(--mute)">π ${fmt(e.pending.reduce((s,p)=>s+p.amount,0))}</div></div>
-       </div>
-       <div class="row" style="justify-content:space-between;align-items:center;margin-top:0.48rem">
-         <span class="small">${t('wRule',min,CONFIG.holdDays)}</span>
-         <button class="btn sm p" ${can?'':'disabled'} onclick="withdrawModal()">${t('withdrawShort')}</button>
-       </div>
-       ${can?'':`<div class="small" style="margin-top:0.25rem">${t('wMin',min)}</div>`}
-       ${e.pending.map(p=>`<div class="kv"><span>${esc(p.note)}</span><span>π ${fmt(p.amount)} · ${t('releaseIn',remain(p.releaseAt))}</span></div>`).join('')}
-     </div>
+     return `<div class="card"><div class="row"><div class="grow"><div class="small">${t('piWallet')}</div><div class="big pi">π ${fmt(state.piBalance)}</div></div><button class="btn p act" onclick="topupModal()">＋ ${t('topupTitle')}</button></div></div>
+     <div class="card"><div class="row" style="margin-bottom:0.4rem"><h3 class="grow" style="margin:0">${t('earnings')}</h3><button class="btn p act" ${can?'':'disabled'} onclick="withdrawModal()">${t('withdraw')}</button></div><div class="g2"><div><div class="small">${t('avail')}</div><div class="big pi">π ${fmt(e.available)}</div></div><div><div class="small">${t('pend')}</div><div class="big" style="color:var(--mute)">π ${fmt(e.pending.reduce((s,p)=>s+p.amount,0))}</div></div></div>
+      <p class="small">${t('wRule',min,CONFIG.holdDays,CONFIG.withdrawFeePct)}</p>
+      ${can?'':`<div class="small" style="margin-top:0.35rem">${t('wMin',min)}</div>`}
+      ${e.pending.map(p=>`<div class="kv"><span>${esc(p.note)}</span><span>π ${fmt(p.amount)} · ${t('releaseIn',remain(p.releaseAt))}</span></div>`).join('')}</div>
      <div class="card">
       <div class="row" style="justify-content:space-between;margin-bottom:0.45rem">
         <h3 style="margin:0">${t('history')}</h3>
@@ -2018,79 +2049,58 @@
       <div id="walletHistoryList">${renderHistoryListHtml()}</div>
      </div>`
     }
-
     function topupModal(){
-     openModal(`<h3>${t('topupShort')}</h3>
-      <label class="f">${t('topupAmt')}</label>
-      <input class="in" id="ta" type="number" step="0.5" min="0.5" value="10">
-      <div class="g2" style="margin-top:0.75rem">
-        <button class="btn" onclick="closeModal()">${t('cancel')}</button>
-        <button class="btn p" onclick="doTopup()">${t('topupSend')}</button>
-      </div>`)
+     openModal(`<h3>🟣 ${t('topupTitle')}</h3>
+      <div class="chips" style="flex-wrap:wrap">${[1,5,10,20].map(v=>`<button class="chip" onclick="$('tpa').value=${v}">π ${v}</button>`).join('')}</div>
+      <label class="f">${t('topupAmt')}</label><input class="in" id="tpa" type="number" min="0.1" max="100" step="0.1" value="5">
+      <p class="small">${t('topupNote')}</p>
+      <div class="g2"><button class="btn" onclick="closeModal()">${t('cancel')}</button><button class="btn p" onclick="doTopup()">${t('topupTitle')}</button></div>`)
     }
-
     async function doTopup(){
-     const a=+$('ta').value;
-     if(!(a>0))return;
+     const a=+$('tpa').value;
+     if(!(a>0)){toast(t('topupMin'));return}
+     if(a>100){toast(t('topupMax'));return}
      closeModal();
-     const ok=await PiLayer.pay(a,'RealTap wallet top-up');
+     const ok=await PiLayer.pay(a,'RealTap top-up');
      if(!ok)return;
-     state.piBalance+=a;
-     state.history.unshift({k:'h_topup',amt:a,note:'Wallet top-up',at:now()});
-     save();
-     toast(t('topupDone'));
-     render();
+     state.piBalance+=a;state.history.unshift({k:'h_topup',amt:a,note:'Pi wallet',at:now()});save();toast(t('topupDone',fmt(a)));render()
     }
-
+    function wCalc(a){const fee=a*CONFIG.withdrawFeePct/100;return{fee,net:a-fee}}
+    function updWd(){const a=+$('wa').value||0,c=wCalc(a);$('wfee').textContent='π '+fmt(c.fee);$('wnet').textContent='π '+fmt(c.net)}
     function withdrawModal(){
-     openModal(`<h3>${t('withdraw')}</h3><label class="f">${t('wAmt')}</label><input class="in" id="wa" type="number" step="0.01" min="${CONFIG.minWithdraw}" max="${fmt(state.earn.available)}" value="${fmt(state.earn.available)}">
-      <p class="small">${t('wRule',CONFIG.minWithdraw,CONFIG.holdDays)}</p>
-      <div class="g2"><button class="btn" onclick="closeModal()">${t('cancel')}</button><button class="btn p" onclick="doWithdraw()">${t('wSend')}</button></div>`)
+     openModal(`<h3>${t('withdraw')}</h3><label class="f">${t('wAmt')}</label><input class="in" id="wa" type="number" step="0.01" min="${CONFIG.minWithdraw}" max="${fmt(state.earn.available)}" value="${fmt(state.earn.available)}" oninput="updWd()">
+      <div class="card" style="margin:0.6rem 0;background:var(--surface-alt)"><div class="kv"><span>${t('wFee',CONFIG.withdrawFeePct)}</span><b id="wfee"></b></div><div class="kv"><span>${t('wNet')}</span><b class="pi" id="wnet"></b></div></div>
+      <p class="small">${t('wRule',CONFIG.minWithdraw,CONFIG.holdDays,CONFIG.withdrawFeePct)}</p>
+      <div class="g2"><button class="btn" onclick="closeModal()">${t('cancel')}</button><button class="btn p" onclick="doWithdraw()">${t('wSend')}</button></div>`);updWd()
     }
     async function doWithdraw(){
      const a=+$('wa').value;
      if(!(a>=CONFIG.minWithdraw)||a>state.earn.available+1e-9){toast(t('wMin',CONFIG.minWithdraw));return}
-     closeModal();await PiLayer.payout(a);
-     state.earn.available-=a;state.history.unshift({k:'h_withdraw',amt:-a,note:'Pi Wallet payout',at:now()});save();toast(t('wDone'));render()
+     const c=wCalc(a);
+     closeModal();await PiLayer.payout(c.net);
+     state.earn.available-=a;state.history.unshift({k:'h_withdraw',amt:-a,note:'Fee π '+fmt(c.fee)+' · Received π '+fmt(c.net),at:now()});save();toast(t('wDone'));render()
     }
 
     function vMe(){
      const m=state.me,lo=Object.keys(LN).filter(l=>l!=='any');
-     const curHex=(state.accent||'#4f46e5').toLowerCase();
-     const isOpen=Boolean(state.colorDrawerOpen);
      return `<div class="card"><div class="row">${kindBadge3d('avatar')}<div class="grow"><div class="title">@${esc(m.username)}</div><span class="tag g">✓ ${t('kycOk')}</span></div></div></div>
      <div class="card">
       <label class="f" style="margin-top:0">${t('uiLang')}</label><select class="in" id="uil" onchange="setLang(this.value)">${Object.entries(UILANG).map(([k,v])=>`<option value="${k}" ${state.lang===k?'selected':''}>${v}</option>`).join('')}</select>
-      <label class="f">${t('textSize')}</label><div class="seg" style="margin-bottom:0">${['s','m','l'].map(s=>`<button class="${state.fs===s?'on':''}" onclick="setFs('${s}')">${t('fs_'+s)}</button>`).join('')}</div>
-      <label class="f">${t('colorTheme')}</label>
-      <div class="row" style="flex-wrap:wrap;gap:0.4rem;margin-top:0.25rem">
-        <span style="width:1.45rem;height:1.45rem;border-radius:999px;background:${curHex};border:2px solid #ffffff;box-shadow:0 0.2rem 0.5rem rgba(15,23,42,0.22);display:inline-block;flex-shrink:0"></span>
-        <div class="color-add-wrap">
-          <button type="button" class="btn sm line" onclick="toggleColorDrawer()">${t('addColor')}</button>
-          <div id="colorSlideDrawer" class="color-slide-drawer ${isOpen?'open':''}">
-            ${THEME_PALETTE.map(c=>`<button type="button" class="color-swatch-dot" style="background:${c};outline:${curHex===c?'2px solid var(--ink)':'none'}" onclick="selectAccentColor('${c}')" aria-label="${c}"></button>`).join('')}
-            <label title="${t('addColor')}" style="display:inline-flex;align-items:center;justify-content:center;width:1.35rem;height:1.35rem;border-radius:999px;border:1px dashed var(--mute);font-size:0.75rem;font-weight:800;cursor:pointer;background:#fff;color:var(--ink);flex-shrink:0">
-              <span>+</span>
-              <input type="color" value="${esc(curHex)}" onchange="selectAccentColor(this.value)" style="position:opacity:0;width:0;height:0;opacity:0;pointer-events:none" />
-            </label>
-          </div>
-        </div>
-      </div></div>
+      <label class="f">${t('themeColor')}</label><div class="swrow" id="swrow"><button class="sw cur" id="swcur" style="background:linear-gradient(145deg,${THEMES[state.theme].a1},${THEMES[state.theme].a2})" onclick="toggleSw()" aria-label="${t('themeColor')}"></button><span class="swarrow">›</span><div class="swpanel">${Object.entries(THEMES).map(([k,v])=>`<button class="sw ${state.theme===k?'on':''}" data-k="${k}" style="background:linear-gradient(145deg,${v.a1},${v.a2})" onclick="setTheme('${k}')" aria-label="${t('th_'+k)}"></button>`).join('')}</div></div>
+      <label class="f">${t('textSize')}</label><div class="seg" style="margin-bottom:0">${['s','m','l'].map(s=>`<button class="${state.fs===s?'on':''}" onclick="setFs('${s}')">${t('fs_'+s)}</button>`).join('')}</div></div>
      <div class="card">
       <label class="f" style="margin-top:0">${t('myCountry')}</label><select class="in" onchange="state.me.country=this.value;save()">${Object.keys(CN).filter(c=>c!=='ANY').map(c=>`<option value="${c}" ${m.country===c?'selected':''}>${flag(c)} ${cname(c)}</option>`).join('')}</select>
       <label class="f">${t('mainLang')}</label><select class="in" onchange="state.me.lang=this.value;save()">${lo.map(l=>`<option value="${l}" ${m.lang===l?'selected':''}>${lname(l)}</option>`).join('')}</select>
       <label class="f">${t('secondLang')}</label><select class="in" onchange="state.me.lang2=this.value;save()"><option value="">${t('none')}</option>${lo.map(l=>`<option value="${l}" ${m.lang2===l?'selected':''}>${lname(l)}</option>`).join('')}</select>
       <p class="small" style="margin:0.5rem 0 0">${t('langWhy')}</p></div>
+     <details><summary>${t('privacy')}</summary><div class="card small">${t('privacyNote')}<br><br>${t('privacyBody')}</div></details>
      <details><summary>${t('rulesTitle')}</summary><div class="card small">${['r1','r2','r3','r4','r5'].map(r=>'• '+t(r)).join('<br>')}</div></details>
-     ${sandboxSection()}`
-    }
-    function sandboxSection(){
-     if(!APP_ENV.SHOW_CORE_TEAM_TOOLS)return '';
-     return `<details><summary>${t('demo')}</summary><div class="card"><button class="btn full" onclick="ffwd()">${t('ffwd')}</button>
+     <details><summary>${t('demo')}</summary><div class="card"><button class="btn full" onclick="ffwd()">${t('ffwd')}</button>
       <button class="btn full" style="margin-top:0.5rem" onclick="settleMine()">${t('settleMine')}</button>
-      <button class="btn full" style="margin-top:0.5rem" onclick="topupModal()">${t('topup')}</button>
+      <button class="btn full" style="margin-top:0.5rem" onclick="topup()">${t('topup')}</button>
       <button class="btn red full" style="margin-top:0.5rem" onclick="resetDemo()">${t('reset')}</button></div></details>`
     }
+    function topup(){state.piBalance+=10;state.history.unshift({k:'h_topup',amt:10,note:'Demo top-up',at:now()});save();toast('+π 10');render()}
     function ffwd(){state.timeOffset+=3*D;releasePending();save();toast(t('ffDone'));render()}
     function settleMine(){state.tasks.filter(tk=>myResp(tk)&&tk.status!=='settled'&&tk.mode==='consensus').forEach(tk=>settleTask(tk.id));toast(t('settledMine'));render()}
     function resetDemo(){const l=state.lang,f=state.fs;state=seed();state.lang=l;state.fs=f;save();render()}
