@@ -1,41 +1,68 @@
-<!DOCTYPE html>
+with open('base_realtap.html', 'w', encoding='utf-8') as f:
+    f.write(r'''<!DOCTYPE html>
 <html lang="en" class="fs-m">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RealTap — Real people test your Pi app</title>
+  <title>RealTap — Mini App Bottom Sheet UI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --a1:#6366f1;--a2:#4338ca;--a3:#3730a3;--accent-rgb:79,70,229;
-      --bg: #eef2ff;
-      --surface: rgba(255, 255, 255, 0.9);
-      --surface-solid: #ffffff;
-      --surface-alt: #f8fafc;
-      --ink: #0f172a;
-      --sub: #475569;
-      --mute: #64748b;
-      --line: rgba(148, 163, 184, 0.28);
-      --accent: #4f46e5;
-      --accent-2: #10b981;
-      --accent-soft: rgba(var(--accent-rgb), 0.11);
-      --pi: #6d28d9;
-      --pi-soft: rgba(109, 40, 217, 0.12);
-      --green: #059669;
-      --green-soft: rgba(16, 185, 129, 0.14);
-      --red: #dc2626;
-      --red-soft: rgba(220, 38, 38, 0.12);
-      --yellow: #d97706;
-      --yellow-soft: rgba(217, 119, 6, 0.14);
-      --shadow-3d:
-        0 0.65rem 1.4rem -0.5rem rgba(15, 23, 42, 0.14),
-        0 0.2rem 0.5rem -0.15rem rgba(var(--accent-rgb), 0.08),
-        inset 0 0.08rem 0.1rem rgba(255, 255, 255, 0.94),
-        inset 0 -0.12rem 0.3rem rgba(148, 163, 184, 0.2);
-      --shadow-btn:
-        0 0.75rem 1.5rem -0.5rem rgba(var(--accent-rgb), 0.45),
-        0 0.2rem 0.5rem -0.12rem rgba(15, 23, 42, 0.2),
-        inset 0 0.09rem 0.12rem rgba(255, 255, 255, 0.55),
-        inset 0 -0.18rem 0.45rem rgba(49, 46, 129, 0.55);
+      --a1:#111111;--a2:#18181b;--a3:#09090b;--accent-rgb:17,17,17;
+      --bg:#111214;
+      --chrome-bg:#16171a;
+      --chrome-ink:#ffffff;
+      --chrome-sub:#a1a1aa;
+      --chrome-pill:#23252a;
+      --chrome-line:rgba(255,255,255,0.12);
+      --sheet-bg:#ffffff;
+      --surface:#ffffff;
+      --surface-solid:#ffffff;
+      --surface-alt:#f8fafc;
+      --ink:#111111;
+      --sub:#52525b;
+      --mute:#71717a;
+      --line:#e4e4e7;
+      --line-soft:#f4f4f5;
+      --accent:#111111;
+      --accent-2:#16a34a;
+      --accent-soft:#f4f4f5;
+      --pi:#16a34a;
+      --pi-soft:#f0fdf4;
+      --green:#16a34a;
+      --green-soft:#dcfce7;
+      --red:#dc2626;
+      --red-soft:#fee2e2;
+      --yellow:#d97706;
+      --yellow-soft:#fef3c7;
+      --shadow-3d:none;
+      --shadow-btn:none;
+      --font-display:'Plus Jakarta Sans','Inter','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+      --font-body:'Inter','Pretendard',-apple-system,BlinkMacSystemFont,system-ui,Roboto,'Helvetica Neue','Apple SD Gothic Neo','Noto Sans KR','Noto Sans SC',sans-serif;
+    }
+
+    html.dark-sheet {
+      --sheet-bg:#0a0b0d;
+      --surface:#121317;
+      --surface-solid:#121317;
+      --surface-alt:#181a20;
+      --ink:#f9fafb;
+      --sub:#a1a1aa;
+      --mute:#71717a;
+      --line:#24272e;
+      --line-soft:#191b20;
+      --accent:#ffffff;
+      --accent-soft:#1f2229;
+      --pi:#22c55e;
+      --pi-soft:rgba(34,197,94,0.14);
+      --green:#22c55e;
+      --green-soft:rgba(34,197,94,0.16);
+      --red:#f87171;
+      --red-soft:rgba(248,113,113,0.15);
+      --yellow:#fbbf24;
+      --yellow-soft:rgba(251,191,36,0.15);
     }
 
     html.fs-s { font-size: 11.5px; }
@@ -45,19 +72,17 @@
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
-      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Noto Sans SC', 'Inter', sans-serif;
+      font-family: var(--font-body);
     }
 
     body {
       margin: 0;
-      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Noto Sans SC', 'Inter', sans-serif;
+      font-family: var(--font-body);
       font-size: 1rem;
       color: var(--ink);
       background:
-        radial-gradient(circle at 15% 12%, rgba(var(--accent-rgb), 0.18), transparent 45%),
-        radial-gradient(circle at 85% 20%, rgba(16, 185, 129, 0.16), transparent 42%),
-        radial-gradient(circle at 50% 95%, rgba(139, 92, 246, 0.14), transparent 50%),
-        #e8eef9;
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.06), transparent 45%),
+        #0b0c0e;
       min-height: 100vh;
     }
 
@@ -66,8 +91,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 0.9rem 0.75rem 1.75rem;
-      gap: 0.9rem;
+      padding: 0.85rem 0.75rem 1.5rem;
+      gap: 0.8rem;
     }
 
     .preview-toolbar {
@@ -78,12 +103,11 @@
       align-items: center;
       justify-content: space-between;
       gap: 0.65rem;
-      padding: 0.65rem 0.9rem;
-      border-radius: 1.25rem;
-      background: rgba(255, 255, 255, 0.84);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.92);
-      box-shadow: 0 0.75rem 1.75rem -0.75rem rgba(15, 23, 42, 0.18);
+      padding: 0.6rem 0.85rem;
+      border-radius: 1rem;
+      background: #16171a;
+      border: 1px solid #27292f;
+      color: #ffffff;
     }
 
     .viewport-stage {
@@ -91,7 +115,7 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      transition: all 0.25s ease;
+      transition: all 0.22s ease;
     }
 
     .viewport-stage.mode-mobile #phone {
@@ -100,11 +124,7 @@
       height: 820px;
       max-height: calc(100vh - 5.2rem);
       border-radius: 2.3rem;
-      border: 6px solid #0f172a;
-      box-shadow:
-        0 1.75rem 4rem -1rem rgba(15, 23, 42, 0.35),
-        0 0 0 2px rgba(255, 255, 255, 0.65),
-        inset 0 2px 4px rgba(255, 255, 255, 0.35);
+      border: 5px solid #23252a;
     }
 
     .viewport-stage.mode-responsive #phone {
@@ -112,74 +132,166 @@
       max-width: 820px;
       height: 820px;
       max-height: calc(100vh - 5.2rem);
-      border-radius: 1.75rem;
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      box-shadow: 0 1.5rem 3.5rem -1rem rgba(15, 23, 42, 0.22);
+      border-radius: 1.5rem;
+      border: 1px solid #27292f;
     }
 
+    /* Mini App / In-App Browser Outer Container */
     #phone {
       position: relative;
-      background: linear-gradient(180deg, #f8faff 0%, #eef2ff 55%, #f1f5f9 100%);
+      background: var(--chrome-bg);
+      color: var(--chrome-ink);
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: max-width 0.25s ease, border-radius 0.25s ease;
+      transition: max-width 0.22s ease, border-radius 0.22s ease, background-color 0.2s ease;
     }
 
+    /* Top Mini App / In-App Browser Chrome */
     .proto-bar {
-      background: linear-gradient(90deg, #1e1b4b 0%, #312e81 50%, #065f46 100%);
-      color: #e0e7ff;
-      font-size: 0.72rem;
-      font-weight: 600;
-      padding: 0.36rem 0.75rem;
+      background: #111214;
+      color: var(--chrome-sub);
+      font-size: 0.68rem;
+      font-weight: 500;
+      padding: 0.3rem 0.8rem;
       text-align: center;
       letter-spacing: -0.01em;
       flex-shrink: 0;
-      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.14);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
 
     #hdr {
       display: flex;
       align-items: center;
-      gap: 0.65rem;
-      padding: 0.55rem 0.85rem;
-      background: rgba(255, 255, 255, 0.86);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--line);
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.68rem 0.95rem 0.9rem;
+      background: var(--chrome-bg);
+      color: var(--chrome-ink);
       flex-shrink: 0;
       z-index: 15;
     }
 
-    .hdr-copy {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-
-    #hdr b {
+    .chrome-icon-btn {
+      width: 2.15rem;
+      height: 2.15rem;
+      border-radius: 999px;
+      border: 0;
+      background: transparent;
+      color: var(--chrome-ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
       font-size: 1.05rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      line-height: 1.15;
-      background: linear-gradient(135deg, #1e1b4b 0%, #4f46e5 55%, #059669 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      font-weight: 500;
+      flex-shrink: 0;
+      transition: background-color 0.15s ease;
     }
 
-    #hdr small {
-      color: var(--sub);
-      font-size: 0.74rem;
-      font-weight: 500;
-      white-space: nowrap;
+    .chrome-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .miniapp-switcher {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.34rem 0.72rem 0.34rem 0.4rem;
+      border-radius: 0.75rem;
+      background: var(--chrome-pill);
+      border: 1px solid var(--chrome-line);
+      color: var(--chrome-ink);
+      font-size: 0.84rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      max-width: 15rem;
+    }
+
+    .miniapp-switcher span {
       overflow: hidden;
       text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .miniapp-chev {
+      font-size: 0.72rem;
+      color: var(--chrome-sub);
+      margin-left: 0.08rem;
+    }
+
+    /* Bottom Sheet Body Container */
+    .bottom-sheet-wrap {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      background: var(--sheet-bg);
+      color: var(--ink);
+      border-top-left-radius: 26px;
+      border-top-right-radius: 26px;
+      margin-top: -0.25rem;
+      overflow: hidden;
+      position: relative;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
 
     #main {
       flex: 1;
       overflow-y: auto;
-      padding: 0.55rem 0.75rem 4.6rem;
+      padding: 0.9rem 1rem 4.6rem;
       scroll-behavior: smooth;
+    }
+
+    /* Sheet Hero Header Row (Metric/Title left + Pill Action right) */
+    .sheet-hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.65rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .sheet-hero-title {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--ink);
+      margin: 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sheet-hero-sub {
+      font-size: 0.75rem;
+      color: var(--mute);
+      margin-top: 0.2rem;
+    }
+
+    .sheet-pill-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.44rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .sheet-pill-action:hover {
+      background: var(--surface-alt);
+      border-color: var(--mute);
     }
 
     .emblem-3d {
@@ -187,85 +299,121 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      width: 2.35rem;
-      height: 2.35rem;
-      filter: drop-shadow(0 0.35rem 0.65rem rgba(var(--accent-rgb), 0.25));
-      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+      width: 1.25rem;
+      height: 1.25rem;
     }
 
     .emblem-3d svg { width: 100%; height: 100%; }
-    .emblem-3d:hover { transform: translateY(-0.1rem) scale(1.04); }
 
+    /* Left rounded-square icon with bottom-right badge */
     .ico-3d {
-      width: 2.25rem;
-      height: 2.25rem;
-      border-radius: 0.72rem;
+      width: 2.65rem;
+      height: 2.65rem;
+      border-radius: 0.75rem;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
       position: relative;
-      box-shadow:
-        0 0.45rem 0.85rem -0.3rem rgba(15, 23, 42, 0.22),
-        inset 0 0.1rem 0.12rem rgba(255, 255, 255, 0.75),
-        inset 0 -0.15rem 0.3rem rgba(15, 23, 42, 0.14);
+      border: 1px solid var(--line);
     }
 
-    .ico-3d svg { width: 1.25rem; height: 1.25rem; }
-    .ico-3d.kind-apptest { background: linear-gradient(145deg, #818cf8 0%, #4f46e5 60%, #3730a3 100%); }
-    .ico-3d.kind-survey { background: linear-gradient(145deg, #34d399 0%, #10b981 60%, #047857 100%); }
-    .ico-3d.kind-verify { background: linear-gradient(145deg, #fbbf24 0%, #f59e0b 58%, #b45309 100%); }
-    .ico-3d.kind-avatar { background: linear-gradient(145deg, #a78bfa 0%, #7c3aed 60%, #4c1d95 100%); }
+    .ico-3d svg { width: 1.3rem; height: 1.3rem; }
+    .ico-3d.kind-apptest { background: #18181b; border-color: #27272a; }
+    .ico-3d.kind-apptest svg path,
+    .ico-3d.kind-apptest svg rect { stroke: #ffffff; }
+    .ico-3d.kind-survey { background: #fef3c7; border-color: #fde68a; }
+    .ico-3d.kind-verify { background: #dcfce7; border-color: #bbf7d0; }
+    .ico-3d.kind-avatar { background: #f4f4f5; border-color: #e4e4e7; overflow: hidden; }
+
+    html.dark-sheet .ico-3d.kind-apptest { background: #27272a; border-color: #3f3f46; }
+    html.dark-sheet .ico-3d.kind-survey { background: rgba(251, 191, 36, 0.16); border-color: rgba(251, 191, 36, 0.3); }
+    html.dark-sheet .ico-3d.kind-verify { background: rgba(34, 197, 94, 0.16); border-color: rgba(34, 197, 94, 0.3); }
+    html.dark-sheet .ico-3d.kind-avatar { background: #1f2229; border-color: #2e323c; }
+
+    .ico-subbadge {
+      position: absolute;
+      right: -0.22rem;
+      bottom: -0.22rem;
+      width: 1.05rem;
+      height: 1.05rem;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 0.56rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .avatar-lg {
+      width: 3.3rem;
+      height: 3.3rem;
+      border-radius: 1rem;
+      border: 1px solid var(--line);
+      background: var(--surface-alt);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .avatar-lg img, .ico-3d.kind-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
 
     /* Search Bar */
     .search-wrap {
       position: relative;
       display: flex;
       align-items: center;
-      margin-bottom: 0.45rem;
+      margin-bottom: 0.65rem;
     }
 
     .search-ico {
       position: absolute;
-      left: 0.72rem;
-      width: 0.95rem;
-      height: 0.95rem;
+      left: 0.85rem;
+      width: 0.92rem;
+      height: 0.92rem;
       color: var(--mute);
       pointer-events: none;
     }
 
     .search-in {
       width: 100%;
-      padding: 0.48rem 2.1rem 0.48rem 2.15rem;
-      border-radius: 0.85rem;
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      background: rgba(255, 255, 255, 0.92);
+      padding: 0.52rem 2.2rem 0.52rem 2.3rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
       color: var(--ink);
-      font-size: 0.84rem;
-      font-family: inherit;
-      box-shadow:
-        0 0.4rem 0.9rem -0.4rem rgba(15, 23, 42, 0.12),
-        inset 0 0.08rem 0.15rem rgba(15, 23, 42, 0.05);
-      transition: border-color 0.16s ease, box-shadow 0.16s ease;
+      font-size: 0.82rem;
+      font-family: var(--font-body);
+      transition: border-color 0.15s ease;
     }
 
     .search-in:focus {
       outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 0.18rem rgba(var(--accent-rgb), 0.15);
+      border-color: var(--ink);
     }
 
     .search-clear {
       position: absolute;
-      right: 0.5rem;
+      right: 0.55rem;
       width: 1.35rem;
       height: 1.35rem;
       border: 0;
       border-radius: 999px;
-      background: rgba(148, 163, 184, 0.24);
+      background: var(--line-soft);
       color: var(--sub);
       font-size: 0.72rem;
-      font-weight: 800;
+      font-weight: 700;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -277,11 +425,9 @@
       display: flex;
       flex-direction: column;
       gap: 0.45rem;
-      margin-bottom: 0.65rem;
-      padding: 0.55rem;
-      border-radius: 0.9rem;
-      background: rgba(248, 250, 252, 0.82);
-      border: 1px solid var(--line);
+      margin-bottom: 0.55rem;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid var(--line-soft);
     }
 
     .hist-filter-row {
@@ -294,28 +440,24 @@
 
     .hist-mode-pills {
       display: inline-flex;
-      gap: 0.25rem;
-      background: rgba(226, 232, 240, 0.75);
-      padding: 0.18rem;
-      border-radius: 0.72rem;
+      gap: 0.3rem;
     }
 
     .hist-mode-btn {
-      border: 0;
-      background: transparent;
-      color: var(--sub);
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
       font-size: 0.72rem;
-      font-weight: 700;
-      padding: 0.28rem 0.58rem;
-      border-radius: 0.55rem;
+      font-weight: 600;
+      padding: 0.32rem 0.7rem;
+      border-radius: 999px;
       cursor: pointer;
-      transition: all 0.15s ease;
     }
 
     .hist-mode-btn.on {
-      background: #ffffff;
-      color: var(--accent);
-      box-shadow: 0 0.18rem 0.45rem -0.15rem rgba(15, 23, 42, 0.16);
+      background: var(--ink);
+      color: var(--sheet-bg);
+      border-color: var(--ink);
     }
 
     .hist-dates {
@@ -328,10 +470,10 @@
 
     .hist-date-in {
       width: 100%;
-      padding: 0.38rem 0.48rem;
-      border-radius: 0.68rem;
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      background: rgba(255, 255, 255, 0.92);
+      padding: 0.38rem 0.5rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--line);
+      background: var(--surface);
       color: var(--ink);
       font-size: 0.74rem;
     }
@@ -341,241 +483,257 @@
       align-items: center;
       justify-content: space-between;
       gap: 0.5rem;
-      padding: 0.44rem 0;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+      padding: 0.65rem 0;
+      border-bottom: 1px solid var(--line-soft);
     }
 
-    .hist-item:last-child { border-bottom: 0; padding-bottom: 0.1rem; }
-    .hist-label { font-size: 0.84rem; font-weight: 700; color: var(--ink); line-height: 1.25; }
-    .hist-time { font-size: 0.71rem; color: var(--mute); margin-top: 0.14rem; font-variant-numeric: tabular-nums; }
-    .hist-amt { font-size: 0.86rem; font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .hist-item:last-child { border-bottom: 0; padding-bottom: 0.2rem; }
+    .hist-label { font-size: 0.88rem; font-weight: 600; color: var(--ink); line-height: 1.28; letter-spacing: -0.01em; }
+    .hist-time { font-size: 0.72rem; color: var(--mute); margin-top: 0.16rem; font-variant-numeric: tabular-nums; }
+    .hist-amt { font-size: 0.86rem; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
-    /* Cards */
+    /* Clean Flat List Rows & Section Cards */
     .card {
       background: var(--surface);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.88);
-      border-radius: 1.15rem;
-      padding: 0.75rem 0.85rem;
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      padding: 0.8rem 0.9rem;
       margin-bottom: 0.65rem;
-      box-shadow: var(--shadow-3d);
-      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease, border-color 0.18s ease;
     }
 
     .card.task {
       cursor: pointer;
       position: relative;
-      overflow: hidden;
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid var(--line-soft);
+      border-radius: 0;
+      padding: 0.72rem 0.15rem;
+      margin-bottom: 0;
+    }
+
+    .card.task:last-child {
+      border-bottom: 0;
     }
 
     .card.task.compact {
-      padding: 0.44rem 0.62rem;
-      margin-bottom: 0.36rem;
-      border-radius: 0.92rem;
+      padding: 0.72rem 0.12rem;
+      margin-bottom: 0;
+      border-radius: 0;
     }
 
-    .card.task.compact .ico-3d { width: 1.95rem; height: 1.95rem; border-radius: 0.6rem; }
-    .card.task.compact .ico-3d svg { width: 1.05rem; height: 1.05rem; }
-    .card.task.compact .title { font-size: 0.84rem; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .card.task.compact .meta { font-size: 0.7rem; margin-top: 0.12rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .card.task.compact .reward { padding: 0.24rem 0.48rem; border-radius: 0.62rem; }
-    .card.task.compact .reward b { font-size: 0.8rem; }
-    .card.task.compact .heart { padding: 0.28rem 0.38rem; font-size: 0.84rem; border-radius: 0.58rem; }
-
-    .card.task::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(125deg, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0) 42%);
-      pointer-events: none;
+    .card.task.compact .ico-3d { width: 2.65rem; height: 2.65rem; border-radius: 0.75rem; }
+    .card.task.compact .ico-3d svg { width: 1.25rem; height: 1.25rem; }
+    .card.task.compact .title {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.28;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
+    .card.task.compact .meta {
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin-top: 0.2rem;
+      line-height: 1.28;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card.task.compact .reward { padding: 0.24rem 0.55rem; border-radius: 999px; }
+    .card.task.compact .reward b { font-size: 0.78rem; }
+    .card.task.compact .heart { padding: 0.26rem 0.38rem; font-size: 0.82rem; border-radius: 999px; background: transparent; border-color: transparent; }
 
     .card.task:hover {
-      transform: translateY(-0.08rem);
-      border-color: rgba(var(--accent-rgb), 0.38);
-      box-shadow:
-        0 0.85rem 1.6rem -0.5rem rgba(var(--accent-rgb), 0.2),
-        0 0.3rem 0.7rem -0.2rem rgba(15, 23, 42, 0.12),
-        inset 0 0.08rem 0.1rem rgba(255, 255, 255, 0.96);
+      background: var(--surface-alt);
     }
 
-    .card.task:active { transform: translateY(0.05rem) scale(0.994); }
-    .card h3 { margin: 0 0 0.45rem; font-size: 0.92rem; font-weight: 700; }
+    .card.task:active { opacity: 0.88; }
+    .card h3 {
+      font-family: var(--font-display);
+      margin: 0 0 0.48rem;
+      font-size: 0.94rem;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+    }
 
-    .row { display: flex; align-items: center; gap: 0.55rem; }
+    .row-chev {
+      color: var(--mute);
+      font-size: 1rem;
+      font-weight: 500;
+      flex-shrink: 0;
+      margin-left: 0.1rem;
+    }
+
+    .row { display: flex; align-items: center; gap: 0.72rem; }
     .grow { flex: 1; min-width: 0; }
-    .title { font-weight: 700; font-size: 0.9rem; line-height: 1.32; color: var(--ink); }
-    .meta { font-size: 0.76rem; color: var(--sub); margin-top: 0.18rem; line-height: 1.32; }
-    .small { font-size: 0.78rem; color: var(--sub); line-height: 1.42; }
-    .big { font-size: 1.38rem; font-weight: 800; letter-spacing: -0.02em; }
-    .pi { color: var(--pi); font-weight: 800; }
+    .title { font-family: var(--font-display); font-weight: 700; font-size: 0.92rem; line-height: 1.3; letter-spacing: -0.015em; color: var(--ink); }
+    .meta { font-size: 0.76rem; color: var(--sub); margin-top: 0.2rem; line-height: 1.32; }
+    .small { font-size: 0.76rem; color: var(--sub); line-height: 1.42; }
+    .big { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; letter-spacing: -0.03em; color: var(--ink); font-variant-numeric: tabular-nums; }
+    .pi { color: var(--green); font-weight: 700; font-variant-numeric: tabular-nums; }
 
     .reward {
       text-align: right;
-      background: linear-gradient(145deg, rgba(109, 40, 217, 0.12), rgba(var(--accent-rgb), 0.06));
-      padding: 0.34rem 0.58rem;
-      border-radius: 0.78rem;
-      border: 1px solid rgba(109, 40, 217, 0.16);
-      box-shadow: inset 0 0.06rem 0.06rem rgba(255, 255, 255, 0.8);
+      background: var(--green-soft);
+      padding: 0.24rem 0.58rem;
+      border-radius: 999px;
+      border: 0;
       flex-shrink: 0;
     }
 
-    .reward b { display: block; color: var(--pi); font-size: 0.86rem; font-weight: 800; line-height: 1.15; }
+    .reward b { display: block; color: var(--green); font-size: 0.78rem; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; }
     .reward small { color: var(--sub); font-size: 0.66rem; }
 
     .heart {
-      background: linear-gradient(145deg, #ffffff, #f1f5f9);
-      border: 1px solid var(--line);
-      border-radius: 0.68rem;
-      font-size: 0.95rem;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      font-size: 0.9rem;
       cursor: pointer;
-      padding: 0.35rem 0.46rem;
+      padding: 0.28rem 0.4rem;
       line-height: 1;
-      box-shadow: 0 0.22rem 0.5rem -0.15rem rgba(15, 23, 42, 0.12), inset 0 0.06rem 0.06rem #fff;
-      transition: transform 0.16s ease;
       flex-shrink: 0;
     }
-
-    .heart:active { transform: scale(0.9); }
 
     .tags { display: flex; flex-wrap: wrap; gap: 0.32rem; margin-top: 0.52rem; }
     .tag {
       font-size: 0.68rem;
-      font-weight: 700;
-      padding: 0.16rem 0.5rem;
+      font-weight: 600;
+      padding: 0.16rem 0.52rem;
       border-radius: 999px;
-      background: rgba(148, 163, 184, 0.16);
+      background: var(--surface-alt);
       color: var(--sub);
-      border: 1px solid rgba(255, 255, 255, 0.7);
+      border: 1px solid var(--line);
     }
 
-    .tag.inline-tag { font-size: 0.63rem; padding: 0.08rem 0.38rem; margin-left: 0.28rem; vertical-align: middle; }
-    .tag.b { background: var(--accent-soft); color: var(--accent); }
-    .tag.g { background: var(--green-soft); color: var(--green); }
-    .tag.r { background: var(--red-soft); color: var(--red); }
-    .tag.y { background: var(--yellow-soft); color: var(--yellow); }
+    .tag.inline-tag { font-size: 0.64rem; padding: 0.06rem 0.42rem; margin-left: 0.3rem; vertical-align: middle; border: 0; }
+    .tag.b { background: var(--surface-alt); color: var(--ink); border: 1px solid var(--line); }
+    .tag.g { background: var(--green-soft); color: var(--green); border: 0; }
+    .tag.r { background: var(--red-soft); color: var(--red); border: 0; }
+    .tag.y { background: var(--yellow-soft); color: var(--yellow); border: 0; }
 
-    /* Segmented & Chips */
+    /* Segmented & Lift Pill Chips */
     .seg {
       display: flex;
-      gap: 0.28rem;
-      background: rgba(226, 232, 240, 0.75);
-      padding: 0.22rem;
-      border-radius: 0.88rem;
-      margin-bottom: 0.45rem;
-      box-shadow: inset 0 0.12rem 0.28rem rgba(15, 23, 42, 0.08);
+      gap: 0.35rem;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      margin-bottom: 0.55rem;
+      flex-wrap: wrap;
     }
 
     .seg button {
-      flex: 1;
-      border: 0;
-      background: transparent;
-      padding: 0.42rem 0.35rem;
-      border-radius: 0.68rem;
-      font-weight: 700;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      padding: 0.38rem 0.82rem;
+      border-radius: 999px;
+      font-family: var(--font-body);
+      font-weight: 600;
       font-size: 0.78rem;
-      color: var(--sub);
+      letter-spacing: -0.01em;
+      color: var(--ink);
       cursor: pointer;
-      transition: all 0.18s ease;
+      transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
     }
 
     .seg button.on {
-      background: linear-gradient(145deg, #ffffff, #f8fafc);
-      color: var(--ink);
-      box-shadow: 0 0.32rem 0.75rem -0.2rem rgba(15, 23, 42, 0.16), inset 0 0.06rem 0.06rem #fff;
+      background: var(--ink);
+      color: var(--sheet-bg);
+      border-color: var(--ink);
     }
 
     .chips {
       display: flex;
-      gap: 0.38rem;
+      gap: 0.42rem;
       overflow-x: auto;
-      padding-bottom: 0.3rem;
-      margin-bottom: 0.4rem;
+      padding-bottom: 0.38rem;
+      margin-bottom: 0.45rem;
       scrollbar-width: none;
     }
     .chips::-webkit-scrollbar { display: none; }
 
     .chip {
-      border: 1px solid rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--line);
       background: var(--surface);
-      padding: 0.34rem 0.72rem;
+      padding: 0.42rem 0.88rem;
       border-radius: 999px;
-      font-size: 0.76rem;
-      font-weight: 700;
-      color: var(--sub);
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--ink);
       white-space: nowrap;
       cursor: pointer;
-      box-shadow: 0 0.28rem 0.65rem -0.25rem rgba(15, 23, 42, 0.14), inset 0 0.06rem 0.06rem #fff;
-      transition: all 0.16s ease;
+      transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
     }
 
     .chip.on {
-      background: linear-gradient(145deg, var(--a1), var(--a2));
-      color: #fff;
-      border-color: transparent;
-      box-shadow: 0 0.45rem 0.95rem -0.3rem rgba(var(--accent-rgb), 0.5), inset 0 0.06rem 0.12rem rgba(255, 255, 255, 0.45);
+      background: var(--ink);
+      color: var(--sheet-bg);
+      border-color: var(--ink);
     }
 
-    /* Buttons */
+    /* Flat Buttons */
     .btn {
-      border: 1px solid rgba(255, 255, 255, 0.88);
-      background: linear-gradient(145deg, #ffffff, #f1f5f9);
+      border: 1px solid var(--line);
+      background: var(--surface);
       color: var(--ink);
-      padding: 0.58rem 0.82rem;
-      border-radius: 0.88rem;
-      font-weight: 700;
-      font-size: 0.85rem;
+      padding: 0.58rem 0.85rem;
+      border-radius: 999px;
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.84rem;
+      letter-spacing: -0.01em;
       cursor: pointer;
-      box-shadow: 0 0.45rem 0.9rem -0.32rem rgba(15, 23, 42, 0.14), inset 0 0.08rem 0.08rem #fff;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: opacity 0.15s ease, background-color 0.15s ease;
     }
 
-    .btn:hover:not(:disabled) { transform: translateY(-0.06rem); }
-    .btn:active:not(:disabled) { transform: translateY(0.1rem) scale(0.985); }
-    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn:hover:not(:disabled) { opacity: 0.9; background: var(--surface-alt); }
+    .btn:disabled { opacity: 0.42; cursor: not-allowed; }
 
     .btn.p {
-      background: linear-gradient(145deg, var(--a1) 0%, var(--a2) 65%, var(--a3) 100%);
-      color: #fff;
-      border-color: rgba(165, 180, 252, 0.35);
-      box-shadow: var(--shadow-btn);
+      background: var(--ink);
+      color: var(--sheet-bg);
+      border-color: var(--ink);
     }
 
     .btn.g {
-      background: linear-gradient(145deg, #34d399, #059669);
-      color: #fff;
-      border-color: rgba(167, 243, 208, 0.35);
-      box-shadow: 0 0.55rem 1.1rem -0.35rem rgba(16, 185, 129, 0.45), inset 0 0.08rem 0.1rem rgba(255, 255, 255, 0.5);
+      background: #16a34a;
+      color: #ffffff;
+      border-color: transparent;
     }
 
     .btn.red {
-      background: linear-gradient(145deg, #f87171, #dc2626);
-      color: #fff;
-      border-color: rgba(254, 202, 202, 0.35);
-      box-shadow: 0 0.55rem 1.1rem -0.35rem rgba(220, 38, 38, 0.42), inset 0 0.08rem 0.1rem rgba(255, 255, 255, 0.45);
+      background: #dc2626;
+      color: #ffffff;
+      border-color: transparent;
     }
 
     .btn.line {
-      background: rgba(255, 255, 255, 0.6);
-      border: 1px solid rgba(var(--accent-rgb), 0.25);
-      color: var(--accent);
-      box-shadow: 0 0.25rem 0.65rem -0.3rem rgba(var(--accent-rgb), 0.2);
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--ink);
     }
 
-    .btn.sm { padding: 0.36rem 0.62rem; font-size: 0.76rem; border-radius: 0.68rem; }
+    .btn.sm { padding: 0.36rem 0.68rem; font-size: 0.75rem; border-radius: 999px; }
     .btn.full { width: 100%; }
 
     .back {
-      background: rgba(255, 255, 255, 0.78);
+      background: var(--surface);
       border: 1px solid var(--line);
-      color: var(--accent);
-      font-weight: 700;
-      font-size: 0.82rem;
+      color: var(--ink);
+      font-weight: 600;
+      font-size: 0.78rem;
       cursor: pointer;
-      padding: 0.36rem 0.68rem;
-      border-radius: 0.68rem;
-      margin-bottom: 0.55rem;
-      box-shadow: 0 0.22rem 0.55rem -0.2rem rgba(15, 23, 42, 0.1);
+      padding: 0.36rem 0.76rem;
+      border-radius: 999px;
+      margin-bottom: 0.6rem;
     }
 
     .kv {
@@ -583,52 +741,56 @@
       justify-content: space-between;
       align-items: center;
       gap: 0.45rem;
-      padding: 0.32rem 0;
+      padding: 0.36rem 0;
       font-size: 0.84rem;
     }
 
-    hr { border: 0; border-top: 1px solid var(--line); margin: 0.55rem 0; }
+    hr { border: 0; border-top: 1px solid var(--line-soft); margin: 0.55rem 0; }
 
     .note {
-      padding: 0.58rem 0.72rem;
+      padding: 0.62rem 0.78rem;
       border-radius: 0.85rem;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       line-height: 1.45;
-      background: var(--accent-soft);
+      background: var(--surface-alt);
       color: var(--ink);
-      border: 1px solid rgba(var(--accent-rgb), 0.14);
+      border: 1px solid var(--line);
     }
 
-    .note.warn { background: var(--yellow-soft); border-color: rgba(217, 119, 6, 0.22); }
-    .note.err { background: var(--red-soft); color: var(--red); border-color: rgba(220, 38, 38, 0.22); }
-    .note.ok { background: var(--green-soft); color: var(--green); border-color: rgba(16, 185, 129, 0.22); }
+    .note.warn { background: var(--yellow-soft); border-color: transparent; color: var(--ink); }
+    .note.err { background: var(--red-soft); border-color: transparent; color: var(--red); }
+    .note.ok { background: var(--green-soft); border-color: transparent; color: var(--green); }
 
     .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
 
     label.f {
       display: block;
-      font-size: 0.78rem;
-      font-weight: 700;
+      font-size: 0.76rem;
+      font-weight: 600;
       color: var(--sub);
       margin: 0.58rem 0 0.28rem;
     }
 
     .in {
       width: 100%;
-      padding: 0.52rem 0.7rem;
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      border-radius: 0.75rem;
-      background: rgba(255, 255, 255, 0.94);
+      padding: 0.54rem 0.75rem;
+      border: 1px solid var(--line);
+      border-radius: 0.8rem;
+      background: var(--surface);
       color: var(--ink);
-      font-size: 0.86rem;
-      font-family: inherit;
-      box-shadow: inset 0 0.1rem 0.22rem rgba(15, 23, 42, 0.05);
+      font-size: 0.84rem;
+      font-family: var(--font-body);
     }
 
     .in:focus {
       outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 0.18rem rgba(var(--accent-rgb), 0.16);
+      border-color: var(--ink);
+    }
+
+    .in:disabled {
+      opacity: 0.65;
+      background: var(--surface-alt);
+      cursor: not-allowed;
     }
 
     textarea.in { min-height: 4.1rem; resize: vertical; }
@@ -641,97 +803,104 @@
     }
 
     .kind button {
-      border: 1px solid rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--line);
       background: var(--surface);
-      border-radius: 1rem;
-      padding: 0.62rem 0.35rem;
+      border-radius: 0.9rem;
+      padding: 0.65rem 0.35rem;
       cursor: pointer;
-      font-weight: 700;
+      font-weight: 600;
       font-size: 0.78rem;
       color: var(--ink);
-      box-shadow: var(--shadow-3d);
-      transition: all 0.18s ease;
     }
 
-    .kind button span { display: block; font-size: 1.25rem; margin-bottom: 0.22rem; }
+    .kind button span { display: block; font-size: 1.15rem; margin-bottom: 0.22rem; }
 
     .kind button.on {
-      border-color: var(--accent);
-      background: linear-gradient(145deg, rgba(var(--accent-rgb), 0.18), rgba(16, 185, 129, 0.12));
-      color: var(--accent);
-      transform: translateY(-0.1rem);
+      border-color: var(--ink);
+      background: var(--ink);
+      color: var(--sheet-bg);
     }
 
+    /* Question & Check Item List Rows */
     .q {
-      background: rgba(248, 250, 252, 0.84);
-      border: 1px solid var(--line);
-      border-radius: 1rem;
-      padding: 0.68rem;
-      margin-bottom: 0.58rem;
-      box-shadow: inset 0 0.06rem 0.12rem rgba(255, 255, 255, 0.9);
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid var(--line-soft);
+      border-radius: 0;
+      padding: 0.7rem 0.1rem;
+      margin-bottom: 0;
+    }
+
+    .q:last-child {
+      border-bottom: 0;
     }
 
     .opt {
       display: flex;
       align-items: center;
-      gap: 0.45rem;
-      padding: 0.46rem 0.62rem;
+      gap: 0.5rem;
+      padding: 0.5rem 0.65rem;
       border: 1px solid var(--line);
       border-radius: 0.75rem;
       margin-top: 0.36rem;
       cursor: pointer;
-      font-size: 0.83rem;
-      background: rgba(255, 255, 255, 0.78);
+      font-size: 0.82rem;
+      background: var(--surface);
+      color: var(--ink);
     }
 
     .pills { display: flex; gap: 0.35rem; }
     .pills label {
       flex: 1;
       text-align: center;
-      padding: 0.46rem 0.25rem;
+      padding: 0.44rem 0.25rem;
       border: 1px solid var(--line);
-      border-radius: 0.68rem;
-      font-size: 0.76rem;
-      font-weight: 700;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
       cursor: pointer;
-      background: rgba(255, 255, 255, 0.82);
+      background: var(--surface);
+      color: var(--ink);
     }
 
     .pills input, .stars input { display: none; }
-    .pills label:has(input:checked) { background: linear-gradient(145deg, var(--a1), var(--a2)); color: #fff; border-color: transparent; }
-    .pills label.pr:has(input:checked) { background: linear-gradient(145deg, #f87171, #dc2626); color: #fff; border-color: transparent; }
+    .pills label:has(input:checked) { background: var(--ink); color: var(--sheet-bg); border-color: var(--ink); }
+    .pills label.pr:has(input:checked) { background: #dc2626; color: #fff; border-color: transparent; }
 
     .stars { display: flex; gap: 0.35rem; }
     .stars label {
       flex: 1;
       text-align: center;
-      padding: 0.5rem 0;
+      padding: 0.48rem 0;
       border: 1px solid var(--line);
-      border-radius: 0.68rem;
-      font-weight: 800;
+      border-radius: 0.7rem;
+      font-weight: 700;
       cursor: pointer;
-      background: rgba(255, 255, 255, 0.82);
+      background: var(--surface);
+      color: var(--ink);
     }
-    .stars label:has(input:checked) { background: linear-gradient(145deg, #fbbf24, #d97706); color: #fff; border-color: transparent; }
+    .stars label:has(input:checked) { background: var(--ink); color: var(--sheet-bg); border-color: var(--ink); }
 
     /* Detailed App Test Specific Styles */
     .step-item {
       display: flex;
-      align-items: flex-start;
-      gap: 0.5rem;
-      padding: 0.48rem 0.6rem;
-      border-radius: 0.78rem;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.85);
-      margin-top: 0.38rem;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.62rem 0.15rem;
+      border-radius: 0;
+      border: 0;
+      border-bottom: 1px solid var(--line-soft);
+      background: transparent;
+      margin-top: 0;
       font-size: 0.82rem;
       line-height: 1.38;
       cursor: pointer;
-      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .step-item:last-of-type {
+      border-bottom: 0;
     }
     .step-item:has(input:checked) {
-      background: rgba(16, 185, 129, 0.1);
-      border-color: rgba(16, 185, 129, 0.35);
+      color: var(--green);
     }
     .step-num {
       display: inline-flex;
@@ -740,20 +909,20 @@
       width: 1.25rem;
       height: 1.25rem;
       border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--accent);
+      background: var(--surface-alt);
+      border: 1px solid var(--line);
+      color: var(--ink);
       font-size: 0.7rem;
-      font-weight: 800;
+      font-weight: 700;
       flex-shrink: 0;
-      margin-top: 0.05rem;
     }
 
     .problem-drawer {
       margin-top: 0.45rem;
-      padding: 0.58rem 0.65rem;
-      border-radius: 0.82rem;
-      background: rgba(220, 38, 38, 0.06);
-      border: 1px solid rgba(220, 38, 38, 0.22);
+      padding: 0.6rem 0.68rem;
+      border-radius: 0.85rem;
+      background: var(--red-soft);
+      border: 1px solid rgba(220, 38, 38, 0.25);
     }
 
     .sev-pills {
@@ -764,30 +933,30 @@
     }
     .sev-pills label {
       text-align: center;
-      padding: 0.38rem 0.2rem;
-      border-radius: 0.6rem;
-      border: 1px solid rgba(220, 38, 38, 0.24);
-      background: #ffffff;
+      padding: 0.36rem 0.2rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
       font-size: 0.71rem;
-      font-weight: 700;
+      font-weight: 600;
       color: var(--sub);
       cursor: pointer;
     }
     .sev-pills input { display: none; }
     .sev-pills label.sev-blocker:has(input:checked) { background: #dc2626; color: #fff; border-color: transparent; }
     .sev-pills label.sev-major:has(input:checked) { background: #d97706; color: #fff; border-color: transparent; }
-    .sev-pills label.sev-minor:has(input:checked) { background: #4f46e5; color: #fff; border-color: transparent; }
+    .sev-pills label.sev-minor:has(input:checked) { background: var(--ink); color: var(--sheet-bg); border-color: transparent; }
 
     .env-badge {
       display: inline-flex;
       align-items: center;
       gap: 0.32rem;
-      padding: 0.28rem 0.58rem;
-      border-radius: 0.68rem;
-      background: rgba(15, 23, 42, 0.06);
+      padding: 0.26rem 0.6rem;
+      border-radius: 999px;
+      background: var(--surface-alt);
       border: 1px solid var(--line);
-      font-size: 0.74rem;
-      font-weight: 700;
+      font-size: 0.72rem;
+      font-weight: 600;
       color: var(--ink);
     }
 
@@ -795,37 +964,30 @@
       width: 100%;
       max-height: 8.5rem;
       object-fit: cover;
-      border-radius: 0.68rem;
+      border-radius: 0.75rem;
       margin-top: 0.4rem;
       border: 1px solid var(--line);
     }
 
     .bar {
-      height: 0.4rem;
+      height: 0.3rem;
       border-radius: 99px;
-      background: rgba(148, 163, 184, 0.22);
+      background: var(--line-soft);
       overflow: hidden;
-      margin-top: 0.36rem;
-      box-shadow: inset 0 0.06rem 0.16rem rgba(15, 23, 42, 0.12);
+      margin-top: 0.38rem;
     }
     .bar > i {
       display: block;
       height: 100%;
-      background: linear-gradient(90deg, var(--a1), #10b981);
+      background: var(--ink);
       border-radius: 99px;
     }
 
     .imgph {
       height: 7.2rem;
-      border-radius: 1rem;
-      background: repeating-linear-gradient(
-        -45deg,
-        rgba(var(--accent-rgb), 0.08),
-        rgba(var(--accent-rgb), 0.08) 0.6rem,
-        rgba(16, 185, 129, 0.08) 0.6rem,
-        rgba(16, 185, 129, 0.08) 1.2rem
-      );
-      border: 1px dashed rgba(var(--accent-rgb), 0.35);
+      border-radius: 0.9rem;
+      background: var(--surface-alt);
+      border: 1px dashed var(--line);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -835,26 +997,25 @@
 
     details > summary {
       cursor: pointer;
-      font-weight: 700;
+      font-weight: 600;
       font-size: 0.82rem;
       color: var(--sub);
-      padding: 0.45rem 0.25rem;
+      padding: 0.5rem 0.2rem;
       list-style: none;
     }
 
+    /* Minimalist 5-Icon Bottom Bar */
     #nav {
       position: sticky;
       bottom: 0;
       left: 0;
       right: 0;
       display: flex;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(16px);
-      border-top: 1px solid var(--line);
-      padding: 0.32rem 0.35rem calc(0.32rem + env(safe-area-inset-bottom));
+      background: var(--sheet-bg);
+      border-top: 1px solid var(--line-soft);
+      padding: 0.48rem 0.35rem calc(0.52rem + env(safe-area-inset-bottom));
       flex-shrink: 0;
       z-index: 15;
-      box-shadow: 0 -0.45rem 1.4rem -0.55rem rgba(15, 23, 42, 0.14);
     }
 
     #nav button {
@@ -862,31 +1023,41 @@
       border: 0;
       background: transparent;
       color: var(--mute);
-      padding: 0.32rem 0.15rem;
-      border-radius: 0.78rem;
+      padding: 0.35rem 0.15rem;
+      border-radius: 0.75rem;
       cursor: pointer;
-      font-size: 0.68rem;
-      font-weight: 700;
+      font-size: 0.64rem;
+      font-weight: 500;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.12rem;
-      transition: all 0.16s ease;
+      gap: 0.16rem;
+      transition: color 0.15s ease;
     }
 
     #nav button.on {
-      color: var(--accent);
-      background: rgba(var(--accent-rgb), 0.11);
-      box-shadow: inset 0 0.06rem 0.06rem rgba(255, 255, 255, 0.8);
+      color: var(--ink);
+      font-weight: 700;
     }
 
-    #nav .ni { font-size: 1.08rem; line-height: 1.1; }
+    #nav .ni {
+      width: 1.35rem;
+      height: 1.35rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    #nav .ni svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
 
     .modalbg {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.55);
-      backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.62);
       display: flex;
       align-items: flex-end;
       justify-content: center;
@@ -897,96 +1068,128 @@
     @media (min-width: 640px) { .modalbg { align-items: center; } }
 
     .sheet {
-      background: #ffffff;
+      background: var(--surface);
+      color: var(--ink);
+      border: 1px solid var(--line);
       width: 100%;
       max-width: 26rem;
       border-radius: 1.5rem;
       padding: 1.15rem 1.05rem;
-      box-shadow: 0 1.5rem 3.5rem -0.75rem rgba(15, 23, 42, 0.4), inset 0 0.08rem 0.12rem #fff;
     }
 
-    .sheet h3 { margin: 0 0 0.48rem; font-size: 1rem; font-weight: 800; }
+    .sheet h3 { font-family: var(--font-display); margin: 0 0 0.48rem; font-size: 1rem; font-weight: 700; }
 
     .toast {
       position: fixed;
       bottom: 4.8rem;
       left: 50%;
       transform: translateX(-50%);
-      background: #0f172a;
-      color: #fff;
-      padding: 0.56rem 1.05rem;
+      background: var(--ink);
+      color: var(--sheet-bg);
+      padding: 0.54rem 1.05rem;
       border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 700;
+      font-size: 0.78rem;
+      font-weight: 600;
       z-index: 60;
       white-space: nowrap;
-      box-shadow: 0 0.7rem 1.5rem -0.45rem rgba(15, 23, 42, 0.55), inset 0 0.06rem 0.06rem rgba(255, 255, 255, 0.25);
     }
 
     .spin {
       width: 1.9rem;
       height: 1.9rem;
-      border: 0.18rem solid rgba(var(--accent-rgb), 0.18);
-      border-top-color: var(--accent);
+      border: 0.18rem solid var(--line);
+      border-top-color: var(--ink);
       border-radius: 50%;
       animation: sp 0.8s linear infinite;
       margin: 0 auto 0.6rem;
     }
 
     @keyframes sp { to { transform: rotate(360deg); } }
-  
-    /* toolbar (replaces Tailwind classes) */
-    .tb-brand{display:flex;align-items:center;gap:.7rem}.tb-title{font-weight:800;font-size:.95rem;color:#0f172a}.tb-sub{font-size:.72rem;color:#64748b}
-    .tb-btns{display:flex;gap:.4rem}
-    .vp{border:1px solid #e2e8f0;background:#fff;color:#334155;font-weight:700;font-size:.75rem;padding:.4rem .75rem;border-radius:.75rem;cursor:pointer;font-family:inherit}
-    .vp.on{background:var(--a2);color:#fff;border-color:transparent}
-    /* colour swatches */
-    .swatches{display:flex;gap:.6rem;flex-wrap:wrap}
-    .sw{width:2.1rem;height:2.1rem;border-radius:50%;border:2px solid #fff;cursor:pointer;box-shadow:0 .3rem .6rem -.2rem rgba(15,23,42,.4),inset 0 .08rem .1rem rgba(255,255,255,.6)}
-    .sw.on{outline:2px solid var(--a2);outline-offset:2px}
-    .swrow{display:flex;align-items:center;gap:.5rem}
-    .swarrow{color:var(--mute);font-weight:800;font-size:1.2rem;transition:transform .3s ease}
-    .swrow.open .swarrow{transform:rotate(180deg)}
-    .swpanel{display:flex;gap:.6rem;align-items:center;overflow:hidden;max-width:0;opacity:0;padding:.3rem 0;transition:max-width .4s ease,opacity .3s ease}
-    .swrow.open .swpanel{max-width:22rem;opacity:1}
-    .btn.act{min-width:7.5rem;height:2.7rem;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
+
+    /* Toolbar */
+    .tb-brand{display:flex;align-items:center;gap:.65rem}
+    .tb-title{font-family:var(--font-display);font-weight:700;font-size:.92rem;color:#ffffff}
+    .tb-sub{font-size:.7rem;color:#a1a1aa}
+    .tb-btns{display:flex;flex-wrap:wrap;gap:.38rem}
+    .vp{border:1px solid #2b2d34;background:#1f2127;color:#f4f4f5;font-weight:600;font-size:.72rem;padding:.38rem .72rem;border-radius:999px;cursor:pointer;font-family:var(--font-body)}
+    .vp.on{background:#ffffff;color:#111111;border-color:#ffffff}
+    .btn.act{min-width:6.8rem;height:2.4rem;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
+
+    .me-quick-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.65rem;
+    }
+    .me-quick-btn {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+      border-radius: 0.95rem;
+      padding: 0.68rem 0.75rem;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.4rem;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+    .me-quick-btn:hover { background: var(--surface-alt); }
+    .me-quick-btn.on {
+      border-color: var(--ink);
+      background: var(--ink);
+      color: var(--sheet-bg);
+    }
+    .me-quick-btn.on .small { color: var(--sheet-bg); opacity: 0.82; }
+    .preset-av-row {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-top: 0.45rem;
+    }
+    .preset-av-btn {
+      width: 2.35rem;
+      height: 2.35rem;
+      border-radius: 0.7rem;
+      border: 1px solid var(--line);
+      background: var(--surface-alt);
+      font-size: 1.15rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .preset-av-btn.on {
+      border-color: var(--ink);
+      outline: 2px solid var(--ink);
+      outline-offset: 1px;
+    }
   </style>
 </head>
 <body>
   <div class="preview-shell">
     <div class="preview-toolbar">
       <div class="tb-brand">
-        <span class="emblem-3d" style="width:2.1rem;height:2.1rem;" aria-hidden="true">
+        <span class="emblem-3d" style="width:1.95rem;height:1.95rem;" aria-hidden="true">
           <svg viewBox="0 0 160 160" fill="none">
-            <defs>
-              <linearGradient id="prevSquircle" x1="20" y1="12" x2="140" y2="148" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#6366F1" />
-                <stop offset="52%" stop-color="#3B82F6" />
-                <stop offset="100%" stop-color="#10B981" />
-              </linearGradient>
-              <linearGradient id="prevShield" x1="50" y1="34" x2="115" y2="128" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#FFFFFF" />
-                <stop offset="65%" stop-color="#E2E8F0" />
-                <stop offset="100%" stop-color="#94A3B8" />
-              </linearGradient>
-              <linearGradient id="prevCheck" x1="62" y1="68" x2="102" y2="98" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#10B981" />
-                <stop offset="100%" stop-color="#047857" />
-              </linearGradient>
-            </defs>
-            <rect x="16" y="16" width="128" height="128" rx="34" fill="url(#prevSquircle)" />
-            <ellipse cx="80" cy="40" rx="46" ry="18" fill="white" fill-opacity="0.18" />
-            <path d="M80 36L114 49V78C114 101.5 99.5 119.5 80 127C60.5 119.5 46 101.5 46 78V49L80 36Z" fill="url(#prevShield)" />
-            <path d="M65 81.5L75.5 92L97 69.5" stroke="url(#prevCheck)" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" />
-            <circle cx="122" cy="38" r="13" fill="#10B981" stroke="#FFFFFF" stroke-width="3" />
+            <rect x="16" y="16" width="128" height="128" rx="34" fill="#4F46E5" />
+            <path d="M80 36L114 49V78C114 101.5 99.5 119.5 80 127C60.5 119.5 46 101.5 46 78V49L80 36Z" fill="#FFFFFF" />
+            <path d="M65 81.5L75.5 92L97 69.5" stroke="#059669" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </span>
-        <div><div class="tb-title">RealTap</div><div class="tb-sub">Real people test your Pi app</div></div>
+        <div>
+          <div class="tb-title">RealTap · Mini App Sheet</div>
+          <div class="tb-sub">Bottom Sheet &amp; In-App Browser Minimal UI</div>
+        </div>
       </div>
 
       <div class="tb-btns">
+        <button type="button" id="sheetModeLightBtn" class="vp on" onclick="setSheetMode('light')">☀️ Light Sheet</button>
+        <button type="button" id="sheetModeDarkBtn" class="vp" onclick="setSheetMode('dark')">🌙 Dark Sheet</button>
         <button type="button" id="vpMobileBtn" class="vp on" onclick="setViewportMode('mobile')">📱 Mobile</button>
         <button type="button" id="vpWideBtn" class="vp" onclick="setViewportMode('responsive')">🖥️ Wide</button>
+        <button type="button" class="vp" onclick="copyUpdatedSource()">📋 Copy HTML</button>
       </div>
     </div>
 
@@ -994,8 +1197,10 @@
       <div id="phone">
         <div id="proto" class="proto-bar"></div>
         <header id="hdr"></header>
-        <main id="main"></main>
-        <nav id="nav" aria-label="Primary"></nav>
+        <div class="bottom-sheet-wrap">
+          <main id="main"></main>
+          <nav id="nav" aria-label="Primary"></nav>
+        </div>
       </div>
     </div>
   </div>
@@ -1004,83 +1209,66 @@
 
   <script>
     /* =========================================================================
-       3D Glossy Tactile SVG Emblem & Category Icons
+       Minimal SVG Emblem, Category Icons & Bottom Nav Outline Icons
        ========================================================================= */
     function brandEmblemSvg() {
       return `
         <span class="emblem-3d" aria-hidden="true">
           <svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="rtSquircle" x1="20" y1="12" x2="140" y2="148" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#6366F1" />
-                <stop offset="52%" stop-color="#3B82F6" />
-                <stop offset="100%" stop-color="#10B981" />
-              </linearGradient>
-              <linearGradient id="rtGlassRim" x1="25" y1="15" x2="135" y2="145" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.72" />
-                <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.14" />
-                <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.4" />
-              </linearGradient>
-              <linearGradient id="rtShield" x1="50" y1="34" x2="115" y2="128" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#FFFFFF" />
-                <stop offset="65%" stop-color="#E2E8F0" />
-                <stop offset="100%" stop-color="#94A3B8" />
-              </linearGradient>
-              <linearGradient id="rtCheck" x1="62" y1="68" x2="102" y2="98" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#10B981" />
-                <stop offset="100%" stop-color="#047857" />
-              </linearGradient>
-              <filter id="rtShadow" x="15" y="18" width="130" height="134" filterUnits="userSpaceOnUse">
-                <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#0F172A" flood-opacity="0.28" />
-              </filter>
-            </defs>
-            <rect x="16" y="16" width="128" height="128" rx="34" fill="url(#rtSquircle)" />
-            <rect x="17" y="17" width="126" height="126" rx="33" stroke="url(#rtGlassRim)" stroke-width="2.5" />
-            <ellipse cx="80" cy="40" rx="46" ry="18" fill="white" fill-opacity="0.2" />
-            <g filter="url(#rtShadow)">
-              <path d="M80 36L114 49V78C114 101.5 99.5 119.5 80 127C60.5 119.5 46 101.5 46 78V49L80 36Z" fill="url(#rtShield)" />
-              <path d="M80 36L114 49V78C114 101.5 99.5 119.5 80 127V36Z" fill="#0F172A" fill-opacity="0.06" />
-              <path d="M65 81.5L75.5 92L97 69.5" stroke="url(#rtCheck)" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" />
-            </g>
-            <circle cx="122" cy="38" r="13" fill="#10B981" stroke="#FFFFFF" stroke-width="3" />
-            <circle cx="119" cy="34" r="3.5" fill="#FFFFFF" fill-opacity="0.82" />
+            <rect x="16" y="16" width="128" height="128" rx="40" fill="#FFFFFF" />
+            <path d="M80 38L112 50V78C112 100.5 98.5 117.5 80 125C61.5 117.5 48 100.5 48 78V50L80 38Z" fill="#16171A" />
+            <path d="M66 81.5L76 91.5L96 70.5" stroke="#22C55E" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </span>
       `;
+    }
+
+    function navOutlineIcon(tabKey) {
+      if (tabKey === 'explore') {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5.5 9.5V19a1.5 1.5 0 0 0 1.5 1.5h10A1.5 1.5 0 0 0 18.5 19V9.5"/><path d="M9.5 20.5v-6h5v6"/></svg>`;
+      }
+      if (tabKey === 'create') {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>`;
+      }
+      if (tabKey === 'activity') {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>`;
+      }
+      if (tabKey === 'wallet') {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10l-2.5-2.5"/><path d="M17 17H7l2.5 2.5"/><path d="M7 7l1.5 1.5"/><path d="M17 17l-1.5-1.5"/></svg>`;
+      }
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`;
     }
 
     function kindBadge3d(kind) {
       if (kind === 'apptest') {
         return `<div class="ico-3d kind-apptest" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none">
-            <rect x="6" y="3" width="12" height="18" rx="3" fill="#FFFFFF" fill-opacity="0.95" />
-            <path d="M9.5 12L11.2 13.7L14.8 10.1" stroke="#4338CA" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-            <circle cx="12" cy="18.2" r="1" fill="#4F46E5" />
+            <rect x="6" y="3" width="12" height="18" rx="3" stroke="#4F46E5" stroke-width="2" />
+            <path d="M9.5 12L11.2 13.7L14.8 10.1" stroke="#4F46E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </div>`;
       }
       if (kind === 'survey') {
         return `<div class="ico-3d kind-survey" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none">
-            <rect x="5" y="4" width="14" height="16" rx="3" fill="#FFFFFF" fill-opacity="0.95" />
-            <path d="M8.5 9H15.5M8.5 12.5H15.5M8.5 16H12.5" stroke="#047857" stroke-width="2" stroke-linecap="round" />
+            <rect x="5" y="4" width="14" height="16" rx="3" stroke="#059669" stroke-width="2" />
+            <path d="M8.5 9H15.5M8.5 12.5H15.5M8.5 16H12.5" stroke="#059669" stroke-width="2" stroke-linecap="round" />
           </svg>
         </div>`;
       }
       if (kind === 'verify') {
         return `<div class="ico-3d kind-verify" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none">
-            <path d="M12 3.5L19 6.3V12.2C19 16.8 16 20.2 12 21.5C8 20.2 5 16.8 5 12.2V6.3L12 3.5Z" fill="#FFFFFF" fill-opacity="0.96" />
-            <path d="M9 12.2L11.1 14.3L15.2 10.1" stroke="#B45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M12 3.5L19 6.3V12.2C19 16.8 16 20.2 12 21.5C8 20.2 5 16.8 5 12.2V6.3L12 3.5Z" stroke="#D97706" stroke-width="2" />
+            <path d="M9 12.2L11.1 14.3L15.2 10.1" stroke="#D97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </div>`;
       }
-      return `<div class="ico-3d kind-avatar" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="8.5" r="3.6" fill="#FFFFFF" />
-          <path d="M5.5 19C6.4 15.8 8.9 14 12 14C15.1 14 17.6 15.8 18.5 19" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" />
-        </svg>
-      </div>`;
+      const m = (typeof state !== 'undefined' && state.me) ? state.me : { avatarData: '', avatarPreset: '🙂' };
+      if (m.avatarData) {
+        return `<div class="ico-3d kind-avatar" aria-hidden="true"><img src="${m.avatarData}" alt="Avatar" /></div>`;
+      }
+      return `<div class="ico-3d kind-avatar" aria-hidden="true"><span style="font-size:1.25rem;line-height:1">${esc(m.avatarPreset || '🙂')}</span></div>`;
     }
 
     function setViewportMode(mode) {
@@ -1089,10 +1277,44 @@
       $('vpWideBtn').className = 'vp' + (mode !== 'mobile' ? ' on' : '');
     }
 
+    function setSheetMode(mode) {
+      state.sheetMode = mode === 'dark' ? 'dark' : 'light';
+      save();
+      applyPrefs();
+      updateSheetModeButtons();
+    }
+
+    function updateSheetModeButtons() {
+      const isDark = state.sheetMode === 'dark';
+      const lBtn = $('sheetModeLightBtn');
+      const dBtn = $('sheetModeDarkBtn');
+      if (lBtn) lBtn.className = 'vp' + (!isDark ? ' on' : '');
+      if (dBtn) dBtn.className = 'vp' + (isDark ? ' on' : '');
+    }
+
+    function copyUpdatedSource() {
+      const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      let copied = false;
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = htmlContent;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        copied = document.execCommand('copy');
+        document.body.removeChild(ta);
+      } catch (e) {
+        copied = false;
+      }
+      toast(copied ? 'Copied updated index.html!' : 'Copy failed — use editor code.');
+    }
+
     /* =========================================================================
-       Localization Strings, Countries, Languages (RealTap)
+       Localization Strings, Countries, Provinces/States, Genders & Age Groups
        ========================================================================= */
-    const CONFIG={minWithdraw:1,holdDays:3,feePct:1,withdrawFeePct:1,minConsensus:10,maxQuestions:20,reportsToPause:3,minPerQuestion:0.02,minAppTest:0.1};
+    const CONFIG={minWithdraw:1,holdDays:3,feePct:1,withdrawFeePct:1,minConsensus:10,maxQuestions:20,reportsToPause:3,minPerQuestion:0.02,minAppTest:0.1,yearMs:365*24*3600e3,monthMs:30*24*3600e3};
     const LANGS=['en','ko','zh'];
     const S={
      proto:['Prototype · Pi sign-in and payments are simulated','프로토타입 · Pi 로그인과 결제는 시뮬레이션입니다','原型 · Pi 登录与支付为模拟'],
@@ -1115,12 +1337,14 @@
      holdNote:['Rewards can be withdrawn {0} days after approval.','보상은 승인 {0}일 후부터 인출할 수 있어요.','奖励在通过 {0} 天后可提现。'],
      start:['Start','시작하기','开始'],report:['Report','신고','举报'],back:['← Back','← 뒤로','← 返回'],
      needCountry:['Only for people in {0}. Change in Me.','{0} 거주자만 참여할 수 있어요. 내 정보에서 변경하세요.','仅限{0}地区用户，可在“我的”中修改。'],
+     needRegion:['Only for {0}. Change in Me.','{0} 지역 대상 의뢰예요. 내 정보에서 확인하세요.','仅限 {0} 地区，可在“我的”中查看。'],
+     needGender:['Only for {0} participants. Change in Me.','{0} 대상 의뢰예요. 내 정보에서 확인하세요.','仅限 {0} 用户，可在“我的”中查看。'],
+     needAge:['Only for {0} age group. Change in Me.','{0} 연령대 대상 의뢰예요. 내 정보에서 확인하세요.','仅限 {0} 年龄段，可在“我的”中查看。'],
      needLang:['Only for {0} speakers. Change in Me.','{0} 사용자만 참여할 수 있어요. 내 정보에서 변경하세요.','仅限使用{0}的用户，可在“我的”中修改。'],
      isFull:['All spots are taken.','모집이 마감되었어요.','名额已满。'],isPaused:['Paused while reports are reviewed.','신고 검토 중이라 일시 중지되었어요.','因举报审核暂停。'],isMine:['This is your request.','내가 올린 의뢰예요.','这是你发布的任务。'],alreadyDone:['You already joined this task.','이미 참여한 의뢰예요.','你已参与此任务。'],isSettled:['This task is finished.','종료된 의뢰예요.','任务已结束。'],
      consent:['This task may show sensitive or disturbing content. I understand and want to continue.','불쾌하거나 민감한 내용이 있을 수 있음을 이해하고 계속합니다.','此任务可能包含敏感或令人不适的内容，我已了解并愿意继续。'],needConsent:['Please confirm the content warning first.','먼저 민감 콘텐츠 안내에 동의해 주세요.','请先确认内容提示。'],
      reportContent:['⚑ Report this content','⚑ 이 내용 신고하기','⚑ 举报此内容'],submit:['Submit','제출하기','提交'],answerAll:['Please answer every required question.','필수 질문에 모두 답해 주세요.','请回答所有必答问题。'],submitted:['Submitted! See it in Activity.','제출했어요! 내 활동에서 확인하세요.','已提交！可在“我的活动”查看。'],
      qChoice:['Choice','객관식','选择题'],qText:['Text','서술형','简答题'],qRating:['Rating','별점','评分'],optional:['optional','선택','可选'],yourAnswer:['Your answer','내 답변','你的回答'],imgPlaceholder:['Image placeholder','이미지 자리 표시','图片占位'],
-     /* Detailed App Test strings */
      testApp:['Test {0}','{0} 테스트','测试 {0}'],openApp:['Open the app ↗','앱 열기 ↗','打开应用 ↗'],
      steps:['Step-by-step test scenario','단계별 테스트 시나리오','分步测试场景'],
      stepsCheckHint:['Complete each step in the app and check it off:','앱에서 각 단계를 순서대로 실행하고 체크하세요:','在应用中完成每一步并勾选：'],
@@ -1160,7 +1384,11 @@
      addQ:['+ Add question','+ 질문 추가','+ 添加问题'],qPh:['Question','질문 내용','问题内容'],optPh:['Option','보기','选项'],addOpt:['+ option','+ 보기','+ 选项'],
      people:['People','인원','人数'],rewardPer:['Reward each (π)','인당 보상 (π)','每人奖励 (π)'],
      advanced:['More options','추가 옵션','更多选项'],mode:['How rewards are decided','보상 결정 방식','奖励判定方式'],modeC:['Majority — 10+ people, choice only','다수결 — 10명 이상, 객관식만','多数决 — 10人以上，仅选择题'],modeR:['I accept or reject each response','내가 응답마다 승인·거절','我逐条通过或拒绝'],autoAppr:['Approve complete responses automatically','완성된 응답은 자동 승인','自动通过完整回答'],
-     country:['Participant country','참여자 국가','参与者国家'],language:['Participant language','참여자 언어','参与者语言'],estMin:['Minutes needed','소요 시간(분)','所需分钟数'],deadline:['Deadline','마감','截止时间'],hrs:['{0} hours','{0}시간','{0}小时'],days:['{0} days','{0}일','{0}天'],
+     country:['Participant country','참여자 국가','参与者国家'],
+     region:['State / Province','주 / 도','省 / 州'],
+     gender:['Gender','성별','性别'],
+     ageGroup:['Age group','연령대','年龄段'],
+     language:['Participant language','참여자 언어','参与者语言'],estMin:['Minutes needed','소요 시간(분)','所需分钟数'],deadline:['Deadline','마감','截止时间'],hrs:['{0} hours','{0}시간','{0}小时'],days:['{0} days','{0}일','{0}天'],
      sensFlag:['Shows sensitive content (people see a warning first)','민감한 콘텐츠 포함 (참여자에게 사전 경고)','包含敏感内容（参与者将先看到警告）'],
      rulesAck:['I agree to the rules','규칙을 지키는 의뢰임을 확인합니다','我确认遵守规则'],rulesTitle:['Not allowed','금지 사항','禁止事项'],
      r1:['Fake reviews or rating manipulation','가짜 후기·평점 조작','虚假评价或刷分'],r2:['Mass account creation, spam, or collecting personal data','계정 대량 생성·스팸·개인정보 수집','批量注册账号、垃圾信息或收集个人信息'],r3:['Identifying or tracking a specific person','특정인 식별·추적','识别或跟踪特定个人'],r4:['Sexual content, or anything involving minors','성적 콘텐츠, 미성년자 관련 내용','色情内容或涉及未成年人的内容'],r5:['Gambling, scams, or illegal activity','도박·사기·불법 행위','赌博、诈骗或违法活动'],
@@ -1197,8 +1425,9 @@
  privacy:['Privacy policy','개인정보처리방침','隐私政策'],
  privacyNote:['Device OS and screen size are collected automatically when you submit an app test, only so developers can reproduce bugs.','앱 테스트를 제출하면 개발자가 버그를 재현할 수 있도록 기기 OS와 화면 크기가 자동 수집됩니다.','提交应用测试时会自动收集设备系统和屏幕尺寸，仅用于帮助开发者复现问题。'],
  privacyBody:['The full privacy policy link will be added before launch. Placeholder: https://example.com/privacy','정식 개인정보처리방침 링크는 출시 전에 추가됩니다. 임시 주소: https://example.com/privacy','正式隐私政策链接将在上线前添加。占位地址：https://example.com/privacy'],
- themeColor:['Color','색상','颜色'],
- th_indigo:['Indigo','인디고','靛蓝'],th_blue:['Blue','블루','蓝色'],th_green:['Green','그린','绿色'],th_rose:['Rose','로즈','玫红'],th_orange:['Orange','오렌지','橙色'],th_slate:['Slate','슬레이트','石板灰'],
+ sheetSurface:['Sheet surface','시트 배경 모드','面板背景模式'],
+ sheetLight:['Light Sheet','라이트 시트','浅色面板'],
+ sheetDark:['Dark Sheet','다크 시트','深色面板'],
  topupTitle:['Add π','π 충전','充值 π'],topupAmt:['Amount (π)','충전 금액 (π)','充值金额 (π)'],
  topupNote:['Paid from your Pi wallet (simulated). Used to fund requests.','내 Pi 지갑에서 결제됩니다 (시뮬레이션). 의뢰 결제에 사용돼요.','从你的 Pi 钱包支付（模拟），用于支付任务。'],
  topupDone:['π {0} added.','π {0} 충전됐어요.','已充值 π {0}。'],topupMin:['Enter an amount above 0.','0보다 큰 금액을 입력하세요.','请输入大于 0 的金额。'],
@@ -1207,11 +1436,48 @@
  wRule:['Minimum π {0} · {1}-day hold · {2}% withdrawal fee','최소 π {0} · 승인 후 {1}일 보류 · 출금 수수료 {2}%','最低 π {0} · 保留{1}天 · 提现手续费 {2}%'],
  wFee:['Withdrawal fee ({0}%)','출금 수수료 ({0}%)','提现手续费 ({0}%)'],wNet:['You receive','실제 수령액','实际到账'],
  topupMax:['Up to π 100 per top-up.','1회 최대 π 100까지 충전할 수 있어요.','单次最多充值 π 100。'],
- mainLang:['Language I can answer in','답변 가능한 언어','我可回答的语言'],
  noActCta:['Browse tasks','의뢰 둘러보기','浏览任务'],noActHint:['Join an app test from Explore to see it here.','탐색에서 앱 테스트에 참여하면 여기에 나타나요.','在“探索”中参与应用测试后会显示在这里。'],
- demoNotice:['This is demo data, not real users. Reset anytime in Me → Demo tools.','데모 데이터이며 실제 사용자가 아닙니다. 내 정보 → 데모 도구에서 언제든 초기화할 수 있어요.','这是演示数据，并非真实用户。可随时在“我的”→演示工具中重置。'],gotIt:['Got it','확인','知道了']
+ demoNotice:['This is demo data, not real users. Reset anytime in Me → Demo tools.','데모 데이터이며 실제 사용자가 아닙니다. 내 정보 → 데모 도구에서 언제든 초기화할 수 있어요.','这是演示数据，并非真实用户。可随时在“我的”→演示工具中重置。'],gotIt:['Got it','확인','知道了'],
+ profileIdentity:['Profile & Display','프로필 사진 · 닉네임','头像与昵称'],
+ profilePhoto:['Profile photo','프로필 사진','头像'],
+ uploadPhoto:['Upload photo','사진 업로드','上传图片'],
+ clearPhoto:['Use emoji','이모지 사용','使用表情'],
+ nickname:['Nickname','닉네임','昵称'],
+ nicknamePh:['2–16 chars nickname','2~16자 닉네임','2–16 个字符昵称'],
+ saveNickname:['Save nickname','닉네임 저장','保存昵称'],
+ nickSaved:['Nickname updated.','닉네임이 변경되었어요.','昵称已更新。'],
+ nickInvalid:['Enter a nickname of 2–16 characters without banned words.','금지어 없이 2~16자 닉네임을 입력하세요.','请输入 2–16 个字符且无违规词的昵称。'],
+ targetProfile:['Target Screening Profile','참여자 선별 프로필','筛选档案'],
+ cooldownYear:['Editable once a year','연 1회 변경 가능','每年可修改 1 次'],
+ cooldownMonth:['Editable once a month','월 1회 변경 가능','每月可修改 1 次'],
+ cooldownLocked:['Locked · available in {0}','변경 제한 · {0} 후 가능','已锁定 · {0} 后可修改'],
+ cooldownNote:['Country: once/year · State/Province: once/month · Gender & Age group: locked after initial save (privacy & anti-abuse).','국가: 연 1회 · 주/도: 월 1회 · 성별·연령대: 최초 저장 후 고정(개인정보 보호·어뷰징 방지).','国家：每年 1 次 · 省/州：每月 1 次 · 性别与年龄段：保存后锁定（隐私与防刷）。'],
+ confirmFieldChange:['Confirm profile change','프로필 변경 확인','确认修改档案'],
+ confirmFieldMsg:['"{0}" will be locked until {1}. Continue?','"{0}" 항목은 {1}까지 다시 변경할 수 없어요. 계속할까요?','“{0}”在 {1} 之前将无法再次修改，是否继续？'],
+ fieldUpdated:['Profile updated.','프로필이 저장되었어요.','档案已保存。'],
+ g_any:['All genders','전체 성별','不限性别'],g_male:['Male','남성','男'],g_female:['Female','여성','女'],g_private:['Prefer not to say','비공개','不公开'],
+ age_any:['All ages','전체 연령대','不限年龄段'],age_10s:['10s','10대','10多岁'],age_20s:['20s','20대','20多岁'],age_30s:['30s','30대','30多岁'],age_40s:['40s','40대','40多岁'],age_50s:['50s','50대','50多岁'],age_60plus:['60+','60대 이상','60岁及以上'],
+ savedListTitle:['Interested / Saved','관심 표시한 목록','已关注/收藏'],
+ recentListTitle:['Recently Viewed','최근 본 글','最近浏览'],
+ emptyRecent:['No recently viewed tasks yet.','아직 최근 본 글이 없어요.','暂无最近浏览的任务。'],
+ countItems:['{0} items','{0}개','{0} 项']
 });
     const CN={ANY:['Anywhere','전 세계','不限地区','🌍'],KR:['South Korea','한국','韩国','🇰🇷'],CN:['China','중국','中国','🇨🇳'],US:['United States','미국','美国','🇺🇸'],JP:['Japan','일본','日本','🇯🇵'],VN:['Vietnam','베트남','越南','🇻🇳'],ID:['Indonesia','인도네시아','印度尼西亚','🇮🇩'],PH:['Philippines','필리핀','菲律宾','🇵🇭'],IN:['India','인도','印度','🇮🇳'],NG:['Nigeria','나이지리아','尼日利亚','🇳🇬']};
+    const REGIONS={
+      ANY:[['ANY','Anywhere','전 세계','不限地区']],
+      KR:[['ANY','Any region','전체 지역','不限地区'],['KR-JJ','Jeju-do','제주특별자치도','济州道'],['KR-SU','Seoul','서울특별시','首尔'],['KR-GG','Gyeonggi-do','경기도','京畿道'],['KR-BS','Busan','부산광역시','釜山'],['KR-DG','Daegu','대구광역시','大邱'],['KR-IC','Incheon','인천광역시','仁川']],
+      CN:[['ANY','Any region','전체 지역','不限地区'],['CN-BJ','Beijing','베이징','北京'],['CN-SH','Shanghai','상하이','上海'],['CN-GD','Guangdong','광둥성','广东'],['CN-ZJ','Zhejiang','저장성','浙江']],
+      US:[['ANY','Any region','전체 지역','不限地区'],['US-CA','California','캘리포니아','加利福尼亚'],['US-NY','New York','뉴욕','纽约'],['US-TX','Texas','텍사스','得克萨斯']],
+      JP:[['ANY','Any region','전체 지역','不限地区'],['JP-13','Tokyo','도쿄','东京'],['JP-27','Osaka','오사카','大阪']],
+      VN:[['ANY','Any region','전체 지역','不限地区'],['VN-HN','Hanoi','하노이','河内'],['VN-SG','Ho Chi Minh City','호치민','胡志明市']],
+      ID:[['ANY','Any region','전체 지역','不限地区'],['ID-JK','Jakarta','자카르타','雅加达'],['ID-BA','Bali','발리','巴厘岛']],
+      PH:[['ANY','Any region','전체 지역','不限地区'],['PH-MNL','Metro Manila','메트로 마닐라','马尼拉大都会']],
+      IN:[['ANY','Any region','전체 지역','不限地区'],['IN-MH','Maharashtra','마하라슈트라','马哈拉施特拉'],['IN-KA','Karnataka','카르나타카','卡纳塔克']],
+      NG:[['ANY','Any region','전체 지역','不限地区'],['NG-LA','Lagos','라고스','拉各斯'],['NG-FC','Abuja','아부자','阿布贾']]
+    };
+    const GENDERS=['any','male','female','private'];
+    const AGE_GROUPS=['any','10s','20s','30s','40s','50s','60plus'];
+    const AVATAR_PRESETS=['🙂','🦊','🐼','🐯','🐧','🐨'];
     const LN={any:['Any language','모든 언어','不限语言'],en:['English','영어','英语'],ko:['Korean','한국어','韩语'],zh:['Chinese','중국어','中文'],ja:['Japanese','일본어','日语'],vi:['Vietnamese','베트남어','越南语'],id:['Indonesian','인도네시아어','印尼语']};
     const UILANG={en:'English',ko:'한국어',zh:'中文'};
 
@@ -1220,6 +1486,13 @@
        ========================================================================= */
     function t(key,...a){const e=S[key];if(!e)return '['+key+']';let s=e[LANGS.indexOf(state.lang)]??e[0];a.forEach((v,i)=>{s=s.split('{'+i+'}').join(v)});return s}
     const cname=c=>CN[c][LANGS.indexOf(state.lang)],flag=c=>CN[c][3],lname=l=>LN[l][LANGS.indexOf(state.lang)];
+    function rname(country,code){
+      const list=REGIONS[country]||REGIONS.ANY;
+      const found=list.find(x=>x[0]===code)||list[0];
+      return found[LANGS.indexOf(state.lang)]??found[1];
+    }
+    const gname=g=>t('g_'+g);
+    const agename=a=>t('age_'+a);
     const ICON={apptest:'📱',survey:'📋',verify:'🔍'};
     const KINDS=['apptest','survey','verify'];
     const CHECKS=['login','pay','main','lang','speed','ui'];
@@ -1232,7 +1505,6 @@
     const safeUrl=u=>/^https?:\/\//i.test(u||'')?u:'#';
     function remain(ts){let ms=ts-now();if(ms<=0)return '0h';const d=Math.floor(ms/D),h=Math.floor((ms%D)/H);return d>0?d+'d '+h+'h':Math.max(1,h)+'h'}
 
-    /* Auto-detect current tester device OS, viewport resolution & Pi Browser status */
     function detectClientEnv(){
       const ua=navigator.userAgent||'';
       let os='desktop',osLabel='Desktop Web';
@@ -1294,7 +1566,7 @@
 
     function seed(){
      const n=Date.now();
-     const mk=(o)=>Object.assign({rej:0,mode:'review',autoApprove:false,minutes:5,country:'ANY',lang:'any',targetOs:'any',appVersion:'',steps:[],customChecks:[],sensitive:false,status:'open',desc:'',responses:[]},o);
+     const mk=(o)=>Object.assign({rej:0,mode:'review',autoApprove:false,minutes:5,country:'ANY',region:'ANY',gender:'any',ageGroup:'any',lang:'any',targetOs:'any',appVersion:'',steps:[],customChecks:[],sensitive:false,status:'open',desc:'',responses:[]},o);
      const tasks=[
       mk({id:1,kind:'apptest',appName:'Pi Notes',appVersion:'v1.4.2-testnet',targetOs:'any',appUrl:'https://example.com/pi-notes',
        desc:'Verify core note creation and Pi authentication flow inside Pi Browser.',
@@ -1308,7 +1580,7 @@
        requester:'shopbuilder',rej:2,reward:0.4,max:15,minutes:6,deadline:n+3*D,createdAt:n-2*H}),
       mk({id:2,kind:'verify',title:'Is this Chinese sentence natural?',desc:'Native Chinese speakers only.',requester:'lang_lab',mode:'consensus',minutes:1,reward:0.1,max:30,lang:'zh',deadline:n+3*D,createdAt:n-3*H,
        questions:[{id:'q1',type:'choice',text:'「完成任务后，奖励会在三天后到账。」 Is this natural?',options:['Natural','Slightly odd','Wrong']}]}),
-      mk({id:15,kind:'verify',title:'Is this Pi-accepting café actually open for business?',desc:'Check on site or by phone today. Pick what you find.',requester:'pi_map_team',rej:1,mode:'consensus',minutes:10,reward:0.5,max:15,country:'KR',lang:'any',deadline:n+4*D,createdAt:n-3.2*H,
+      mk({id:15,kind:'verify',title:'Is this Pi-accepting café actually open for business?',desc:'Check on site or by phone today. Pick what you find.',requester:'pi_map_team',rej:1,mode:'consensus',minutes:10,reward:0.5,max:15,country:'KR',region:'KR-JJ',lang:'any',deadline:n+4*D,createdAt:n-3.2*H,
        questions:[{id:'q1',type:'choice',text:'What is the status of this café today?',options:['Open and takes Pi','Open but no Pi','Closed or not found']}]}),
       mk({id:16,kind:'verify',title:'Is the intercity bus route from City A to City B running?',desc:'Check the terminal timetable or ask the staff. Answer for today.',requester:'transit_watch',rej:0,mode:'consensus',minutes:10,reward:0.4,max:20,deadline:n+3*D,createdAt:n-3.4*H,
        questions:[{id:'q1',type:'choice',text:'Is this route operating today?',options:['Running as scheduled','Reduced service','Not running']}]}),
@@ -1318,9 +1590,9 @@
        questions:[{id:'q1',type:'choice',text:'Who do you expect to win the City mayoral election?',options:['Candidate A','Candidate B','Candidate C','Undecided']},{id:'q2',type:'choice',text:'How sure are you?',options:['Very sure','Somewhat','Not sure']},{id:'q3',type:'text',text:'What matters most to you in this election?'}]}),
       mk({id:19,kind:'survey',title:'Voting experience survey',desc:'Short survey about the last election. Paid for taking part.',requester:'civic_poll',autoApprove:true,minutes:2,reward:0.12,max:80,deadline:n+5*D,createdAt:n-3.9*H,
        questions:[{id:'q1',type:'choice',text:'Did you vote in the last election?',options:['Yes','No']},{id:'q2',type:'choice',text:'What drove your choice most?',options:['Candidate','Party','Policy','Other']},{id:'q3',type:'rating',text:'How easy was it to find polling information? (1–5)'}]}),
-      mk({id:4,kind:'verify',title:'What is the floor material of this lobby?',desc:'Gangnam Station Exit 3 (Seoul). Pick the closest match.',requester:'interior_kim',rej:6,minutes:15,reward:0.8,max:3,country:'KR',lang:'ko',deadline:n+5*D,createdAt:n-5*H,
+      mk({id:4,kind:'verify',title:'What is the floor material of this lobby?',desc:'Gangnam Station Exit 3 (Seoul). Pick the closest match.',requester:'interior_kim',rej:6,minutes:15,reward:0.8,max:3,country:'KR',region:'KR-SU',lang:'ko',deadline:n+5*D,createdAt:n-5*H,
        questions:[{id:'q1',type:'choice',text:'Floor material',options:['Marble','Tile','Vinyl','Wood']}]}),
-      mk({id:5,kind:'survey',title:'Mobile payment habits (5 questions)',desc:'A short survey about how you pay in everyday life.',requester:'pay_research',autoApprove:true,minutes:3,reward:0.2,max:60,deadline:n+6*D,createdAt:n-6*H,
+      mk({id:5,kind:'survey',title:'Mobile payment habits (5 questions)',desc:'A short survey about how you pay in everyday life.',requester:'pay_research',autoApprove:true,minutes:3,reward:0.2,max:60,ageGroup:'20s',deadline:n+6*D,createdAt:n-6*H,
        questions:[{id:'q1',type:'choice',text:'How often do you pay with your phone?',options:['Daily','Weekly','Rarely']},{id:'q2',type:'choice',text:'Where do you pay most?',options:['Shops','Online','Transport']},{id:'q3',type:'rating',text:'How safe do you feel? (1–5)'},{id:'q4',type:'choice',text:'Have you used crypto to pay?',options:['Yes','No']},{id:'q5',type:'text',text:'What would make paying easier?'}]}),
       mk({id:8,kind:'verify',title:'이 한국어 문구가 자연스러운가요?',desc:'한국어 원어민만 참여해 주세요.',requester:'lang_lab',mode:'consensus',minutes:1,reward:0.1,max:15,country:'KR',lang:'ko',deadline:n+2*D,createdAt:n-8*H,
        questions:[{id:'q1',type:'choice',text:'"의뢰를 완료하면 3일 뒤에 보상이 지급돼요." 자연스러운가요?',options:['Natural','Slightly odd','Wrong']}]}),
@@ -1334,7 +1606,6 @@
        desc:'Search 2 local cafes and test bookmarking and Korean/English labels.',
        steps:['Search "Seogwipo Cafe" on the map','Tap a pin and save it to Favorites','Switch language toggle between EN and KO'],
        checks:['main','lang','ui'],requester:'jeju_dev',rej:0,reward:0.35,max:18,minutes:4,deadline:n+4*D,createdAt:n-12*H}),
-      /* mine */
       mk({id:11,kind:'verify',title:'Is this Korean button label natural?',desc:'"오늘의 보상을 받아가세요"',requester:'pioneer_kim',mode:'consensus',minutes:1,reward:0.1,max:12,country:'KR',lang:'ko',deadline:n+1*D,createdAt:n-13*H,
        questions:[{id:'q1',type:'choice',text:'Is the button label natural?',options:['Natural','Slightly odd','Wrong']}]}),
       mk({id:12,kind:'apptest',appName:'Pi Journal',appVersion:'v1.0.3',targetOs:'any',appUrl:'https://example.com/pi-journal',
@@ -1362,8 +1633,23 @@
      mkResp(by[14],appAns(by[14].checks,4,0));
      mkResp(by[11],['Natural','Natural','Natural','Natural','Natural','Natural','Natural','Natural','Natural','Slightly odd','Slightly odd','Wrong'].map((a,i)=>({u:'kr_v'+i,a:{q1:a}})));
      mkResp(by[12],appAns(by[12].checks,5,2));
-     return {lang:'en',fs:'m',tab:'explore',view:null,from:null,kind:'all',browse:'all',search:'',histQuery:'',histFilterMode:'all',histFrom:'',histTo:'',seg:'all',adv:false,saved:[2,9],theme:'indigo',
-      me:{username:'pioneer_kim',country:'KR',lang:'ko',lang2:'en'},
+     return {lang:'en',fs:'m',sheetMode:'light',tab:'explore',view:null,from:null,kind:'all',browse:'all',search:'',histQuery:'',histFilterMode:'all',histFrom:'',histTo:'',seg:'all',adv:false,saved:[2,9],recent:[1,5],meListView:null,theme:'indigo',
+      me:{
+        username:'pioneer_kim',
+        nickname:'Pioneer Kim',
+        avatarPreset:'🙂',
+        avatarData:'',
+        country:'KR',
+        region:'KR-JJ',
+        gender:'male',
+        ageGroup:'30s',
+        lang:'ko',
+        lang2:'en',
+        lastCountryChange:0,
+        lastRegionChange:0,
+        genderLocked:false,
+        ageLocked:false
+      },
       piBalance:20,earn:{available:2.4,pending:[{amount:0.2,releaseAt:n+2*D,note:'Mobile payment habits'}]},
       history:[
         {k:'h_earn',amt:0.2,at:n-1*D-2*H},
@@ -1384,6 +1670,21 @@
         if(s){
           const parsed=JSON.parse(s);
           if(typeof parsed.search!=='string')parsed.search='';if(!parsed.theme)parsed.theme='indigo';
+          if(!parsed.sheetMode)parsed.sheetMode='light';
+          if(!Array.isArray(parsed.saved))parsed.saved=[];
+          if(!Array.isArray(parsed.recent))parsed.recent=[];
+          if(!parsed.meListView)parsed.meListView=null;
+          if(!parsed.me)parsed.me={};
+          if(!parsed.me.nickname)parsed.me.nickname=parsed.me.username||'pioneer_kim';
+          if(!parsed.me.avatarPreset)parsed.me.avatarPreset='🙂';
+          if(typeof parsed.me.avatarData!=='string')parsed.me.avatarData='';
+          if(!parsed.me.region)parsed.me.region='ANY';
+          if(!parsed.me.gender)parsed.me.gender='any';
+          if(!parsed.me.ageGroup)parsed.me.ageGroup='any';
+          if(typeof parsed.me.lastCountryChange!=='number')parsed.me.lastCountryChange=0;
+          if(typeof parsed.me.lastRegionChange!=='number')parsed.me.lastRegionChange=0;
+          if(typeof parsed.me.genderLocked!=='boolean')parsed.me.genderLocked=false;
+          if(typeof parsed.me.ageLocked!=='boolean')parsed.me.ageLocked=false;
           if(typeof parsed.histQuery!=='string')parsed.histQuery='';
           if(!parsed.histFilterMode)parsed.histFilterMode='all';
           if(typeof parsed.histFrom!=='string')parsed.histFrom='';
@@ -1410,16 +1711,26 @@
     function openModal(html){$('layer').innerHTML=`<div class="modalbg"><div class="sheet">${html}</div></div>`}
     function closeModal(){$('layer').innerHTML=''}
     let toastT;function toast(msg){const d=document.createElement('div');d.className='toast';d.textContent=msg;$('phone').appendChild(d);clearTimeout(toastT);toastT=setTimeout(()=>d.remove(),2400)}
-    const THEMES={indigo:{a1:'#6366f1',a2:'#4338ca',a3:'#3730a3',ac:'#4f46e5',rgb:'79,70,229'},blue:{a1:'#3b82f6',a2:'#1d4ed8',a3:'#1e40af',ac:'#2563eb',rgb:'37,99,235'},green:{a1:'#10b981',a2:'#047857',a3:'#065f46',ac:'#059669',rgb:'5,150,105'},rose:{a1:'#fb7185',a2:'#e11d48',a3:'#9f1239',ac:'#e11d48',rgb:'225,29,72'},orange:{a1:'#fb923c',a2:'#ea580c',a3:'#9a3412',ac:'#ea580c',rgb:'234,88,12'},slate:{a1:'#64748b',a2:'#334155',a3:'#1e293b',ac:'#334155',rgb:'51,65,85'}};
-    function applyTheme(){const th=THEMES[state.theme]||THEMES.indigo,r=document.documentElement.style;r.setProperty('--a1',th.a1);r.setProperty('--a2',th.a2);r.setProperty('--a3',th.a3);r.setProperty('--accent',th.ac);r.setProperty('--accent-rgb',th.rgb)}
-    function toggleSw(){const r=$('swrow');if(r)r.classList.toggle('open')}
-    function setTheme(k){state.theme=k;applyTheme();save();const th=THEMES[k],c=$('swcur');if(c)c.style.background=`linear-gradient(145deg,${th.a1},${th.a2})`;document.querySelectorAll('.swpanel .sw').forEach(b=>b.classList.toggle('on',b.dataset.k===k));const r=$('swrow');if(r)r.classList.remove('open')}
-    function applyPrefs(){document.documentElement.lang=state.lang;document.documentElement.className='fs-'+state.fs;applyTheme()}
+    function applyPrefs(){
+      document.documentElement.lang=state.lang;
+      const darkCls = state.sheetMode === 'dark' ? ' dark-sheet' : '';
+      document.documentElement.className='fs-'+state.fs+darkCls;
+      updateSheetModeButtons();
+    }
     function setLang(l){state.lang=l;applyPrefs();save();render()}
     function setFs(s){state.fs=s;applyPrefs();save();render()}
     function go(tab){state.tab=tab;state.view=null;state.from=null;save();render();$('main').scrollTop=0}
     function view(v){state.view=v;save();render();$('main').scrollTop=0}
-    function openTask(id,from){state.tab='explore';state.from=from||null;view({name:'task',id})}
+    function recordRecent(id){
+      if(!Array.isArray(state.recent))state.recent=[];
+      state.recent=[id,...state.recent.filter(x=>x!==id)].slice(0,20);
+    }
+    function openTask(id,from){
+      recordRecent(id);
+      state.tab='explore';
+      state.from=from||null;
+      view({name:'task',id});
+    }
     function openReview(id){state.tab='activity';state.view={name:'review',id};save();render();$('main').scrollTop=0}
     function goBack(){const f=state.from;state.from=null;state.view=null;if(f)state.tab=f;save();render()}
     function releasePending(){const a=state.earn;const keep=[];a.pending.forEach(p=>{if(p.releaseAt<=now())a.available+=p.amount;else keep.push(p)});a.pending=keep}
@@ -1433,7 +1744,9 @@
      if(tk.status==='paused')return{ok:false,msg:t('isPaused')};
      if(tk.responses.length>=tk.max)return{ok:false,msg:t('isFull')};
      if(tk.country!=='ANY'&&tk.country!==m.country)return{ok:false,msg:t('needCountry',cname(tk.country))};
-     if(tk.lang!=='any'&&tk.lang!==m.lang&&tk.lang!==m.lang2)return{ok:false,msg:t('needLang',lname(tk.lang))};
+     if(tk.region&&tk.region!=='ANY'&&m.region&&m.region!=='ANY'&&tk.region!==m.region)return{ok:false,msg:t('needRegion',rname(tk.country!=='ANY'?tk.country:m.country,tk.region))};
+     if(tk.gender&&tk.gender!=='any'&&m.gender!==tk.gender)return{ok:false,msg:t('needGender',gname(tk.gender))};
+     if(tk.ageGroup&&tk.ageGroup!=='any'&&m.ageGroup!==tk.ageGroup)return{ok:false,msg:t('needAge',agename(tk.ageGroup))};
      if(tk.kind==='apptest'&&tk.targetOs&&tk.targetOs!=='any'){
        const env=detectClientEnv();
        if(tk.targetOs!==env.os)return{ok:false,msg:t('needOs',t('os_'+tk.targetOs),env.osLabel)};
@@ -1462,9 +1775,22 @@
     function render(){
      releasePending();
      $('proto').textContent=t('proto');
-     $('hdr').innerHTML=`${brandEmblemSvg()}<div class="hdr-copy"><b>RealTap</b><small>${t('tagline')}</small></div>`;
-     const tabs=[['explore','🔎'],['create','➕'],['activity','📋'],['wallet','👛'],['me','🙂']];
-     $('nav').innerHTML=tabs.map(([k,i])=>`<button class="${state.tab===k?'on':''}" onclick="go('${k}')"><span class="ni">${i}</span>${t('t_'+k)}</button>`).join('');
+     const isSubView = Boolean(state.view);
+     const leftBtnGlyph = isSubView ? '←' : '✕';
+     const leftBtnAction = isSubView ? "view(null)" : "go('explore');toast('RealTap Mini App')";
+     $('hdr').innerHTML=`
+       <button type="button" class="chrome-icon-btn" onclick="${leftBtnAction}" aria-label="Close or Back">${leftBtnGlyph}</button>
+       <button type="button" class="miniapp-switcher" onclick="go('explore')">
+         ${brandEmblemSvg()}
+         <span>RealTap</span>
+         <span class="miniapp-chev">⌄</span>
+       </button>
+       <button type="button" class="chrome-icon-btn" onclick="go('wallet')" title="${t('t_wallet')}" aria-label="${t('t_wallet')}">
+         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
+       </button>
+     `;
+     const tabs=['explore','create','activity','wallet','me'];
+     $('nav').innerHTML=tabs.map(k=>`<button class="${state.tab===k?'on':''}" onclick="go('${k}')"><span class="ni">${navOutlineIcon(k)}</span><span>${t('t_'+k)}</span></button>`).join('');
      const v=state.view,m=$('main');
      if(state.tab==='explore')m.innerHTML=v?.name==='task'?vTask(v.id):v?.name==='answer'?vAnswer(v.id):vExplore();
      else if(state.tab==='create')m.innerHTML=vCreate();
@@ -1479,6 +1805,9 @@
      const b=[`<span class="${cls} b">${t('k_'+tk.kind)}</span>`];
      if(tk.kind==='apptest'&&tk.appVersion)b.push(`<span class="${cls}">${esc(tk.appVersion)}</span>`);
      if(tk.kind==='apptest'&&tk.targetOs&&tk.targetOs!=='any')b.push(`<span class="${cls} b">${t('os_'+tk.targetOs)}</span>`);
+     if(tk.region&&tk.region!=='ANY')b.push(`<span class="${cls}">${esc(rname(tk.country,tk.region))}</span>`);
+     if(tk.gender&&tk.gender!=='any')b.push(`<span class="${cls}">${esc(gname(tk.gender))}</span>`);
+     if(tk.ageGroup&&tk.ageGroup!=='any')b.push(`<span class="${cls}">${esc(agename(tk.ageGroup))}</span>`);
      if(!inline&&tk.mode==='consensus')b.push(`<span class="${cls}">${t('modeC').split(' — ')[0]}</span>`);
      if(tk.sensitive)b.push(`<span class="${cls} r">⚠ ${t('sensitive')}</span>`);
      if(tk.status==='paused')b.push(`<span class="${cls} y">${t('underReview')}</span>`);
@@ -1491,17 +1820,17 @@
 
     function taskCard(tk){
      const left=Math.max(0,tk.max-tk.responses.length),sv=state.saved.includes(tk.id);
-     const where=(tk.country!=='ANY'?flag(tk.country)+' ':'')+(tk.lang!=='any'?lname(tk.lang)+' · ':'');
+     const where=(tk.country!=='ANY'?flag(tk.country)+' ':'')+(tk.region&&tk.region!=='ANY'?rname(tk.country,tk.region)+' · ':'');
+     const subLine=`<span class="pi">π ${fmt(tk.reward)} ${t('perPerson')}</span> · <span>${where}${t('minutes',tk.minutes)} · ${t('spotsLeft',left)}</span>${badges(tk,true)}`;
      return `<div class="card task compact" onclick="openTask(${tk.id})"><div class="row">${kindBadge3d(tk.kind)}
-      <div class="grow"><div class="title">${esc(ttl(tk))}</div><div class="meta">${where}${t('minutes',tk.minutes)} · ${t('spotsLeft',left)}${badges(tk,true)}</div></div>
-      <div class="reward"><b>π ${fmt(tk.reward)}</b></div>
-      <button class="heart ${sv?'on':''}" onclick="toggleSave(${tk.id},event)" aria-label="${t('save')}">${sv?'❤️':'🤍'}</button></div></div>`
+      <div class="grow"><div class="title">${esc(ttl(tk))}</div><div class="meta">${subLine}</div></div>
+      <button class="heart ${sv?'on':''}" onclick="toggleSave(${tk.id},event)" aria-label="${t('save')}">${sv?'❤️':'🤍'}</button>
+      <span class="row-chev" aria-hidden="true">›</span></div></div>`
     }
 
     function renderExploreList(){
-     const saved=state.browse==='saved';
      const q=(state.search||'').trim().toLowerCase();
-     let list=state.tasks.filter(x=>saved?state.saved.includes(x.id):x.status!=='settled');
+     let list=state.tasks.filter(x=>x.status!=='settled');
      if(state.kind!=='all')list=list.filter(x=>x.kind===state.kind);
      if(q){
       list=list.filter(x=>{
@@ -1511,20 +1840,25 @@
      }
      list.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
      if(list.length)return list.map(taskCard).join('');
-     const emptyMsg=q?t('noSearch',esc(state.search.trim())):(saved?t('noSaved'):t('noTasks'));
+     const emptyMsg=q?t('noSearch',esc(state.search.trim())):t('noTasks');
      return `<div class="card small" style="text-align:center">${emptyMsg}</div>`;
     }
 
     function vExplore(){
-     const saved=state.browse==='saved';
      const hasQ=Boolean((state.search||'').trim());
-     const demoBanner=state.demoSeen?'':`<div class="note warn" style="margin-bottom:0.55rem"><div>${t('demoNotice')}</div><button class="btn sm" style="margin-top:0.4rem" onclick="state.demoSeen=true;save();render()">${t('gotIt')}</button></div>`;
-     return `${demoBanner}<div class="search-wrap">
-       <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+     const demoBanner=state.demoSeen?'':`<div class="note warn" style="margin-bottom:0.65rem"><div>${t('demoNotice')}</div><button class="btn sm" style="margin-top:0.4rem" onclick="state.demoSeen=true;save();render()">${t('gotIt')}</button></div>`;
+     const heroRow=`<div class="sheet-hero">
+       <div>
+         <h1 class="sheet-hero-title">π ${fmt(state.piBalance)}</h1>
+         <div class="sheet-hero-sub">${t('tagline')}</div>
+       </div>
+       <button type="button" class="sheet-pill-action" onclick="go('create')">+ ${t('t_create')}</button>
+     </div>`;
+     return `${demoBanner}${heroRow}<div class="search-wrap">
+       <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
        <input id="exploreSearchInput" class="search-in" type="search" value="${esc(state.search||'')}" placeholder="${t('searchPh')}" oninput="onExploreSearch(this.value)" />
        <button id="searchClearBtn" type="button" class="search-clear" style="display:${hasQ?'inline-flex':'none'}" onclick="clearExploreSearch()" aria-label="Clear">✕</button>
       </div>
-      <div class="seg"><button class="${!saved?'on':''}" onclick="state.browse='all';save();render()">${t('viewAll')}</button><button class="${saved?'on':''}" onclick="state.browse='saved';save();render()">${t('viewSaved')} (${state.saved.length})</button></div>
       <div class="chips">${['all',...KINDS].map(c=>`<button class="chip ${state.kind===c?'on':''}" onclick="state.kind='${c}';save();render()">${t('k_'+c)}</button>`).join('')}</div>
       <div id="exploreList">${renderExploreList()}</div>`
     }
@@ -1533,7 +1867,7 @@
     function vTask(id){
      const tk=taskById(id);if(!tk)return '';
      const el=eligible(tk),sv=state.saved.includes(tk.id);
-     const where=flag(tk.country)+' '+cname(tk.country)+(tk.lang!=='any'?' · '+lname(tk.lang):'');
+     const where=flag(tk.country)+' '+cname(tk.country)+(tk.region&&tk.region!=='ANY'?' · '+rname(tk.country,tk.region):'');
      const stepsHtml=(tk.kind==='apptest'&&tk.steps&&tk.steps.length)?`<div style="margin-top:0.65rem"><div class="small" style="font-weight:700;color:var(--ink);margin-bottom:0.25rem">${t('steps')}</div>${tk.steps.map((st,i)=>`<div class="step-item" style="cursor:default"><span class="step-num">${i+1}</span><span>${esc(st)}</span></div>`).join('')}</div>`:'';
      return `<button class="back" onclick="goBack()">${t('back')}</button>
      <div class="card"><div class="row">${kindBadge3d(tk.kind)}<div class="grow"><div class="title" style="font-size:1.05rem">${esc(ttl(tk))}</div><div class="meta">${t('requester')}: ${esc(tk.requester)} · ${t('rejRate',tk.rej)}</div></div>
@@ -1547,13 +1881,14 @@
       <div class="kv"><span>${t('spotsLeft','')}</span><b>${Math.max(0,tk.max-tk.responses.length)} / ${tk.max}</b></div>
       <div class="kv"><span>⏱ ${t('minutes',tk.minutes)}</span><b>${remain(tk.deadline)}</b></div>
       ${tk.kind==='apptest'?`<div class="kv"><span>${t('targetOs')}</span><b>${t('os_'+(tk.targetOs||'any'))}</b></div>`:''}
-      ${tk.country!=='ANY'||tk.lang!=='any'?`<div class="kv"><span>${where}</span><b></b></div>`:''}</div>
+      <div class="kv"><span>${t('country')}</span><b>${esc(where)}</b></div>
+      ${tk.gender&&tk.gender!=='any'?`<div class="kv"><span>${t('gender')}</span><b>${esc(gname(tk.gender))}</b></div>`:''}
+      ${tk.ageGroup&&tk.ageGroup!=='any'?`<div class="kv"><span>${t('ageGroup')}</span><b>${esc(agename(tk.ageGroup))}</b></div>`:''}</div>
      <div class="card"><h3>${t('howPaid')}</h3><div class="note">${tk.mode==='consensus'?t('expConsensus'):(tk.autoApprove?t('expAuto'):t('expReview'))}</div><p class="small" style="margin:0.5rem 0 0">${t('holdNote',CONFIG.holdDays)}</p></div>
      ${el.ok?`<button class="btn p full" onclick="view({name:'answer',id:${tk.id}})">${t('start')}</button>`:`<div class="note warn" style="margin-bottom:0.5rem">${el.msg}</div>`}
      <button class="btn line full" style="margin-top:0.5rem" onclick="reportTask(${tk.id})">⚑ ${t('report')}</button>`
     }
 
-    /* Progressive disclosure when tester picks "Problem" on an app check item */
     function onCheckChoiceChange(qid,val){
       const drawer=$('prob_drawer_'+qid);
       if(drawer)drawer.style.display=val==='problem'?'block':'none';
@@ -1679,7 +2014,7 @@
     }
 
     function newDraft(kind){
-     const d={kind,appName:'',appVersion:'',targetOs:'any',appUrl:'',steps:['',''],checks:['login','main','speed','ui'],customChecks:[],title:'',desc:'',questions:[],mode:'review',autoApprove:false,country:'ANY',lang:'any',max:20,reward:0.3,minutes:5,hours:72,sensitive:false,ack:false,errors:[]};
+     const d={kind,appName:'',appVersion:'',targetOs:'any',appUrl:'',steps:['',''],checks:['login','main','speed','ui'],customChecks:[],title:'',desc:'',questions:[],mode:'review',autoApprove:false,country:'ANY',region:'ANY',gender:'any',ageGroup:'any',lang:'any',max:20,reward:0.3,minutes:5,hours:72,sensitive:false,ack:false,errors:[]};
      const Q=(type,text,options)=>({type,text,options:options||[]});
      if(kind==='survey'){d.questions=[Q('choice','',['','']),Q('text','')];d.autoApprove=true;d.max=50;d.reward=0.1;d.minutes=3}
      if(kind==='verify'){d.questions=[Q('choice','',['',''])];d.mode='consensus';d.max=20;d.reward=0.1;d.minutes=1}
@@ -1696,6 +2031,7 @@
     function vCreate(){
      if(!state.draft)state.draft=newDraft('apptest');
      const d=state.draft,k=d.kind;
+     const regList=(REGIONS[d.country]||REGIONS.ANY).map(r=>[r[0],r[LANGS.indexOf(state.lang)]??r[1]]);
      return `<div class="kind">${KINDS.map(c=>`<button class="${k===c?'on':''}" onclick="state.draft=newDraft('${c}');render()"><span>${ICON[c]}</span>${t('k_'+c)}</button>`).join('')}</div>
      <p class="small" style="margin:-0.25rem 0.15rem 0.6rem">${t('d_'+k)}</p>
      ${d.errors.length?`<div class="note err" style="margin-bottom:0.6rem"><b>${t('errs')}</b><br>${d.errors.map(e=>'• '+e).join('<br>')}</div>`:''}
@@ -1733,8 +2069,10 @@
        <label class="opt"><input type="radio" name="md" ${d.mode==='consensus'?'checked':''} onchange="setDraft('mode','consensus',true)"> ${t('modeC')}</label>
        <label class="opt"><input type="radio" name="md" ${d.mode==='review'?'checked':''} onchange="setDraft('mode','review',true)"> ${t('modeR')}</label>`:''}
       ${k!=='verify'?`<label class="opt" style="margin-top:0"><input type="checkbox" ${d.autoApprove?'checked':''} onchange="setDraft('autoApprove',this.checked)"> ${t('autoAppr')}</label>`:''}
-      <div class="g2"><div><label class="f">${t('country')}</label><select class="in" onchange="setDraft('country',this.value)">${opts(Object.keys(CN).map(c=>[c,flag(c)+' '+cname(c)]),d.country)}</select></div>
-      <div><label class="f">${t('language')}</label><select class="in" onchange="setDraft('lang',this.value)">${opts(Object.keys(LN).map(l=>[l,lname(l)]),d.lang)}</select></div>
+      <div class="g2"><div><label class="f">${t('country')}</label><select class="in" onchange="state.draft.country=this.value;state.draft.region='ANY';render()">${opts(Object.keys(CN).map(c=>[c,flag(c)+' '+cname(c)]),d.country)}</select></div>
+      <div><label class="f">${t('region')}</label><select class="in" onchange="setDraft('region',this.value)">${opts(regList,d.region)}</select></div>
+      <div><label class="f">${t('gender')}</label><select class="in" onchange="setDraft('gender',this.value)">${opts(GENDERS.map(g=>[g,gname(g)]),d.gender)}</select></div>
+      <div><label class="f">${t('ageGroup')}</label><select class="in" onchange="setDraft('ageGroup',this.value)">${opts(AGE_GROUPS.map(a=>[a,agename(a)]),d.ageGroup)}</select></div>
       <div><label class="f">${t('estMin')}</label><input class="in" type="number" min="1" value="${d.minutes}" oninput="setDraft('minutes',+this.value||1)"></div>
       <div><label class="f">${t('deadline')}</label><select class="in" onchange="setDraft('hours',+this.value)">${opts([[24,t('hrs',24)],[48,t('hrs',48)],[72,t('days',3)],[168,t('days',7)]],d.hours)}</select></div></div>
       <label class="opt"><input type="checkbox" ${d.sensitive?'checked':''} onchange="setDraft('sensitive',this.checked)"> ${t('sensFlag')}</label></div></details>
@@ -1793,7 +2131,7 @@
      const reqLabel=d.kind==='apptest'?d.appName.trim():(d.kind==='verify'?d.questions[0].text:d.title).trim();
      state.piBalance-=tt.total;state.history.unshift({k:'h_deposit',amt:-tt.total,note:reqLabel,at:now()});
      const id=Math.max(...state.tasks.map(x=>x.id))+1;
-     const base={id,kind:d.kind,desc:d.desc.trim(),requester:state.me.username,rej:0,mode:d.mode,autoApprove:d.mode==='review'&&d.autoApprove,minutes:d.minutes,reward:d.reward,max:d.max,country:d.country,lang:d.lang,sensitive:d.sensitive,status:'open',deadline:now()+d.hours*H,createdAt:now(),responses:[]};
+     const base={id,kind:d.kind,desc:d.desc.trim(),requester:state.me.username,rej:0,mode:d.mode,autoApprove:d.mode==='review'&&d.autoApprove,minutes:d.minutes,reward:d.reward,max:d.max,country:d.country,region:d.region||'ANY',gender:d.gender||'any',ageGroup:d.ageGroup||'any',lang:d.lang,sensitive:d.sensitive,status:'open',deadline:now()+d.hours*H,createdAt:now(),responses:[]};
      if(d.kind==='apptest'){
        const cleanSteps=d.steps.map(s=>s.trim()).filter(Boolean);
        const cleanCustom=d.customChecks.map(c=>c.trim()).filter(Boolean);
@@ -1823,10 +2161,9 @@
      if(state.seg==='req')items=items.filter(x=>x.role==='req');
      const body=items.map(({tk,role})=>{
       if(role==='done'){const r=myResp(tk);const col=['approved','correct'].includes(r.status)?'g':['rejected','wrong'].includes(r.status)?'r':'y';
-       return `<div class="card task" onclick="openTask(${tk.id},'activity')"><div class="row">${kindBadge3d(tk.kind)}<div class="grow"><div class="title">${esc(ttl(tk))}</div><div class="meta">${t('role_done')} · ${esc(tk.requester)}</div></div><span class="tag ${col}">${t('st_'+r.status)}</span></div>
-       ${r.amount>0?`<div class="kv"><span></span><b class="pi">${t('earned',fmt(r.amount))}</b></div>`:''}
+       return `<div class="card task" onclick="openTask(${tk.id},'activity')"><div class="row">${kindBadge3d(tk.kind)}<div class="grow"><div class="title">${esc(ttl(tk))}</div><div class="meta">${t('role_done')} · ${esc(tk.requester)}${r.amount>0?` · <span class="pi">${t('earned',fmt(r.amount))}</span>`:''}</div></div><span class="tag ${col}">${t('st_'+r.status)}</span><span class="row-chev">›</span></div>
        ${r.status==='rejected'?`<div class="note err" style="margin-top:0.5rem">${esc(r.reason)}</div>${r.appealed?`<div class="small">${t('appealed')}</div>`:`<button class="btn sm line" style="margin-top:0.5rem" onclick="event.stopPropagation();appeal(${tk.id})">${t('appeal')}</button>`}`:''}</div>`}
-      return `<div class="card task" onclick="openReview(${tk.id})"><div class="row">${kindBadge3d(tk.kind)}<div class="grow"><div class="title">${esc(ttl(tk))}</div><div class="meta">${t('role_req')} · ${t('progress',tk.responses.length,tk.max)} · π ${fmt(tk.reward*tk.max)}</div></div><span class="tag ${tk.status==='settled'?'g':'b'}">${tk.status==='settled'?t('settled'):t('results')}</span></div>
+      return `<div class="card task" onclick="openReview(${tk.id})"><div class="row">${kindBadge3d(tk.kind)}<div class="grow"><div class="title">${esc(ttl(tk))}</div><div class="meta">${t('role_req')} · ${t('progress',tk.responses.length,tk.max)} · π ${fmt(tk.reward*tk.max)}</div></div><span class="tag ${tk.status==='settled'?'g':'b'}">${tk.status==='settled'?t('settled'):t('results')}</span><span class="row-chev">›</span></div>
        <div class="bar"><i style="width:${Math.min(100,tk.responses.length/tk.max*100)}%"></i></div></div>`}).join('')||`<div class="card" style="text-align:center"><div class="small" style="margin-bottom:0.6rem">${t('noAct')}<br>${t('noActHint')}</div><button class="btn p" onclick="go('explore')">${t('noActCta')}</button></div>`;
      const c=s=>s==='all'?done.length+req.length:s==='done'?done.length:req.length;
      return `<div class="seg">${['all','done','req'].map(s=>`<button class="${state.seg===s?'on':''}" onclick="state.seg='${s}';save();render()">${t('seg_'+s)} ${c(s)}</button>`).join('')}</div>${body}`
@@ -2081,18 +2418,187 @@
      state.earn.available-=a;state.history.unshift({k:'h_withdraw',amt:-a,note:'Fee π '+fmt(c.fee)+' · Received π '+fmt(c.net),at:now()});save();toast(t('wDone'));render()
     }
 
+    /* Me Profile Helpers: Avatar, Nickname, Cooldowns, Saved & Recent */
+    function handleAvatarUpload(input){
+      const file=input.files&&input.files[0];
+      if(!file)return;
+      if(file.size>2*1024*1024){toast('Max 2MB image');return}
+      const reader=new FileReader();
+      reader.onload=e=>{
+        state.me.avatarData=e.target.result;
+        save();
+        render();
+        toast(t('fieldUpdated'));
+      };
+      reader.readAsDataURL(file);
+    }
+    function selectAvatarPreset(em){
+      state.me.avatarData='';
+      state.me.avatarPreset=em;
+      save();
+      render();
+    }
+    function saveNickname(){
+      const inp=$('meNickInput');
+      if(!inp)return;
+      const val=inp.value.trim();
+      const low=val.toLowerCase();
+      if(val.length<2||val.length>16||BANNED.some(b=>low.includes(b))){
+        toast(t('nickInvalid'));
+        return;
+      }
+      state.me.nickname=val;
+      save();
+      toast(t('nickSaved'));
+      render();
+    }
+    function getCountryCooldown(){
+      const next=(state.me.lastCountryChange||0)+CONFIG.yearMs;
+      if(!state.me.lastCountryChange||now()>=next)return {locked:false,leftText:''};
+      return {locked:true,leftText:remain(next),until:formatDateTime(next)};
+    }
+    function getRegionCooldown(){
+      const next=(state.me.lastRegionChange||0)+CONFIG.monthMs;
+      if(!state.me.lastRegionChange||now()>=next)return {locked:false,leftText:''};
+      return {locked:true,leftText:remain(next),until:formatDateTime(next)};
+    }
+    function applyCountryChange(newCountry){
+      const prev=state.me.country;
+      if(newCountry===prev)return;
+      const cd=getCountryCooldown();
+      if(cd.locked){toast(t('cooldownLocked',cd.leftText));render();return}
+      const nextDate=formatDateTime(now()+CONFIG.yearMs);
+      openModal(`<h3>${t('confirmFieldChange')}</h3><p class="small">${t('confirmFieldMsg',t('myCountry'),nextDate)}</p>
+        <div class="g2" style="margin-top:0.75rem"><button class="btn" id="ccNo">${t('cancel')}</button><button class="btn p" id="ccYes">${t('submit')}</button></div>`);
+      $('ccNo').onclick=()=>{closeModal();render()};
+      $('ccYes').onclick=()=>{
+        state.me.country=newCountry;
+        state.me.region='ANY';
+        state.me.lastCountryChange=now();
+        closeModal();
+        save();
+        toast(t('fieldUpdated'));
+        render();
+      };
+    }
+    function applyRegionChange(newRegion){
+      const prev=state.me.region||'ANY';
+      if(newRegion===prev)return;
+      const cd=getRegionCooldown();
+      if(cd.locked){toast(t('cooldownLocked',cd.leftText));render();return}
+      const nextDate=formatDateTime(now()+CONFIG.monthMs);
+      openModal(`<h3>${t('confirmFieldChange')}</h3><p class="small">${t('confirmFieldMsg',t('region'),nextDate)}</p>
+        <div class="g2" style="margin-top:0.75rem"><button class="btn" id="rcNo">${t('cancel')}</button><button class="btn p" id="rcYes">${t('submit')}</button></div>`);
+      $('rcNo').onclick=()=>{closeModal();render()};
+      $('rcYes').onclick=()=>{
+        state.me.region=newRegion;
+        state.me.lastRegionChange=now();
+        closeModal();
+        save();
+        toast(t('fieldUpdated'));
+        render();
+      };
+    }
+    function applyLockedProfileField(field,val){
+      const isGender=field==='gender';
+      const locked=isGender?Boolean(state.me.genderLocked):Boolean(state.me.ageLocked);
+      if(locked){toast(t('cooldownLocked',isGender?t('gender'):t('ageGroup')));render();return}
+      const label=isGender?t('gender'):t('ageGroup');
+      const dispVal=isGender?gname(val):agename(val);
+      openModal(`<h3>${t('confirmFieldChange')}</h3><p class="small">${t('confirmFieldMsg',label+' · '+dispVal,t('cooldownLocked','∞'))}</p>
+        <div class="g2" style="margin-top:0.75rem"><button class="btn" id="lpNo">${t('cancel')}</button><button class="btn p" id="lpYes">${t('submit')}</button></div>`);
+      $('lpNo').onclick=()=>{closeModal();render()};
+      $('lpYes').onclick=()=>{
+        if(isGender){state.me.gender=val;state.me.genderLocked=true}
+        else{state.me.ageGroup=val;state.me.ageLocked=true}
+        closeModal();
+        save();
+        toast(t('fieldUpdated'));
+        render();
+      };
+    }
+    function toggleMeList(kind){
+      state.meListView=state.meListView===kind?null:kind;
+      save();
+      render();
+    }
+    function renderMeSavedOrRecent(){
+      if(!state.meListView)return '';
+      if(state.meListView==='saved'){
+        const items=(state.saved||[]).map(taskById).filter(Boolean);
+        return `<div class="card"><h3>${t('savedListTitle')} (${items.length})</h3>${items.length?items.map(taskCard).join(''):`<div class="small" style="text-align:center;padding:0.5rem 0">${t('noSaved')}</div>`}</div>`;
+      }
+      const recItems=(state.recent||[]).map(taskById).filter(Boolean);
+      return `<div class="card"><h3>${t('recentListTitle')} (${recItems.length})</h3>${recItems.length?recItems.map(taskCard).join(''):`<div class="small" style="text-align:center;padding:0.5rem 0">${t('emptyRecent')}</div>`}</div>`;
+    }
+
     function vMe(){
-     const m=state.me,lo=Object.keys(LN).filter(l=>l!=='any');
-     return `<div class="card"><div class="row">${kindBadge3d('avatar')}<div class="grow"><div class="title">@${esc(m.username)}</div><span class="tag g">✓ ${t('kycOk')}</span></div></div></div>
+     const m=state.me;
+     const cCd=getCountryCooldown();
+     const rCd=getRegionCooldown();
+     const regList=(REGIONS[m.country]||REGIONS.ANY).map(r=>[r[0],r[LANGS.indexOf(state.lang)]??r[1]]);
+     const avatarHtml=m.avatarData
+       ?`<div class="avatar-lg"><img src="${m.avatarData}" alt="Profile avatar" /></div>`
+       :`<div class="avatar-lg"><span style="font-size:1.6rem;line-height:1">${esc(m.avatarPreset||'🙂')}</span></div>`;
+     const savedCnt=(state.saved||[]).filter(id=>Boolean(taskById(id))).length;
+     const recentCnt=(state.recent||[]).filter(id=>Boolean(taskById(id))).length;
+     return `<div class="card">
+       <div class="row">
+         ${avatarHtml}
+         <div class="grow">
+           <div class="title">${esc(m.nickname||m.username)}</div>
+           <div class="meta">@${esc(m.username)} · ${esc(flag(m.country))} ${esc(rname(m.country,m.region))} · ${esc(gname(m.gender))} · ${esc(agename(m.ageGroup))}</div>
+           <span class="tag g" style="margin-top:0.3rem;display:inline-block">✓ ${t('kycOk')}</span>
+         </div>
+       </div>
+       <hr>
+       <div class="small" style="font-weight:700;color:var(--ink)">${t('profileIdentity')}</div>
+       <label class="f">${t('nickname')}</label>
+       <div class="row" style="gap:0.4rem">
+         <input id="meNickInput" class="in" maxlength="16" value="${esc(m.nickname||'')}" placeholder="${t('nicknamePh')}">
+         <button type="button" class="btn sm p" onclick="saveNickname()">${t('saveNickname')}</button>
+       </div>
+       <label class="f">${t('profilePhoto')}</label>
+       <div class="row" style="flex-wrap:wrap;gap:0.4rem">
+         <label class="btn sm line" style="cursor:pointer;margin:0">📷 ${t('uploadPhoto')}<input type="file" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)"></label>
+         ${m.avatarData?`<button type="button" class="btn sm" onclick="selectAvatarPreset('${esc(m.avatarPreset||'🙂')}')">${t('clearPhoto')}</button>`:''}
+       </div>
+       <div class="preset-av-row">${AVATAR_PRESETS.map(em=>`<button type="button" class="preset-av-btn ${!m.avatarData&&m.avatarPreset===em?'on':''}" onclick="selectAvatarPreset('${em}')">${em}</button>`).join('')}</div>
+     </div>
+     <div class="me-quick-grid">
+       <button type="button" class="me-quick-btn ${state.meListView==='saved'?'on':''}" onclick="toggleMeList('saved')">
+         <div><div class="title" style="font-size:0.84rem">♥ ${t('savedListTitle')}</div><div class="small">${t('countItems',savedCnt)}</div></div>
+         <span>›</span>
+       </button>
+       <button type="button" class="me-quick-btn ${state.meListView==='recent'?'on':''}" onclick="toggleMeList('recent')">
+         <div><div class="title" style="font-size:0.84rem">🕒 ${t('recentListTitle')}</div><div class="small">${t('countItems',recentCnt)}</div></div>
+         <span>›</span>
+       </button>
+     </div>
+     ${renderMeSavedOrRecent()}
      <div class="card">
-      <label class="f" style="margin-top:0">${t('uiLang')}</label><select class="in" id="uil" onchange="setLang(this.value)">${Object.entries(UILANG).map(([k,v])=>`<option value="${k}" ${state.lang===k?'selected':''}>${v}</option>`).join('')}</select>
-      <label class="f">${t('themeColor')}</label><div class="swrow" id="swrow"><button class="sw cur" id="swcur" style="background:linear-gradient(145deg,${THEMES[state.theme].a1},${THEMES[state.theme].a2})" onclick="toggleSw()" aria-label="${t('themeColor')}"></button><span class="swarrow">›</span><div class="swpanel">${Object.entries(THEMES).map(([k,v])=>`<button class="sw ${state.theme===k?'on':''}" data-k="${k}" style="background:linear-gradient(145deg,${v.a1},${v.a2})" onclick="setTheme('${k}')" aria-label="${t('th_'+k)}"></button>`).join('')}</div></div>
+      <h3>${t('targetProfile')}</h3>
+      <label class="f" style="margin-top:0.2rem">${t('myCountry')} <span class="small">(${cCd.locked?t('cooldownLocked',cCd.leftText):t('cooldownYear')})</span></label>
+      <select class="in" ${cCd.locked?'disabled':''} onchange="applyCountryChange(this.value)">${Object.keys(CN).filter(c=>c!=='ANY').map(c=>`<option value="${c}" ${m.country===c?'selected':''}>${flag(c)} ${cname(c)}</option>`).join('')}</select>
+      <label class="f">${t('region')} <span class="small">(${rCd.locked?t('cooldownLocked',rCd.leftText):t('cooldownMonth')})</span></label>
+      <select class="in" ${rCd.locked?'disabled':''} onchange="applyRegionChange(this.value)">${opts(regList,m.region||'ANY')}</select>
+      <div class="g2">
+        <div>
+          <label class="f">${t('gender')} <span class="small">(${m.genderLocked?t('cooldownLocked','∞'):''})</span></label>
+          <select class="in" ${m.genderLocked?'disabled':''} onchange="applyLockedProfileField('gender',this.value)">${opts(GENDERS.map(g=>[g,gname(g)]),m.gender||'any')}</select>
+        </div>
+        <div>
+          <label class="f">${t('ageGroup')} <span class="small">(${m.ageLocked?t('cooldownLocked','∞'):''})</span></label>
+          <select class="in" ${m.ageLocked?'disabled':''} onchange="applyLockedProfileField('ageGroup',this.value)">${opts(AGE_GROUPS.map(a=>[a,agename(a)]),m.ageGroup||'any')}</select>
+        </div>
+      </div>
+      <p class="small" style="margin:0.55rem 0 0">${t('cooldownNote')}</p>
+     </div>
+     <div class="card">
+      <label class="f" style="margin-top:0">${t('sheetSurface')}</label>
+      <div class="seg"><button class="${state.sheetMode!=='dark'?'on':''}" onclick="setSheetMode('light')">☀️ ${t('sheetLight')}</button><button class="${state.sheetMode==='dark'?'on':''}" onclick="setSheetMode('dark')">🌙 ${t('sheetDark')}</button></div>
+      <label class="f">${t('uiLang')}</label><select class="in" id="uil" onchange="setLang(this.value)">${Object.entries(UILANG).map(([k,v])=>`<option value="${k}" ${state.lang===k?'selected':''}>${v}</option>`).join('')}</select>
       <label class="f">${t('textSize')}</label><div class="seg" style="margin-bottom:0">${['s','m','l'].map(s=>`<button class="${state.fs===s?'on':''}" onclick="setFs('${s}')">${t('fs_'+s)}</button>`).join('')}</div></div>
-     <div class="card">
-      <label class="f" style="margin-top:0">${t('myCountry')}</label><select class="in" onchange="state.me.country=this.value;save()">${Object.keys(CN).filter(c=>c!=='ANY').map(c=>`<option value="${c}" ${m.country===c?'selected':''}>${flag(c)} ${cname(c)}</option>`).join('')}</select>
-      <label class="f">${t('mainLang')}</label><select class="in" onchange="state.me.lang=this.value;save()">${lo.map(l=>`<option value="${l}" ${m.lang===l?'selected':''}>${lname(l)}</option>`).join('')}</select>
-      <label class="f">${t('secondLang')}</label><select class="in" onchange="state.me.lang2=this.value;save()"><option value="">${t('none')}</option>${lo.map(l=>`<option value="${l}" ${m.lang2===l?'selected':''}>${lname(l)}</option>`).join('')}</select>
-      <p class="small" style="margin:0.5rem 0 0">${t('langWhy')}</p></div>
      <details><summary>${t('privacy')}</summary><div class="card small">${t('privacyNote')}<br><br>${t('privacyBody')}</div></details>
      <details><summary>${t('rulesTitle')}</summary><div class="card small">${['r1','r2','r3','r4','r5'].map(r=>'• '+t(r)).join('<br>')}</div></details>
      <details><summary>${t('demo')}</summary><div class="card"><button class="btn full" onclick="ffwd()">${t('ffwd')}</button>
@@ -2103,10 +2609,11 @@
     function topup(){state.piBalance+=10;state.history.unshift({k:'h_topup',amt:10,note:'Demo top-up',at:now()});save();toast('+π 10');render()}
     function ffwd(){state.timeOffset+=3*D;releasePending();save();toast(t('ffDone'));render()}
     function settleMine(){state.tasks.filter(tk=>myResp(tk)&&tk.status!=='settled'&&tk.mode==='consensus').forEach(tk=>settleTask(tk.id));toast(t('settledMine'));render()}
-    function resetDemo(){const l=state.lang,f=state.fs;state=seed();state.lang=l;state.fs=f;save();render()}
+    function resetDemo(){const l=state.lang,f=state.fs,sm=state.sheetMode;state=seed();state.lang=l;state.fs=f;state.sheetMode=sm;save();render()}
 
     applyPrefs();
     render();
   </script>
 </body>
-</html>
+</html>''')
+print('Saved base_realtap.html')
